@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getOrder, listMessages, setOrderOnchainId, setOrderStatus } from "@/lib/orders";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 /**
  * GET /api/orders/[id]
  *   Returns the order plus its message thread.

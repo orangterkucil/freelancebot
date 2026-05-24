@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { chatTurn, type ChatMessage } from "@/lib/agent";
 import { appendMessage, listMessages, getOrder } from "@/lib/orders";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 /**
  * POST /api/agent
  *

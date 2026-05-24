@@ -7,6 +7,9 @@ import {
   setOrderDeliverable,
 } from "@/lib/orders";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 /**
  * POST /api/verify
  *
