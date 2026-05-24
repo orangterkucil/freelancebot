@@ -40,12 +40,21 @@ export default function OrderDetailPage() {
       setOrder(order);
 
       const ctx = (window as any).__fbAuthCtx ?? {};
-      if (ctx.clientEmail === order.client_email) {
+      const isClient     = ctx.clientEmail === order.client_email;
+      const isFreelancer = ctx.freelancerEmail === order.freelancer_email;
+
+      if (isClient && isFreelancer) {
+        // Same email is both parties (common in solo testing).
+        // Pick the role whose turn it is based on order status.
+        if (order.status === "funded") setRole("freelancer");      // freelancer must deliver
+        else if (order.status === "delivered") setRole("client");  // client must approve
+        else if (order.status === "draft") setRole("client");      // client must fund
+        else setRole("client");                                    // released/refunded — read-only
+      } else if (isClient) {
         setRole("client");
-      } else if (ctx.freelancerEmail === order.freelancer_email) {
+      } else if (isFreelancer) {
         setRole("freelancer");
       } else {
-        // viewer is not signed in as either party
         setRole(null);
       }
     } catch (e: any) {
