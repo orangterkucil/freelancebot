@@ -15,8 +15,8 @@ module.exports = {
       // local test network, auto-managed
     },
     arcTestnet: {
-      url: process.env.NEXT_PUBLIC_ARC_RPC_URL || "",
-      chainId: Number(process.env.NEXT_PUBLIC_ARC_CHAIN_ID || 0),
+      url: process.env.NEXT_PUBLIC_ARC_RPC_URL || "https://rpc.testnet.arc.network",
+      chainId: Number(process.env.NEXT_PUBLIC_ARC_CHAIN_ID || 5042002),
       accounts: process.env.DEPLOYER_PRIVATE_KEY
         ? [process.env.DEPLOYER_PRIVATE_KEY]
         : [],
