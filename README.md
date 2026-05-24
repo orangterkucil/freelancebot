@@ -111,14 +111,45 @@ freelancebot/
 
 Vercel is configured to deploy on push to `main`. Set the same env vars from `.env.example` in Vercel dashboard → Project → Settings → Environment Variables.
 
+## API surface (week 3)
+
+All routes live under `src/app/api/`.
+
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/api/orders` | Create a draft order |
+| `GET`  | `/api/orders?email=<email>` | List orders for a user (client or freelancer) |
+| `GET`  | `/api/orders/[id]` | Fetch one order + its message thread |
+| `PATCH`| `/api/orders/[id]` | Update `onchain_id` or `status` after on-chain action |
+| `POST` | `/api/agent` | Append a user message, get an agent reply |
+| `POST` | `/api/verify` | Submit a deliverable URL; agent returns a verification verdict |
+
+### Verify verdict shape
+
+```json
+{
+  "verified": true,
+  "confidence": "high",
+  "reasoning": "URL is reachable, contents appear to match the brief...",
+  "checks": {
+    "urlReachable": true,
+    "deadlineMet": true,
+    "briefAlignment": "matches"
+  }
+}
+```
+
+The agent is conservative — it returns `verified: false` on any uncertainty, leaving
+the final release to the client.
+
 ## Roadmap
 
 - [x] Week 1 — Setup, accounts, scaffold, architecture diagram
-- [ ] Week 2 — Smart contract escrow on Arc testnet
-- [ ] Week 3 — AI agent + verifier API
-- [ ] Week 4 — Supabase wiring, order lifecycle
-- [ ] Week 5 — Frontend MVP (client + freelancer pages)
-- [ ] Week 6 — End-to-end demo with Circle Wallets embedded
+- [x] Week 2 — Smart contract escrow + 18-test suite
+- [x] Week 3 — AI agent + verifier API + order lifecycle
+- [ ] Week 4 — Wire frontend to API + contract bindings (ethers)
+- [ ] Week 5 — Frontend MVP (client + freelancer pages, Circle Wallets embedded)
+- [ ] Week 6 — End-to-end demo, deploy contract to Arc testnet
 - [ ] Week 7 — Polish, video, README
 - [ ] Week 8 — Submit to Ignyte
 
