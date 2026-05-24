@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { createOrder, listOrdersForEmail } from "@/lib/orders";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 /**
  * GET /api/orders?email=<email>
  *   Returns all orders where the given email is either the client OR the freelancer.
