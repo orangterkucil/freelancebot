@@ -1,0 +1,11 @@
+export default function ClientPage() {
+  return (
+    <main className="mx-auto max-w-3xl px-6 py-16">
+      <h1 className="text-3xl font-bold text-slate-900">Fund an order</h1>
+      <p className="mt-3 text-slate-600">
+        Coming soon — week 5 build. This page will let clients create an order,
+        fund escrow with USDC, and approve deliverables.
+      </p>
+    </main>
+  );
+}
