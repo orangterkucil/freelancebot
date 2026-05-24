@@ -7,9 +7,13 @@ module.exports = {
     version: "0.8.24",
     settings: {
       optimizer: { enabled: true, runs: 200 },
+      viaIR: false,
     },
   },
   networks: {
+    hardhat: {
+      // local test network, auto-managed
+    },
     arcTestnet: {
       url: process.env.NEXT_PUBLIC_ARC_RPC_URL || "",
       chainId: Number(process.env.NEXT_PUBLIC_ARC_CHAIN_ID || 0),
@@ -17,5 +21,11 @@ module.exports = {
         ? [process.env.DEPLOYER_PRIVATE_KEY]
         : [],
     },
+  },
+  paths: {
+    sources:   "./",
+    tests:     "./test",
+    cache:     "./cache",
+    artifacts: "./artifacts",
   },
 };

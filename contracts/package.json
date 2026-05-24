@@ -1,0 +1,18 @@
+{
+  "name": "freelancebot-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FreelanceEscrow smart contracts (Solidity) for Arc testnet",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:arc": "hardhat run scripts/deploy.js --network arcTestnet",
+    "deploy:local": "hardhat run scripts/deploy.js --network hardhat"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.7"
+  }
+}
