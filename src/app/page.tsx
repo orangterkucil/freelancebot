@@ -45,9 +45,28 @@ export default function Home() {
         </Link>
       </section>
 
-      <footer className="mt-16 border-t border-slate-200 pt-6 text-sm text-slate-500">
-        Built for the Stablecoins Commerce Stack Challenge · Track 4 (Agentic
-        Economy) · Circle &amp; Arc · 2026
+      <footer className="mt-16 space-y-2 border-t border-slate-200 pt-6 text-sm text-slate-500">
+        <p>
+          Built for the Stablecoins Commerce Stack Challenge · Track 4 (Agentic
+          Economy) · Circle &amp; Arc · 2026
+        </p>
+        <p>
+          Contract on Arc Testnet:{" "}
+          <a
+            href="https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-xs text-brand hover:underline"
+          >
+            0xA8CA04560603951b0f0e803039B059432F673ae4 ↗
+          </a>{" "}
+          <span className="text-emerald-600">✓ source verified</span>
+        </p>
+        <p>
+          <a href="https://github.com/orangterkucil/freelancebot" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">
+            GitHub repo ↗
+          </a>
+        </p>
       </footer>
     </main>
   );
