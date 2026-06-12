@@ -1,12 +1,22 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
       <header className="mb-12">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-brand-dark">
-          FreelanceBot · on Arc
-        </p>
+        <div className="mb-6 flex items-center gap-3">
+          <Image
+            src="/logo-mark.svg"
+            alt="FreelanceBot"
+            width={48}
+            height={48}
+            className="rounded-xl"
+          />
+          <span className="text-sm font-semibold uppercase tracking-wider text-brand-dark">
+            FreelanceBot · on Arc
+          </span>
+        </div>
         <h1 className="text-5xl font-bold leading-tight tracking-tight text-slate-900">
           Get paid the moment you deliver.
         </h1>
