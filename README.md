@@ -1,11 +1,53 @@
-# FreelanceBot
+<p align="center">
+  <img src="./public/logo.svg" alt="FreelanceBot" width="320" />
+</p>
 
-> Autonomous AI payment agent for global freelancers, built on Arc.
-> Clients fund USDC escrow on Arc, the AI agent verifies deliverables, payments release in sub-second — no PayPal fees, no SWIFT wait, no Upwork hold.
+<p align="center">
+  <strong>Autonomous AI payment agent for global freelancers, built on Arc.</strong><br/>
+  Clients fund USDC escrow on Arc · AI agent verifies deliverables · Payment releases in sub-second.<br/>
+  <em>No PayPal fees · No SWIFT wait · No Upwork hold.</em>
+</p>
+
+<p align="center">
+  <a href="https://freelancebot-alpha.vercel.app"><img alt="Live demo" src="https://img.shields.io/badge/live%20demo-online-22c55e?style=flat-square" /></a>
+  <a href="https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4"><img alt="Contract verified" src="https://img.shields.io/badge/contract-verified%20on%20Arc-0369a1?style=flat-square" /></a>
+  <a href="https://github.com/orangterkucil/freelancebot/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" /></a>
+  <img alt="Stack" src="https://img.shields.io/badge/stack-Next.js%20·%20Solidity%20·%20Groq%20·%20Supabase-0f172a?style=flat-square" />
+</p>
+
+---
 
 **Submission for:** [The Stablecoins Commerce Stack Challenge](https://challenges.ignyte.ae/competition/the-stablecoins-commerce-stack-challenge-ozc0ih6kba) — **Track 4 (Agentic Economy)**
 **Tech sponsors:** Circle · Arc
 **Deadline:** July 13, 2026
+
+## Demo
+
+> **TODO** (for tarjo): replace the placeholders below with real screenshots.
+> Quick-record GIF: install [Kap](https://getkap.co) (free Mac app) or [LICEcap](https://www.cockos.com/licecap/) → record the full flow (client create → fund → freelancer submit → agent verify → release) → save as `docs/demo.gif` and uncomment the line below.
+
+<!-- ![Demo flow](./docs/demo.gif) -->
+
+| Landing | Order detail with chat |
+|---|---|
+| _add `docs/landing.png` here_ | _add `docs/order-detail.png` here_ |
+
+To take screenshots:
+1. Open https://freelancebot-alpha.vercel.app
+2. Cmd+Shift+4 → Space → click window (Mac) / Win+Shift+S (Windows)
+3. Save to `freelancebot/docs/landing.png` and `freelancebot/docs/order-detail.png`
+4. Replace placeholder text above with `![Landing](./docs/landing.png)` etc.
+
+## Features
+
+- 🏦 **USDC escrow on Arc** — client deposits, contract holds, freelancer receives. All in stablecoin, sub-second finality.
+- 🤖 **AI agent (Groq Llama 3.3 70B)** — verifies deliverables, recommends release, chats with both parties in their own language.
+- ⚙️ **Auto-verification** — URL reachability check + deadline check + LLM brief alignment → structured JSON verdict.
+- 🔐 **Smart contract verified on-chain** — source code public on [arcscan](https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4), audit-clean (SafeERC20, custom errors, Ownable).
+- 💸 **1% platform fee, configurable** — fee routes to a separate recipient address (planned: Circle Gateway for treasury splits).
+- 🌐 **Multi-language agent** — auto-detects user language (Indonesian, English, Tagalog, Vietnamese, etc) and replies in kind.
+- 🛡️ **Production-grade resilience** — structured logger, exponential backoff retries on API calls, lazy clients for build-time safety.
+- 🔄 **End-to-end happy path** — Draft → Funded → Delivered → Released, with refund path for missed deadlines.
 
 ---
 

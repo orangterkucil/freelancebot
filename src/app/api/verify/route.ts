@@ -6,6 +6,7 @@ import {
   getOrder,
   setOrderDeliverable,
 } from "@/lib/orders";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -63,6 +64,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(verdict);
   } catch (err: any) {
+    logger.error("api.verify.failed", { err: err?.message ?? String(err) });
     return NextResponse.json(
       { error: "verify_error", detail: err?.message ?? String(err) },
       { status: 500 }

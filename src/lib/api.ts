@@ -1,20 +1,43 @@
 /**
- * Thin browser-side API client. Wraps fetch() with typed helpers.
+ * Thin browser-side API client. Wraps fetch() with typed helpers + retry/backoff.
  * All endpoints are same-origin so no base URL is needed.
  */
 
 import type { Order, Message, OrderStatus } from "./orders";
 
 async function jsonFetch<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
-  const res = await fetch(input, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error((data && (data.detail || data.error)) || `HTTP ${res.status}`);
+  const attempts = 3;
+  const baseMs   = 300;
+  let lastErr: unknown;
+
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const res = await fetch(input, {
+        ...init,
+        headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        // Don't retry on 4xx — those are our fault, not transient.
+        if (res.status >= 400 && res.status < 500) {
+          throw new Error((data && (data.detail || data.error)) || `HTTP ${res.status}`);
+        }
+        throw new Error((data && (data.detail || data.error)) || `HTTP ${res.status}`);
+      }
+      return data as T;
+    } catch (err) {
+      lastErr = err;
+      const msg = String(err ?? "").toLowerCase();
+      const isClientError = msg.includes("http 4");
+      if (isClientError || attempt === attempts) break;
+      // exponential backoff with full jitter
+      const expo  = Math.min(4000, baseMs * 2 ** (attempt - 1));
+      const delay = Math.floor(Math.random() * expo);
+      await new Promise((r) => setTimeout(r, delay));
+    }
   }
-  return data as T;
+  throw lastErr;
 }
 
 // ---- Orders --------------------------------------------------------------

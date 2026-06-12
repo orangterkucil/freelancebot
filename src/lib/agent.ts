@@ -1,4 +1,6 @@
 import { groq, AGENT_MODEL } from "./groq";
+import { withRetry } from "./retry";
+import { logger } from "./logger";
 
 /**
  * FreelanceBot agent core.
@@ -22,11 +24,19 @@ Your role:
 - When asked to verify a deliverable, you weigh evidence and respond with a structured
   JSON verdict. Never guess — when uncertain, flag for human review.
 
+Language:
+- Detect the language the user wrote in (Indonesian, English, Tagalog, Vietnamese, etc.)
+  and reply in the same language.
+- For mixed-language messages, default to the user's primary language.
+- Translate financial / on-chain terms accurately; do not over-localize ("USDC" stays
+  "USDC", "escrow" can be translated where natural).
+
 Constraints:
-- You do not hold funds. You only recommend release/refund.
+- You do not hold funds. You only recommend release/refund. The on-chain release is
+  triggered by the client or by the permissioned agent address calling the contract.
 - You never reveal private keys, wallet seed phrases, or anything that looks like one.
 - You never write code that would call setAgent, setAgentFee, or any admin function.
-- You always respond in the language the user wrote in (Indonesian or English).
+- You never recommend the client wire money off-platform.
 `;
 
 export type ChatMessage = {
@@ -37,17 +47,24 @@ export type ChatMessage = {
 export async function chatTurn(history: ChatMessage[], userMessage: string): Promise<string> {
   if (!groq) throw new Error("GROQ_API_KEY not configured");
 
-  const completion = await groq.chat.completions.create({
-    model: AGENT_MODEL,
-    temperature: 0.3,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      ...history,
-      { role: "user", content: userMessage },
-    ],
-  });
+  const start = Date.now();
+  const completion = await withRetry(
+    () =>
+      groq!.chat.completions.create({
+        model: AGENT_MODEL,
+        temperature: 0.3,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          ...history,
+          { role: "user", content: userMessage },
+        ],
+      }),
+    { label: "groq.chat", attempts: 3 }
+  );
 
-  return completion.choices[0]?.message?.content?.trim() ?? "";
+  const reply = completion.choices[0]?.message?.content?.trim() ?? "";
+  logger.info("agent.chat.replied", { tookMs: Date.now() - start, replyLen: reply.length });
+  return reply;
 }
 
 // ---------------------------------------------------------------------------
@@ -81,6 +98,9 @@ export type VerifyVerdict = {
  *               text or run a vision model on attached images. For MVP we keep it text-only.
  */
 export async function verifyDeliverable(input: VerifyInput): Promise<VerifyVerdict> {
+  const start = Date.now();
+  logger.info("agent.verify.start", { orderId: input.orderId });
+
   // ---- mechanical checks ----
   const urlReachable = await isUrlReachable(input.deliverableUrl);
   const deadlineMet  = input.deadlineISO
@@ -88,16 +108,19 @@ export async function verifyDeliverable(input: VerifyInput): Promise<VerifyVerdi
     : true;
 
   if (!urlReachable) {
-    return {
+    const verdict: VerifyVerdict = {
       verified: false,
       confidence: "high",
       reasoning: "Deliverable URL is not reachable.",
       checks: { urlReachable: false, deadlineMet, briefAlignment: "unknown" },
     };
+    logger.warn("agent.verify.url_unreachable", { orderId: input.orderId, url: input.deliverableUrl });
+    return verdict;
   }
 
   if (!groq) {
     // No LLM available — fall back to mechanical-only judgment.
+    logger.warn("agent.verify.no_llm", { orderId: input.orderId });
     return {
       verified: deadlineMet,
       confidence: "low",
@@ -122,7 +145,7 @@ Respond with JSON in this exact shape:
 {
   "alignment": "matches" | "partial" | "mismatch",
   "confidence": "low" | "medium" | "high",
-  "reasoning": "<2-3 sentences explaining the judgment>"
+  "reasoning": "<2-3 sentences explaining the judgment, in English>"
 }
 
 Be conservative: if you cannot verify the contents (e.g. you can only see the URL),
@@ -134,15 +157,19 @@ you have not actually inspected.`;
   let reasoning = "";
 
   try {
-    const completion = await groq.chat.completions.create({
-      model: AGENT_MODEL,
-      temperature: 0,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: prompt },
-      ],
-    });
+    const completion = await withRetry(
+      () =>
+        groq!.chat.completions.create({
+          model: AGENT_MODEL,
+          temperature: 0,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: prompt },
+          ],
+        }),
+      { label: "groq.verify", attempts: 3 }
+    );
     const raw = completion.choices[0]?.message?.content ?? "{}";
     const parsed = JSON.parse(raw);
     if (parsed.alignment === "matches" || parsed.alignment === "partial" || parsed.alignment === "mismatch") {
@@ -155,17 +182,20 @@ you have not actually inspected.`;
       reasoning = parsed.reasoning;
     }
   } catch (e) {
+    logger.error("agent.verify.llm_failed", { orderId: input.orderId, err: String(e) });
     reasoning = "LLM call failed; defaulted to partial/low.";
   }
 
   const verified = alignment === "matches" && deadlineMet && confidence !== "low";
 
-  return {
+  const verdict: VerifyVerdict = {
     verified,
     confidence,
     reasoning,
     checks: { urlReachable, deadlineMet, briefAlignment: alignment },
   };
+  logger.info("agent.verify.done", { orderId: input.orderId, verified, confidence, alignment, tookMs: Date.now() - start });
+  return verdict;
 }
 
 // ---------------------------------------------------------------------------

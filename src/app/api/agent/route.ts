@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { chatTurn, type ChatMessage } from "@/lib/agent";
 import { appendMessage, listMessages, getOrder } from "@/lib/orders";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -64,6 +65,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ reply, message: persisted });
   } catch (err: any) {
+    logger.error("api.agent.failed", { err: err?.message ?? String(err) });
     return NextResponse.json(
       { error: "agent_error", detail: err?.message ?? String(err) },
       { status: 500 }
