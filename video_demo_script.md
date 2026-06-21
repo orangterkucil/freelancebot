@@ -170,6 +170,50 @@ Switch to the GitHub repo at `github.com/orangterkucil/freelancebot`. Scroll the
 
 ---
 
+## Compress + upload (target: under 25 MB if possible)
+
+Submission platforms behave best with ≤ 25 MB files. Raw screen recordings often
+come out at 200–800 MB at 1080p. Compress before uploading.
+
+### Easiest: HandBrake (free GUI)
+
+1. Download HandBrake from https://handbrake.fr
+2. Open your raw recording
+3. Preset: **"Web → Gmail Large 3 Minutes 720p30"** (good default) or **"Vimeo YouTube HQ 1080p60"** for higher quality
+4. Codec: **H.264 (x264)** — universal compatibility
+5. Quality slider: **RF 23** for balanced, **RF 26** for smaller file
+6. Click **Start Encode** → wait 2–5 minutes
+7. Output is typically 5–20 MB for a 4-min demo
+
+### Power user: FFmpeg one-liner
+
+```bash
+ffmpeg -i raw.mov \\
+  -c:v libx264 -crf 25 -preset slow \\
+  -c:a aac -b:a 96k -ac 1 \\
+  -vf "scale=1280:-2,fps=30" \\
+  -movflags +faststart \\
+  freelancebot-demo.mp4
+```
+
+What this does:
+- `-crf 25` — quality 25 (lower = bigger + better, 18–28 is the useful range)
+- `-preset slow` — encoder spends more time = smaller file
+- `scale=1280:-2` — downscale to 720p width (height auto)
+- `fps=30` — drop to 30fps if you recorded 60fps (halves bitrate need)
+- `-c:a aac -b:a 96k -ac 1` — mono 96 kbps audio is plenty for voiceover
+- `-movflags +faststart` — moves the index to the front so video starts playing before fully downloaded
+
+For a 4-minute demo recorded at 1080p60 with mic, this typically produces a **15–25 MB MP4**. Good enough for Ignyte upload, YouTube, and a GitHub Release asset.
+
+### Upload locations (in priority order)
+
+1. **YouTube unlisted** — paste link in Ignyte submission form + add to README. Most judges prefer this — no download, plays in-page.
+2. **GitHub Release asset** — `gh release create v1.0-demo freelancebot-demo.mp4 --notes "Demo video for hackathon submission"` — gives a permanent direct-download link, max 2 GB per file.
+3. **Direct upload to Ignyte** — only if the form accepts ≥ 25 MB files (check the upload limit first).
+
+If video > 25 MB, do (1) + (2) only. Never bloat the GitHub repo with a video file committed to git (use Releases).
+
 ## Quick-cut version (90 seconds, for social)
 
 If you also want a Twitter/LinkedIn cut, take Sections 2 + 3 + 5 + 7 only:

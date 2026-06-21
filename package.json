@@ -1,6 +1,6 @@
 {
   "name": "freelancebot",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "private": true,
   "description": "Autonomous AI payment agent for global freelancers on Arc",
   "scripts": {
@@ -9,7 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "contracts:compile": "cd contracts && npx hardhat compile",
-    "contracts:deploy:arc": "cd contracts && npx hardhat run scripts/deploy.js --network arcTestnet"
+    "contracts:deploy:arc": "cd contracts && npx hardhat run scripts/deploy.js --network arcTestnet",
+    "release:patch": "npm version patch -m 'chore(release): v%s' && git push --follow-tags",
+    "release:minor": "npm version minor -m 'chore(release): v%s' && git push --follow-tags",
+    "release:major": "npm version major -m 'chore(release): v%s' && git push --follow-tags"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",

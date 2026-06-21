@@ -270,6 +270,15 @@ Or use Remix in the browser — no local Node install required. See [`contracts/
 - [ ] Week 7 — Wire frontend to on-chain (ethers.js), polish, record video
 - [ ] Week 8 — Submit to Ignyte
 
+## Project documents
+
+- [**PRD.md**](./PRD.md) — Product Requirements Document covering MVP 1 (shipped) and MVP 2 (roadmap), stack recommendations, governance.
+- [**CHANGELOG.md**](./CHANGELOG.md) — every release, with semantic version, date, and a Keep-a-Changelog-style entry.
+- [**VERSIONING.md**](./VERSIONING.md) — SemVer scheme + how to cut a release (`npm run release:minor` etc).
+- [**circle_product_feedback.md**](./circle_product_feedback.md) — honest Circle DX feedback (hackathon submission requirement).
+- [**submission_narrative.md**](./submission_narrative.md) — one-page pitch.
+- [**video_demo_script.md**](./video_demo_script.md) — 7-section storyboard + compression instructions.
+
 ## License
 
 MIT
