@@ -12,6 +12,33 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.7.0] — 2026-06-12
+
+Landing page full pivot to Orbis-style dark luxe.
+
+### Added
+- **New landing page (`src/app/page.tsx`)** — full Orbis-inspired redesign with four sections:
+  1. **HERO** — uppercase Anton heading, "agentic payouts" Condiment cursive accent in signal-green, liquid-glass nav, CTA buttons, 4-stat strip.
+  2. **ABOUT** — "Hello. I'm FreelanceBot" with "open source" cursive, orbital decoration with animated signal-green dot, 4 liquid-glass stat cards.
+  3. **LIVE FLOW** — 3-card grid replacing the NFT collection grid concept: Client funds → Agent verifies → Freelancer paid, each with animated signal-green dot inside an orbit ring, liquid-glass KPI overlay bar with circular gradient chevron button.
+  4. **CTA** — "Go beyond" cursive, "Join us / Fork the repo / Ship your own / Follow the signal" heading, vertical social icons.
+- **`liquid-glass` CSS utility** in `globals.css` (Apple Vision Pro-ish backdrop blur with subtle inset border gradient).
+- **`bg-space`, `bg-stars`, `texture-overlay`** CSS utilities — pure CSS stars + radial gradient nebula + SVG noise overlay. No CDN videos = saves ~35 MB on first load (critical for emerging-market 3G/4G).
+- **Three Google Fonts** via `next/font/google`: **Anton** (display), **Condiment** (cursive accent), **JetBrains Mono** (body).
+- Tailwind tokens: `ink` (#010828), `cream` (#EFF4FF), `signal` (#00D18C — money green, not the original highlighter #6FFF00), `glass`. Plus `font-display`, `font-script`, `max-w-landing` (1831px).
+- Animations: `orbit` (28s rotation of decorative dot), `flow` (8s pulse for step cards).
+
+### Changed
+- `src/app/layout.tsx` — registers the three Google Fonts and exposes them as CSS variables on `<html>`. Body background stays `bg-slate-50` so app routes (`/client`, `/freelancer`, `/orders`) keep their light/clean fintech look — only `/` lives in the dark luxe world.
+- `tailwind.config.ts` — new color tokens, font families bound to next/font CSS variables, `max-w-landing` and the two animations.
+
+### Design rationale
+- **Signal-green over highlighter-green** — psychological fit: money/trust products (Wise, Robinhood, Mercury) trend toward teal/emerald rather than radioactive lime.
+- **No CloudFront videos** — original Orbis spec used four 6–15 MB MP4s. For a globally distributed open-source product targeting emerging markets, that bandwidth is prohibitive. CSS-only approximation keeps the visual energy at <200 KB initial paint.
+- **App routes intentionally stay light** — payment UI trust signals (Stripe, Wise, Mercury) lean light. Dark stays in the marketing/storytelling layer.
+
+---
+
 ## [v0.6.0] — 2026-06-12
 
 On-chain wiring, product roadmap, and versioning system.

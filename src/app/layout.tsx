@@ -1,5 +1,26 @@
 import type { Metadata } from "next";
+import { Anton, Condiment, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+
+const anton = Anton({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-anton",
+  display: "swap",
+});
+
+const condiment = Condiment({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-condiment",
+  display: "swap",
+});
+
+const jbMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jb-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "FreelanceBot — Autonomous Payment Agent for Global Freelancers",
@@ -31,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${anton.variable} ${condiment.variable} ${jbMono.variable}`}>
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased">
         {children}
       </body>
