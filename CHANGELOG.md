@@ -12,6 +12,15 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.7.1] — 2026-06-12
+
+Fix Vercel build failure from v0.7.0.
+
+### Fixed
+- Added `lucide-react@^0.460.0` to `dependencies`. v0.7.0 introduced heavy use of `lucide-react` icons in the new landing (`Mail`, `Twitter`, `Github`, `ArrowRight`, `ChevronRight`, `Wallet`, `Sparkles`, `CircleCheckBig`), but the package was never declared as a direct dependency. Vercel's fresh `npm install` (no cached `node_modules`) failed module resolution. Earlier builds succeeded incidentally because the package was present in cached state.
+
+---
+
 ## [v0.7.0] — 2026-06-12
 
 Landing page full pivot to Orbis-style dark luxe.
