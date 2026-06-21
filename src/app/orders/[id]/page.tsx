@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { AgentChat } from "@/components/AgentChat";
 import { OrderActions } from "@/components/OrderActions";
 import { StatusBadge } from "@/components/StatusBadge";
+import { WalletStatus } from "@/components/WalletStatus";
 import { getOrder } from "@/lib/api";
 import type { Order } from "@/lib/orders";
 
@@ -88,9 +89,12 @@ export default function OrderDetailPage() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
       <header className="mb-6">
-        <Link href="/" className="text-xs uppercase tracking-wider text-brand-dark">
-          ← FreelanceBot
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link href="/" className="text-xs uppercase tracking-wider text-brand-dark">
+            ← FreelanceBot
+          </Link>
+          <WalletStatus />
+        </div>
         <div className="mt-2 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Order #{order.id}</h1>
