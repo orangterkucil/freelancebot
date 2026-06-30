@@ -109,6 +109,27 @@ export async function getOrder(orderId: number): Promise<Order | null> {
   return (data as Order) ?? null;
 }
 
+/**
+ * Authorization helper. Used by every mutating API route + by GETs that return
+ * private data (chat messages, applications).
+ *
+ * Returns the order plus the actor's role on it, or { role: null } if the actor
+ * is not a party. Until MVP 2 ships real auth, the API trusts the actor_email
+ * the client sends — the spoof risk is acknowledged in the security model.
+ * Tradeoff is documented in PRD.md §3 (MVP 1 limitations).
+ */
+export async function assertActorIsParty(
+  orderId: number,
+  actorEmail: string | null | undefined
+): Promise<{ role: "client" | "freelancer" | null; order: Order | null }> {
+  const order = await getOrder(orderId);
+  if (!order || !actorEmail) return { role: null, order };
+  const lower = actorEmail.toLowerCase().trim();
+  if (order.client_email.toLowerCase() === lower)     return { role: "client",     order };
+  if (order.freelancer_email.toLowerCase() === lower) return { role: "freelancer", order };
+  return { role: null, order };
+}
+
 export async function listOrdersForEmail(email: string): Promise<Order[]> {
   const sb = supabaseAdmin();
   const { data, error } = await sb

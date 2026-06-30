@@ -1,20 +1,26 @@
 import { NextResponse } from "next/server";
-import { getOrder, listMessages, setOrderOnchainId, setOrderStatus } from "@/lib/orders";
+import {
+  getOrder,
+  listMessages,
+  setOrderOnchainId,
+  setOrderStatus,
+  assertActorIsParty,
+} from "@/lib/orders";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /**
- * GET /api/orders/[id]
- *   Returns the order plus its message thread.
+ * GET /api/orders/[id]?actor_email=...
+ *   Returns the order. The message thread is only included if the caller is a party.
  *
  * PATCH /api/orders/[id]
- *   Body: { onchain_id?: number, status?: OrderStatus }
- *   Used by the client frontend after the on-chain fund / release call succeeds,
- *   to keep the off-chain mirror in sync.
+ *   Body: { onchain_id?, status?, actor_email }
+ *   Guard: actor must be a party (client OR freelancer).
  */
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
     const orderId = Number(params.id);
     if (!orderId) return NextResponse.json({ error: "bad id" }, { status: 400 });
@@ -22,7 +28,16 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     const order = await getOrder(orderId);
     if (!order) return NextResponse.json({ error: "not found" }, { status: 404 });
 
-    const messages = await listMessages(orderId);
+    const url = new URL(req.url);
+    const actorEmail = url.searchParams.get("actor_email") ?? "";
+    const isParty =
+      !!actorEmail &&
+      (order.client_email.toLowerCase() === actorEmail.toLowerCase() ||
+       order.freelancer_email.toLowerCase() === actorEmail.toLowerCase());
+
+    // Public jobs are readable but their chat thread is private to parties.
+    const messages = isParty ? await listMessages(orderId) : [];
+
     return NextResponse.json({ order, messages });
   } catch (err: any) {
     return NextResponse.json(
@@ -38,6 +53,14 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     if (!orderId) return NextResponse.json({ error: "bad id" }, { status: 400 });
 
     const body = await req.json();
+    const actorEmail = String(body.actor_email ?? "").trim();
+
+    // ---- AUTH GUARD ----
+    const { role } = await assertActorIsParty(orderId, actorEmail);
+    if (!role) {
+      logger.warn("api.orders.patch.forbidden", { orderId, actorEmail });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     if (typeof body.onchain_id === "number") {
       await setOrderOnchainId(orderId, body.onchain_id);

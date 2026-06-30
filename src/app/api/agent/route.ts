@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { chatTurn, type ChatMessage } from "@/lib/agent";
-import { appendMessage, listMessages, getOrder } from "@/lib/orders";
+import { appendMessage, listMessages, assertActorIsParty } from "@/lib/orders";
 import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
@@ -8,33 +8,39 @@ export const runtime = "nodejs";
 
 /**
  * POST /api/agent
+ * Body: { orderId, role: 'client'|'freelancer', message, actor_email }
  *
- * Body: { orderId: number, role: "client" | "freelancer", message: string }
- *
- * 1. Persists the user message to the messages table.
- * 2. Loads recent history + the order context.
- * 3. Asks the agent for a response.
- * 4. Persists the agent reply.
- * 5. Returns { reply, message: <persisted agent msg> }.
+ * Guard: actor_email must match the order's client_email or freelancer_email.
+ * The `role` field is what the user CLAIMS to be; the server verifies via actor_email.
  */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const orderId = Number(body.orderId);
-    const role = body.role as "client" | "freelancer";
-    const message = String(body.message ?? "").trim();
+    const orderId    = Number(body.orderId);
+    const claimedRole = body.role as "client" | "freelancer";
+    const message    = String(body.message ?? "").trim();
+    const actorEmail = String(body.actor_email ?? "").trim();
 
-    if (!orderId || !message || (role !== "client" && role !== "freelancer")) {
+    if (!orderId || !message || (claimedRole !== "client" && claimedRole !== "freelancer")) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const order = await getOrder(orderId);
+    // ---- AUTH GUARD ----
+    const { role: actualRole, order } = await assertActorIsParty(orderId, actorEmail);
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
+    if (!actualRole) {
+      logger.warn("api.agent.forbidden", { orderId, actorEmail });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (actualRole !== claimedRole) {
+      logger.warn("api.agent.role_mismatch", { orderId, actorEmail, claimedRole, actualRole });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     // 1) persist user msg
-    await appendMessage(orderId, role, message);
+    await appendMessage(orderId, actualRole, message);
 
     // 2) build history (last 20 messages) + order context
     const all = await listMessages(orderId);

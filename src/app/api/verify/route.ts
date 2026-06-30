@@ -3,7 +3,7 @@ import { verifyDeliverable } from "@/lib/agent";
 import {
   appendAgentNotes,
   appendMessage,
-  getOrder,
+  assertActorIsParty,
   setOrderDeliverable,
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
@@ -13,30 +13,30 @@ export const runtime = "nodejs";
 
 /**
  * POST /api/verify
+ * Body: { orderId, deliverableUrl, actor_email }
  *
- * Body: { orderId: number, deliverableUrl: string }
- *
- * 1. Persists the deliverable URL on the order (status -> "delivered").
- * 2. Runs the agent's verification (URL reachability + LLM brief alignment).
- * 3. Logs the verdict as an agent message + appends to agent_notes.
- * 4. Returns the verdict.
- *
- * The actual on-chain release happens from the frontend (week 5) once the client
- * (or agent wallet) chooses to act on this verdict.
+ * Guard: actor must be the FREELANCER of the order.
+ * (Only the freelancer can submit a deliverable.)
  */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const orderId = Number(body.orderId);
+    const orderId        = Number(body.orderId);
     const deliverableUrl = String(body.deliverableUrl ?? "").trim();
+    const actorEmail     = String(body.actor_email ?? "").trim();
 
     if (!orderId || !deliverableUrl) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const order = await getOrder(orderId);
+    // ---- AUTH GUARD ----
+    const { role, order } = await assertActorIsParty(orderId, actorEmail);
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+    if (role !== "freelancer") {
+      logger.warn("api.verify.forbidden", { orderId, actorEmail, role });
+      return NextResponse.json({ error: "Forbidden — only the freelancer can submit a deliverable" }, { status: 403 });
     }
 
     // 1) persist deliverable
