@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CheckCircle2, ArrowRightCircle, Coins, ExternalLink } from "lucide-react";
 import type { Order } from "@/lib/orders";
 import { patchOrder, verifyDeliverable } from "@/lib/api";
 import {
@@ -12,16 +13,6 @@ import {
   txUrl,
 } from "@/lib/contracts";
 
-/**
- * Action panel. Role-aware. For status `draft` (client) the user funds the
- * escrow ON-CHAIN: USDC.approve(escrow, amount), then escrow.createAndFund(...).
- * For `funded` (freelancer) it submits the deliverable URL + runs the agent
- * verifier off-chain. For `delivered` (client) it calls approveAndRelease
- * ON-CHAIN. All on-chain steps also sync the DB via PATCH /api/orders/[id].
- *
- * The contract isn't deployed everywhere — if `NEXT_PUBLIC_ESCROW_ADDRESS`
- * isn't set, we fall back to the previous "simulated" mode (DB-only).
- */
 export function OrderActions({
   order,
   role,
@@ -56,33 +47,20 @@ export function OrderActions({
     }
   };
 
-  // -----------------------------------------------------------------------
-  // CLIENT: fund (on-chain) or simulate (DB)
-  // -----------------------------------------------------------------------
   const fundOnChain = async () => {
     const { signer, address } = await connectWallet();
     const amount = toUsdcUnits(order.amount_usdc);
     const usdc = getUsdcWithSigner(signer);
     const escrow = getEscrowWithSigner(signer);
 
-    // 1. approve
     const approveTx = await usdc.approve(ESCROW_ADDRESS, amount);
     await approveTx.wait();
 
-    // 2. createAndFund
     const deadline = order.deadline ? Math.floor(new Date(order.deadline).getTime() / 1000) : Math.floor(Date.now() / 1000) + 86400 * 7;
-    const fundTx = await escrow.createAndFund(
-      // pretend the freelancer wallet == the client wallet for demo simplicity
-      // in a real app, the freelancer's wallet would be looked up via email→wallet
-      address,
-      amount,
-      order.brief,
-      deadline
-    );
+    const fundTx = await escrow.createAndFund(address, amount, order.brief, deadline);
     const receipt = await fundTx.wait();
     setLastTxHash(receipt.hash);
 
-    // 3. parse OrderFunded event for onchain id
     let onchainId: number | null = null;
     for (const log of receipt.logs ?? []) {
       try {
@@ -94,7 +72,6 @@ export function OrderActions({
       } catch {}
     }
 
-    // 4. sync DB
     await patchOrder(order.id, {
       onchain_id: onchainId ?? order.id,
       status: "funded",
@@ -105,9 +82,6 @@ export function OrderActions({
     await patchOrder(order.id, { onchain_id: order.id, status: "funded" });
   };
 
-  // -----------------------------------------------------------------------
-  // CLIENT: release (on-chain) or simulate
-  // -----------------------------------------------------------------------
   const releaseOnChain = async () => {
     const { signer } = await connectWallet();
     const escrow = getEscrowWithSigner(signer);
@@ -123,16 +97,20 @@ export function OrderActions({
   };
 
   return (
-    <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5">
-      <h3 className="text-sm font-semibold text-slate-900">Actions</h3>
+    <div className="liquid-glass relative space-y-4 rounded-2xl p-5">
+      <div className="flex items-center gap-2 border-b border-white/5 pb-3">
+        <Coins className="h-4 w-4 text-signal" />
+        <p className="font-display text-sm uppercase tracking-wider text-cream">Actions</p>
+      </div>
 
       {/* CLIENT: fund */}
       {role === "client" && order.status === "draft" && (
         <button
           disabled={busy}
           onClick={() => run(hasOnchain ? fundOnChain : fundSimulated)}
-          className="w-full rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-50"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-signal px-4 py-3 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
         >
+          <ArrowRightCircle className="h-4 w-4" />
           {busy ? "Sending…" : hasOnchain
             ? `Fund ${order.amount_usdc} USDC on Arc`
             : `Fund ${order.amount_usdc} USDC (simulated)`}
@@ -141,15 +119,22 @@ export function OrderActions({
 
       {/* FREELANCER: submit deliverable */}
       {role === "freelancer" && order.status === "funded" && (
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-700">Deliverable URL</label>
-          <input
-            type="url"
-            value={deliverable}
-            onChange={(e) => setDeliverable(e.target.value)}
-            placeholder="https://figma.com/file/..."
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand focus:outline-none"
-          />
+        <div className="space-y-3">
+          <label className="block">
+            <span className="block font-mono text-[10px] uppercase tracking-widest text-cream/60">
+              Deliverable URL
+            </span>
+            <input
+              type="url"
+              value={deliverable}
+              onChange={(e) => setDeliverable(e.target.value)}
+              placeholder="https://figma.com/file/..."
+              className="mt-1.5 w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 font-mono text-xs text-cream placeholder:text-cream/30 outline-none transition-colors focus:border-signal/60 focus:bg-white/[0.08]"
+            />
+            <span className="mt-1 block font-mono text-[10px] tracking-wide text-cream/30">
+              Agent will check reachability, deadline, and brief alignment.
+            </span>
+          </label>
           <button
             disabled={busy || !deliverable.trim()}
             onClick={() =>
@@ -158,8 +143,9 @@ export function OrderActions({
                 setVerdict(v);
               })
             }
-            className="w-full rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-50"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-signal px-4 py-3 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
           >
+            <CheckCircle2 className="h-4 w-4" />
             {busy ? "Verifying…" : "Submit deliverable"}
           </button>
         </div>
@@ -170,84 +156,96 @@ export function OrderActions({
         <button
           disabled={busy}
           onClick={() => run(hasOnchain ? releaseOnChain : releaseSimulated)}
-          className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-signal px-4 py-3 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
         >
+          <CheckCircle2 className="h-4 w-4" />
           {busy ? "Sending…" : hasOnchain
-            ? `Approve & release ${order.amount_usdc} USDC on Arc`
+            ? `Approve & release ${order.amount_usdc} USDC`
             : `Approve & release ${order.amount_usdc} USDC (simulated)`}
         </button>
       )}
 
       {/* TX receipt */}
       {lastTxHash && (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs">
-          <p className="font-semibold text-emerald-900">Transaction confirmed</p>
+        <div className="rounded-xl border border-signal/30 bg-signal/10 p-3">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-signal">
+            Transaction confirmed
+          </p>
           <a
             href={txUrl(lastTxHash)}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1 block break-all font-mono text-emerald-700 hover:underline"
+            className="mt-1 inline-flex items-center gap-1 break-all font-mono text-[11px] text-cream/80 hover:text-signal"
           >
-            {lastTxHash}
+            {lastTxHash.slice(0, 10)}…{lastTxHash.slice(-8)}
+            <ExternalLink className="h-3 w-3" />
           </a>
         </div>
       )}
 
       {/* Verdict */}
       {verdict && (
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-          <p className="font-semibold">
-            Agent verdict:{" "}
-            <span className={verdict.verified ? "text-emerald-700" : "text-amber-700"}>
-              {verdict.verified ? "ready to release" : "hold for review"}
-            </span>{" "}
-            <span className="text-xs text-slate-500">({verdict.confidence} confidence)</span>
+        <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-cream/60">Agent verdict</p>
+          <p className="mt-1 font-display text-sm uppercase">
+            <span className={verdict.verified ? "text-signal" : "text-amber-300"}>
+              {verdict.verified ? "Ready to release" : "Hold for review"}
+            </span>
+            <span className="ml-2 font-mono text-[10px] text-cream/40">
+              ({verdict.confidence} confidence)
+            </span>
           </p>
-          <p className="mt-1 text-slate-700">{verdict.reasoning}</p>
+          <p className="mt-2 font-mono text-[11px] leading-relaxed text-cream/70">
+            {verdict.reasoning}
+          </p>
         </div>
       )}
 
-      {/* Status-specific notes */}
+      {/* Final states */}
       {order.status === "released" && (
-        <p className="text-sm text-emerald-700">
-          ✅ Payment released to freelancer. End of order lifecycle.
-        </p>
+        <div className="rounded-xl border border-signal/30 bg-signal/10 p-3 font-mono text-xs uppercase tracking-wider text-signal">
+          ✓ Payment released to freelancer · order complete
+        </div>
       )}
       {order.status === "refunded" && (
-        <p className="text-sm text-rose-700">
-          ↩ Refunded to client. End of order lifecycle.
-        </p>
+        <div className="rounded-xl border border-rose-400/30 bg-rose-500/10 p-3 font-mono text-xs uppercase tracking-wider text-rose-300">
+          ↩ Refunded to client · order complete
+        </div>
       )}
 
-      {error && <p className="text-sm text-rose-700">{error}</p>}
+      {error && (
+        <div className="rounded-xl border border-rose-400/30 bg-rose-500/10 p-3 font-mono text-xs text-rose-300">
+          {error}
+        </div>
+      )}
 
-      <details className="text-xs text-slate-500">
-        <summary className="cursor-pointer">
-          {hasOnchain ? "Contract details" : "On-chain state (not configured)"}
+      <details className="border-t border-white/5 pt-3">
+        <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-cream/40">
+          {hasOnchain ? "Contract details" : "On-chain not configured"}
         </summary>
-        <div className="mt-2 space-y-1">
+        <div className="mt-2 space-y-2 font-mono text-[10px] leading-relaxed text-cream/50">
           {hasOnchain ? (
             <>
               <p>
-                Escrow contract:{" "}
+                Contract:{" "}
                 <a
                   href={`https://testnet.arcscan.app/address/${ESCROW_ADDRESS}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-mono text-brand hover:underline"
+                  className="text-signal hover:underline"
                 >
-                  {ESCROW_ADDRESS}
+                  {ESCROW_ADDRESS.slice(0, 8)}…{ESCROW_ADDRESS.slice(-6)}
                 </a>
               </p>
               <p>
-                Fund and Release call the contract on Arc Testnet. Your wallet pays
-                a small USDC gas fee and signs each transaction.
+                Fund + Release call the contract on Arc Testnet. Your wallet
+                pays gas in USDC and signs each transaction.
               </p>
             </>
           ) : (
             <p>
-              Set <code>NEXT_PUBLIC_ESCROW_ADDRESS</code> to enable real on-chain
-              fund/release calls.
+              Set <code className="text-signal">NEXT_PUBLIC_ESCROW_ADDRESS</code> to
+              enable real on-chain fund/release.
             </p>
           )}
         </div>

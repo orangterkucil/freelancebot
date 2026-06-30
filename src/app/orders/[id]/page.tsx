@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { AppShell } from "@/components/AppShell";
 import { AgentChat } from "@/components/AgentChat";
 import { OrderActions } from "@/components/OrderActions";
 import { StatusBadge } from "@/components/StatusBadge";
-import { WalletStatus } from "@/components/WalletStatus";
 import { getOrder } from "@/lib/api";
 import type { Order } from "@/lib/orders";
 
@@ -19,14 +19,12 @@ export default function OrderDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [chatKey, setChatKey] = useState(0);
 
-  // Detect role from localStorage (which email signed in where).
   const [role, setRole] = useState<"client" | "freelancer" | null>(null);
 
   useEffect(() => {
     try {
       const clientEmail     = window.localStorage.getItem("fb_client_email");
       const freelancerEmail = window.localStorage.getItem("fb_freelancer_email");
-      // we'll set after we load the order so we can compare to its emails
       const ctx = { clientEmail, freelancerEmail };
       (window as any).__fbAuthCtx = ctx;
     } catch {}
@@ -45,12 +43,10 @@ export default function OrderDetailPage() {
       const isFreelancer = ctx.freelancerEmail === order.freelancer_email;
 
       if (isClient && isFreelancer) {
-        // Same email is both parties (common in solo testing).
-        // Pick the role whose turn it is based on order status.
-        if (order.status === "funded") setRole("freelancer");      // freelancer must deliver
-        else if (order.status === "delivered") setRole("client");  // client must approve
-        else if (order.status === "draft") setRole("client");      // client must fund
-        else setRole("client");                                    // released/refunded — read-only
+        if (order.status === "funded") setRole("freelancer");
+        else if (order.status === "delivered") setRole("client");
+        else if (order.status === "draft") setRole("client");
+        else setRole("client");
       } else if (isClient) {
         setRole("client");
       } else if (isFreelancer) {
@@ -75,53 +71,62 @@ export default function OrderDetailPage() {
   };
 
   if (loading) {
-    return <main className="mx-auto max-w-5xl px-6 py-10 text-slate-500">Loading order…</main>;
+    return (
+      <AppShell title="Loading…" subtitle="Fetching order from Supabase">
+        <div className="liquid-glass rounded-2xl p-6">
+          <p className="font-mono text-xs uppercase tracking-wider text-cream/50">Loading…</p>
+        </div>
+      </AppShell>
+    );
   }
+
   if (error || !order) {
     return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
-        <p className="text-rose-700">{error ?? "Order not found"}</p>
-        <Link href="/" className="mt-4 inline-block text-brand underline">← back to home</Link>
-      </main>
+      <AppShell title="Order not found" subtitle={error ?? "This order does not exist or you do not have access"}>
+        <Link href="/client" className="liquid-glass inline-flex rounded-xl px-4 py-2 font-display text-xs uppercase tracking-wider text-cream hover:bg-white/10">
+          ← back to dashboard
+        </Link>
+      </AppShell>
     );
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-10">
-      <header className="mb-6">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="text-xs uppercase tracking-wider text-brand-dark">
-            ← FreelanceBot
-          </Link>
-          <WalletStatus />
-        </div>
-        <div className="mt-2 flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Order #{order.id}</h1>
-            <p className="mt-1 text-sm text-slate-600">{order.brief}</p>
-          </div>
-          <StatusBadge status={order.status} />
-        </div>
-
-        <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm md:grid-cols-4">
-          <Field label="Client">{order.client_email}</Field>
-          <Field label="Freelancer">{order.freelancer_email}</Field>
-          <Field label="Amount">${order.amount_usdc.toLocaleString()} USDC</Field>
-          <Field label="Deadline">
-            {order.deadline ? new Date(order.deadline).toLocaleDateString() : "—"}
-          </Field>
-        </dl>
-      </header>
+    <AppShell
+      title={`Order #${order.id}`}
+      subtitle={order.brief}
+      breadcrumb={
+        <>
+          {role === "freelancer" ? "Freelancer" : "Client"} / Orders / #{order.id}
+        </>
+      }
+      actions={<StatusBadge status={order.status} />}
+    >
+      {/* Meta strip */}
+      <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <Field label="Client">{order.client_email}</Field>
+        <Field label="Freelancer">{order.freelancer_email}</Field>
+        <Field label="Amount">
+          <span className="font-display text-base text-signal">
+            ${order.amount_usdc.toLocaleString()}
+          </span>
+          <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-cream/40">USDC</span>
+        </Field>
+        <Field label="Deadline">
+          {order.deadline ? new Date(order.deadline).toLocaleDateString() : "—"}
+        </Field>
+      </dl>
 
       {!role && (
-        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          You&apos;re viewing this order but not signed in as the client or freelancer.{" "}
-          <Link href="/client" className="underline">Sign in as client</Link> or{" "}
-          <Link href="/freelancer" className="underline">freelancer</Link> to take actions.
+        <div className="mt-6 rounded-xl border border-amber-400/30 bg-amber-500/10 p-4">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-300">
+            You are viewing this order but not signed in as the client or freelancer.{" "}
+            <Link href="/client" className="underline">Sign in as client</Link> or{" "}
+            <Link href="/freelancer" className="underline">freelancer</Link> to take actions.
+          </p>
         </div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-[1fr_320px]">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="h-[600px]">
           <AgentChat orderId={order.id} role={role ?? "client"} refreshKey={chatKey} />
         </div>
@@ -129,21 +134,21 @@ export default function OrderDetailPage() {
           {role ? (
             <OrderActions order={order} role={role} onChanged={reloadAll} />
           ) : (
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-500">
+            <div className="liquid-glass rounded-2xl p-5 text-sm font-mono uppercase tracking-wider text-cream/50">
               Sign in to act on this order.
             </div>
           )}
         </div>
       </div>
-    </main>
+    </AppShell>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
-      <dt className="text-xs uppercase tracking-wider text-slate-400">{label}</dt>
-      <dd className="mt-0.5 text-slate-900">{children}</dd>
+    <div className="liquid-glass rounded-2xl p-3">
+      <dt className="font-mono text-[10px] uppercase tracking-widest text-cream/40">{label}</dt>
+      <dd className="mt-1 font-mono text-xs text-cream truncate">{children}</dd>
     </div>
   );
 }
