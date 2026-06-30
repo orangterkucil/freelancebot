@@ -33,9 +33,12 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const client_email     = String(body.client_email ?? "").trim();
-    const freelancer_email = String(body.freelancer_email ?? "").trim();
+    const client_email     = String(body.client_email ?? "").trim().toLowerCase();
+    const freelancer_email = String(body.freelancer_email ?? "").trim().toLowerCase();
     const brief            = String(body.brief ?? "").trim();
+    const title            = body.title ? String(body.title).trim() : null;
+    const field            = body.field ? String(body.field).trim() : "other";
+    const is_public        = Boolean(body.is_public);
     const amount_usdc      = Number(body.amount_usdc);
     const deadline         = body.deadline ? String(body.deadline) : null;
 
@@ -47,6 +50,9 @@ export async function POST(req: Request) {
       client_email,
       freelancer_email,
       brief,
+      title,
+      field: field as any,
+      is_public,
       amount_usdc,
       deadline,
     });

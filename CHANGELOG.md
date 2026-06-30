@@ -12,6 +12,43 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.9.0] — 2026-06-12
+
+Public marketplace + applications. Anyone can browse open jobs and apply.
+
+### Added
+- **Public marketplace page `/jobs`** — anyone (no sign-in) can browse open jobs, filter by field (Design / Dev / Writing / Video / Marketing / Research / Other), budget range, free-text search. Grid of liquid-glass cards with field emoji, title, brief preview, budget, deadline.
+- **Job detail page `/jobs/[id]`** — full brief + meta + apply form (email, optional pitch, optional counter-bid). Closed jobs show "no longer open" state pointing back to feed.
+- **Live jobs preview on landing** — new `LiveJobsPreview` section between FLOW and CTA showing the 6 newest public jobs. Non-logged-in visitors see real activity immediately. Skeleton loading state and graceful empty state ("Be the first to post").
+- **`POST /api/applications`** — freelancer applies to a job (email + pitch + bid_amount_usdc).
+- **`GET /api/applications?order_id=X`** — list applicants for a job (client view).
+- **`GET /api/applications?email=X`** — list a freelancer's applications.
+- **`PATCH /api/applications/[id]`** — accept / reject / withdraw. Accepting assigns freelancer to the order and flips `is_public` to false.
+- **`GET /api/jobs`** — public feed with field/min/max/q/limit query params.
+- **CreateOrderForm overhaul** — toggle between **Public marketplace** (lists on /jobs, accepts applications) and **Direct (private)** (goes straight to a specific freelancer email, current MVP behaviour). Field-category chip selector. Title field for the public listing. Different submit copy + footer hint per mode.
+
+### Changed
+- `orders` Supabase schema gains `field text default 'other'`, `is_public boolean default false`, `title text`. Indexes on `(is_public, field)` and `(status)`. Idempotent migration safe to re-run.
+- New `applications` table — `order_id`, `freelancer_email`, `pitch`, `bid_amount_usdc`, `status (pending|accepted|rejected|withdrawn)`. Indexed by order and freelancer.
+- `lib/orders.ts` exports `FIELDS` constant + `Field` type. Adds `listOpenJobs`, `setOrderFreelancer`, plus full applications CRUD.
+- `lib/api.ts` browser client gains `listJobs`, `applyToJob`, `listApplicationsForOrder`, `listMyApplications`, `decideApplication`.
+- `POST /api/orders` accepts `title`, `field`, `is_public` in body.
+
+### Marketplace flow (end-to-end)
+1. Client visits `/client` → "+ New order" → toggle Public, pick category, add title + brief + budget → "Post to marketplace".
+2. Order appears on `/jobs` feed and on landing's "Live jobs" section.
+3. Freelancer browses `/jobs`, filters by field, opens `/jobs/[id]`.
+4. Freelancer fills apply form → application created in DB.
+5. Client sees applications under their order (UI for accept/reject lands in v0.9.1).
+6. On accept: order's `freelancer_email` is set, `is_public` flips false → escrow flow proceeds as before (fund → deliver → release).
+
+### Schema migration
+
+If you forked an earlier version, re-run `supabase/schema.sql` in your Supabase
+SQL editor. The file is idempotent — safe to apply on top of existing data.
+
+---
+
 ## [v0.8.0] — 2026-06-12
 
 Dark luxe extends to all app pages. Real dashboard shell with sidebar nav, filters, search, and proper empty states.

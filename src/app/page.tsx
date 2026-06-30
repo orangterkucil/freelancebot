@@ -9,6 +9,7 @@ import {
   Sparkles,
   CircleCheckBig,
 } from "lucide-react";
+import { LiveJobsPreview } from "@/components/LiveJobsPreview";
 
 /**
  * Landing page — Orbis-inspired dark luxe redesign (v0.7.0).
@@ -32,6 +33,7 @@ export default function Home() {
       <HeroSection />
       <AboutSection />
       <FlowSection />
+      <LiveJobsPreview />
       <CtaSection />
 
       <footer className="border-t border-white/5 bg-ink py-10 text-center">

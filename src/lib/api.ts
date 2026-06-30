@@ -3,7 +3,7 @@
  * All endpoints are same-origin so no base URL is needed.
  */
 
-import type { Order, Message, OrderStatus } from "./orders";
+import type { Order, Message, OrderStatus, Application, Field } from "./orders";
 
 async function jsonFetch<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   const attempts = 3;
@@ -50,6 +50,9 @@ export function createOrder(body: {
   client_email: string;
   freelancer_email: string;
   brief: string;
+  title?: string | null;
+  field?: Field;
+  is_public?: boolean;
   amount_usdc: number;
   deadline?: string | null;
 }) {
@@ -88,5 +91,57 @@ export function verifyDeliverable(orderId: number, deliverableUrl: string) {
   }>(`/api/verify`, {
     method: "POST",
     body: JSON.stringify({ orderId, deliverableUrl }),
+  });
+}
+
+// ---- Marketplace (v0.9.0) -------------------------------------------------
+
+export function listJobs(opts: {
+  field?: Field | "all";
+  min?: number;
+  max?: number;
+  q?: string;
+  limit?: number;
+} = {}) {
+  const params = new URLSearchParams();
+  if (opts.field && opts.field !== "all") params.set("field", opts.field);
+  if (opts.min)   params.set("min",   String(opts.min));
+  if (opts.max)   params.set("max",   String(opts.max));
+  if (opts.q)     params.set("q",     opts.q);
+  if (opts.limit) params.set("limit", String(opts.limit));
+  const qs = params.toString();
+  return jsonFetch<{ jobs: Order[]; fields: readonly string[] }>(
+    `/api/jobs${qs ? "?" + qs : ""}`
+  );
+}
+
+export function applyToJob(body: {
+  order_id: number;
+  freelancer_email: string;
+  pitch?: string;
+  bid_amount_usdc?: number;
+}) {
+  return jsonFetch<{ application: Application }>(`/api/applications`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function listApplicationsForOrder(orderId: number) {
+  return jsonFetch<{ applications: Application[] }>(`/api/applications?order_id=${orderId}`);
+}
+
+export function listMyApplications(email: string) {
+  return jsonFetch<{ applications: Application[] }>(`/api/applications?email=${encodeURIComponent(email)}`);
+}
+
+export function decideApplication(applicationId: number, body: {
+  status: "accepted" | "rejected" | "withdrawn";
+  order_id?: number;
+  freelancer_email?: string;
+}) {
+  return jsonFetch<{ ok: boolean }>(`/api/applications/${applicationId}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
   });
 }
