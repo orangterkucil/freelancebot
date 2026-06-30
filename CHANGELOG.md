@@ -12,6 +12,36 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.9.1] — 2026-06-30
+
+Applications UI + API auth guards. Only the parties of an order can act on it.
+
+### Added
+- **`ApplicationsList` component** on `/orders/[id]` for client viewing a public order. Shows all applicants with pitch + counter-bid, accept/reject buttons. Accepting auto-assigns the freelancer and flips the order private (escrow flow resumes).
+- **`/freelancer/applications` page** — freelancer sees all their applications grouped by status (pending / accepted / rejected). Stats row + links back to each job.
+- **`assertActorIsParty(orderId, email)`** helper in `lib/orders.ts` that resolves an order + the caller's role on it (client / freelancer / null). Single source of truth for API guards.
+- **`readActorEmail()`** helper in `lib/api.ts` reads the appropriate signed-in email from localStorage and is passed automatically by all mutating client-side calls.
+
+### Security (the "guard" requirement)
+Every mutating API route now enforces that the caller is a party to the order. Spoof risk is acknowledged — real auth (Supabase Auth magic link / Circle Wallets) lands in MVP 2 and is documented in `PRD.md`.
+
+- `POST /api/agent` — caller must be the order's client or freelancer. The `role` field is what the user claims; the server verifies it matches the actor's actual role.
+- `POST /api/verify` — caller must be the order's FREELANCER (only the freelancer can submit a deliverable).
+- `PATCH /api/orders/[id]` — caller must be a party (client or freelancer).
+- `GET /api/orders/[id]?actor_email=...` — anyone can read order metadata, but the chat thread is only returned to parties.
+- `PATCH /api/applications/[id]` —
+  - `accepted` / `rejected` — only the order's client can decide.
+  - `withdrawn` — only the applicant freelancer can withdraw their own.
+
+### Changed
+- `lib/api.ts` `sendChat`, `verifyDeliverable`, `patchOrder`, `getOrder`, `decideApplication` now accept an optional `actorEmail` override and fall back to `readActorEmail()` based on the inferred role.
+- All call sites updated to pass actor_email implicitly via localStorage.
+
+### Why this matters
+Before v0.9.1, anyone who knew an order ID could (a) impersonate the client or freelancer in chat, (b) flip status (mark released), (c) accept/reject applications on someone else's job. Now those routes return 403 unless you're a verified party.
+
+---
+
 ## [v0.9.0] — 2026-06-12
 
 Public marketplace + applications. Anyone can browse open jobs and apply.

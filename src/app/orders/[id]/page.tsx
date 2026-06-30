@@ -7,6 +7,7 @@ import { AppShell } from "@/components/AppShell";
 import { AgentChat } from "@/components/AgentChat";
 import { OrderActions } from "@/components/OrderActions";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ApplicationsList } from "@/components/ApplicationsList";
 import { getOrder } from "@/lib/api";
 import type { Order } from "@/lib/orders";
 
@@ -126,7 +127,7 @@ export default function OrderDetailPage() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_400px]">
         <div className="h-[600px]">
           <AgentChat orderId={order.id} role={role ?? "client"} refreshKey={chatKey} />
         </div>
@@ -137,6 +138,11 @@ export default function OrderDetailPage() {
             <div className="liquid-glass rounded-2xl p-5 text-sm font-mono uppercase tracking-wider text-cream/50">
               Sign in to act on this order.
             </div>
+          )}
+
+          {/* Applications panel — only for client viewing a public order */}
+          {role === "client" && order.is_public && order.status === "draft" && (
+            <ApplicationsList orderId={order.id} onAccepted={reloadAll} />
           )}
         </div>
       </div>

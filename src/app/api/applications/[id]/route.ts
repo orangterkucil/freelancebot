@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
-import { getOrder } from "@/lib/orders";
+import { getOrder, assertActorIsParty } from "@/lib/orders";
 import { setApplicationStatus, setOrderFreelancer } from "@/lib/orders";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /**
  * PATCH /api/applications/[id]
- *   Body: { status: 'accepted' | 'rejected' | 'withdrawn', email?: string }
+ *   Body: { status: 'accepted' | 'rejected' | 'withdrawn',
+ *           order_id, freelancer_email, actor_email }
+ *
+ * Guard: only the CLIENT of the order can accept/reject. The freelancer can
+ * only withdraw their own application.
  *
  * If accepted: assign freelancer_email on the order and flip is_public=false.
  */
@@ -23,23 +28,48 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       return NextResponse.json({ error: "invalid status" }, { status: 400 });
     }
 
-    // If accepting, also assign freelancer + close listing
-    if (status === "accepted") {
-      // We need the application to find its order + freelancer email
-      // For brevity, expect order_id + freelancer_email in body
-      const order_id         = Number(body.order_id);
-      const freelancer_email = String(body.freelancer_email ?? "").trim().toLowerCase();
-      if (!order_id || !freelancer_email) {
-        return NextResponse.json({ error: "accept needs order_id + freelancer_email" }, { status: 400 });
+    const orderId         = Number(body.order_id);
+    const freelancerEmail = String(body.freelancer_email ?? "").trim().toLowerCase();
+    const actorEmail      = String(body.actor_email ?? "").trim().toLowerCase();
+
+    if (!orderId || !actorEmail) {
+      return NextResponse.json({ error: "missing order_id or actor_email" }, { status: 400 });
+    }
+
+    const order = await getOrder(orderId);
+    if (!order) return NextResponse.json({ error: "order not found" }, { status: 404 });
+
+    // ---- AUTH GUARD ----
+    if (status === "accepted" || status === "rejected") {
+      // Only client of the order can decide
+      if (order.client_email.toLowerCase() !== actorEmail) {
+        logger.warn("api.applications.decide.forbidden", { id, actorEmail, status });
+        return NextResponse.json(
+          { error: "Forbidden — only the order's client can accept/reject applications" },
+          { status: 403 }
+        );
       }
-      const order = await getOrder(order_id);
-      if (!order) return NextResponse.json({ error: "order not found" }, { status: 404 });
-      await setOrderFreelancer(order_id, freelancer_email);
+    } else if (status === "withdrawn") {
+      // Only the applicant freelancer can withdraw their own app
+      if (freelancerEmail !== actorEmail) {
+        return NextResponse.json(
+          { error: "Forbidden — only the applicant can withdraw" },
+          { status: 403 }
+        );
+      }
+    }
+
+    if (status === "accepted") {
+      if (!freelancerEmail) {
+        return NextResponse.json({ error: "accept needs freelancer_email" }, { status: 400 });
+      }
+      await setOrderFreelancer(orderId, freelancerEmail);
     }
 
     await setApplicationStatus(id, status);
     return NextResponse.json({ ok: true });
   } catch (err: any) {
+    logger.error("api.applications.patch.failed", { err: err?.message ?? String(err) });
     return NextResponse.json(
       { error: "application_patch_failed", detail: err?.message ?? String(err) },
       { status: 500 }

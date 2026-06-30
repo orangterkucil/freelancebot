@@ -1,6 +1,11 @@
 /**
  * Thin browser-side API client. Wraps fetch() with typed helpers + retry/backoff.
  * All endpoints are same-origin so no base URL is needed.
+ *
+ * v0.9.1 — every mutating call now passes the caller's actor_email so the
+ * server can verify they are a party to the order. The actor_email comes from
+ * the page-level signed-in identity (localStorage). Spoof risk is acknowledged
+ * in PRD.md; real auth lands in MVP 2.
  */
 
 import type { Order, Message, OrderStatus, Application, Field } from "./orders";
@@ -19,7 +24,6 @@ async function jsonFetch<T>(input: RequestInfo, init?: RequestInit): Promise<T> 
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        // Don't retry on 4xx — those are our fault, not transient.
         if (res.status >= 400 && res.status < 500) {
           throw new Error((data && (data.detail || data.error)) || `HTTP ${res.status}`);
         }
@@ -31,13 +35,26 @@ async function jsonFetch<T>(input: RequestInfo, init?: RequestInit): Promise<T> 
       const msg = String(err ?? "").toLowerCase();
       const isClientError = msg.includes("http 4");
       if (isClientError || attempt === attempts) break;
-      // exponential backoff with full jitter
       const expo  = Math.min(4000, baseMs * 2 ** (attempt - 1));
       const delay = Math.floor(Math.random() * expo);
       await new Promise((r) => setTimeout(r, delay));
     }
   }
   throw lastErr;
+}
+
+/** Pick the caller's email from localStorage. Prefers the role currently in use. */
+export function readActorEmail(prefer?: "client" | "freelancer"): string {
+  if (typeof window === "undefined") return "";
+  try {
+    const c = window.localStorage.getItem("fb_client_email") ?? "";
+    const f = window.localStorage.getItem("fb_freelancer_email") ?? "";
+    if (prefer === "client" && c) return c;
+    if (prefer === "freelancer" && f) return f;
+    return c || f || "";
+  } catch {
+    return "";
+  }
 }
 
 // ---- Orders --------------------------------------------------------------
@@ -62,27 +79,33 @@ export function createOrder(body: {
   });
 }
 
-export function getOrder(orderId: number) {
-  return jsonFetch<{ order: Order; messages: Message[] }>(`/api/orders/${orderId}`);
+export function getOrder(orderId: number, actorEmail?: string) {
+  const email = actorEmail ?? readActorEmail();
+  return jsonFetch<{ order: Order; messages: Message[] }>(
+    `/api/orders/${orderId}${email ? "?actor_email=" + encodeURIComponent(email) : ""}`
+  );
 }
 
-export function patchOrder(orderId: number, patch: { onchain_id?: number; status?: OrderStatus }) {
+export function patchOrder(orderId: number, patch: { onchain_id?: number; status?: OrderStatus }, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail();
   return jsonFetch<{ order: Order }>(`/api/orders/${orderId}`, {
     method: "PATCH",
-    body: JSON.stringify(patch),
+    body: JSON.stringify({ ...patch, actor_email: actor }),
   });
 }
 
 // ---- Agent ---------------------------------------------------------------
 
-export function sendChat(orderId: number, role: "client" | "freelancer", message: string) {
+export function sendChat(orderId: number, role: "client" | "freelancer", message: string, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail(role);
   return jsonFetch<{ reply: string; message: Message }>(`/api/agent`, {
     method: "POST",
-    body: JSON.stringify({ orderId, role, message }),
+    body: JSON.stringify({ orderId, role, message, actor_email: actor }),
   });
 }
 
-export function verifyDeliverable(orderId: number, deliverableUrl: string) {
+export function verifyDeliverable(orderId: number, deliverableUrl: string, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail("freelancer");
   return jsonFetch<{
     verified: boolean;
     confidence: "low" | "medium" | "high";
@@ -90,7 +113,7 @@ export function verifyDeliverable(orderId: number, deliverableUrl: string) {
     checks: { urlReachable: boolean; deadlineMet: boolean; briefAlignment: string };
   }>(`/api/verify`, {
     method: "POST",
-    body: JSON.stringify({ orderId, deliverableUrl }),
+    body: JSON.stringify({ orderId, deliverableUrl, actor_email: actor }),
   });
 }
 
@@ -139,9 +162,10 @@ export function decideApplication(applicationId: number, body: {
   status: "accepted" | "rejected" | "withdrawn";
   order_id?: number;
   freelancer_email?: string;
-}) {
+}, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail();
   return jsonFetch<{ ok: boolean }>(`/api/applications/${applicationId}`, {
     method: "PATCH",
-    body: JSON.stringify(body),
+    body: JSON.stringify({ ...body, actor_email: actor }),
   });
 }
