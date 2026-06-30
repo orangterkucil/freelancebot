@@ -12,6 +12,20 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.7.2] — 2026-06-12
+
+Fix CTA layout collision + liquid-glass CSS specificity bug.
+
+### Fixed
+- **Section 4 CTA layout** — vertical social-icon stack was stretching horizontally and colliding with the action buttons on desktop. Root cause: `.liquid-glass` CSS class hard-set `position: relative` with higher specificity than Tailwind utilities, so the `absolute` Tailwind class on the social icons was being silently ignored and the element collapsed into normal flow at full container width. Rewrote the section as a CSS Grid with explicit columns (`auto_1fr`) — social icons live in their own column (no positioning hack required) and the heading + buttons live in the next column, right-aligned on desktop.
+- **`.liquid-glass` specificity** — wrapped the selector in `:where()` so the rule has 0 specificity. Tailwind positioning utilities (`absolute`, `fixed`, etc.) now override the default `relative` cleanly without `!important` wars. The `::before` border-gradient still positions correctly because the default is still `relative`.
+
+### Changed
+- "Go beyond" cursive accent moved from `position: absolute` floating above the heading (which leaked off-screen at some viewport widths) into a normal-flow `<span>` directly above the heading. Reads cleaner and no longer escapes the section.
+- Star/PRD CTA buttons now full-width-stack on mobile and inline-on-desktop, both with `justify-center` for consistent visual weight.
+
+---
+
 ## [v0.7.1] — 2026-06-12
 
 Fix Vercel build failure from v0.7.0.
