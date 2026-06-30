@@ -8,6 +8,7 @@ import { AgentChat } from "@/components/AgentChat";
 import { OrderActions } from "@/components/OrderActions";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ApplicationsList } from "@/components/ApplicationsList";
+import { AttachmentsList } from "@/components/AttachmentsList";
 import { getOrder } from "@/lib/api";
 import type { Order } from "@/lib/orders";
 
@@ -116,6 +117,20 @@ export default function OrderDetailPage() {
           {order.deadline ? new Date(order.deadline).toLocaleDateString() : "—"}
         </Field>
       </dl>
+
+      {/* Attachments */}
+      {order.attachments && order.attachments.length > 0 && (
+        <div className="mt-6 liquid-glass rounded-2xl p-5">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-cream/40">
+            Attachments ({order.attachments.length})
+          </p>
+          <AttachmentsList
+            attachments={order.attachments}
+            isPublic={order.is_public}
+            isViewerParty={!!role}
+          />
+        </div>
+      )}
 
       {!role && (
         <div className="mt-6 rounded-xl border border-amber-400/30 bg-amber-500/10 p-4">

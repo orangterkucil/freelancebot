@@ -12,6 +12,36 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.9.2] — 2026-06-30
+
+File attachments on orders (images, PDFs, docs) with privacy honoring the order's public/private flag.
+
+### Added
+- **`FileDropzone` component** — drag-and-drop or click-to-upload widget. Uploads directly from the browser to Supabase Storage (bucket `attachments`), no server hop. Constraints: ≤ 8 MB per file, ≤ 6 files per order, image / PDF / doc / spreadsheet / text / csv / zip MIME types only. Shows live progress, lets the user remove uploaded files before submitting.
+- **`AttachmentsList` component** — read-only display. Images render as a thumbnail grid, other files render as a download list with type icon + size. Honors privacy: if the order is private and the viewer is not a party, shows a lock notice instead of the file list.
+- **`CreateOrderForm` attachment field** — new section between Brief and Amount/Deadline. Hint text changes based on Public vs Private mode so the client knows who'll see them.
+- **Attachment count badge** on `/jobs` cards (paperclip icon + count).
+- **Attachments panel on `/orders/[id]`** — shown in a liquid-glass card under the meta strip.
+- **Attachments section on `/jobs/[id]`** — shown above the "Posted by" footer.
+
+### Changed
+- `orders.attachments` is now a `jsonb` column on the `orders` table (default `'[]'`). Stored as an array of `{ filename, url, size_bytes, content_type, uploaded_by, created_at }` objects.
+- `POST /api/orders` accepts an `attachments` array.
+- `createOrder` (`lib/orders.ts`) accepts the array, defaults to `[]`.
+
+### Storage
+- New Supabase Storage bucket `attachments` (public). Migration script in `supabase/schema.sql` is idempotent:
+  - inserts the bucket if missing,
+  - adds `attachments_public_read` policy if missing,
+  - adds `attachments_public_write` policy if missing.
+- Privacy is currently enforced at the application layer (UI hides files for non-parties on private orders). Per-file signed URLs + per-user paths land alongside real auth in MVP 2.
+
+### Re-apply schema migration
+
+Run `supabase/schema.sql` again in your Supabase SQL editor. Idempotent — safe over existing data. Required for v0.9.2 because of the new `attachments` column and storage bucket setup.
+
+---
+
 ## [v0.9.1] — 2026-06-30
 
 Applications UI + API auth guards. Only the parties of an order can act on it.
