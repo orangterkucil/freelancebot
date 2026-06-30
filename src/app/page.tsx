@@ -31,15 +31,19 @@ export default function Home() {
 
       <footer className="border-t border-slate-200 bg-white py-10 text-center">
         <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
-          MIT licensed · Open source ·{" "}
+          MIT licensed · Open source · v0.11.0 ·{" "}
           <a
             href="https://github.com/orangterkucil/freelancebot"
             target="_blank"
             rel="noopener noreferrer"
             className="text-slate-600 hover:text-brand"
           >
-            github.com/orangterkucil/freelancebot
-          </a>
+            GitHub
+          </a>{" "}
+          ·{" "}
+          <Link href="/docs" className="text-slate-600 hover:text-brand">
+            Docs
+          </Link>
         </p>
       </footer>
     </div>
@@ -71,9 +75,6 @@ function HeroSection() {
                 payouts · on arc
               </span>
             </div>
-            <span className="rounded-full border border-slate-300 bg-white px-2 py-0.5 font-mono text-[10px] uppercase text-slate-600 group-hover:text-brand">
-              v0.10.1
-            </span>
           </Link>
 
           <nav className="hidden rounded-[28px] border border-slate-200 bg-white px-[52px] py-[18px] shadow-sm lg:block">
@@ -82,7 +83,8 @@ function HeroSection() {
                 { href: "#flow",   label: "How it works" },
                 { href: "#about",  label: "About" },
                 { href: "/client", label: "Demo" },
-                { href: "https://github.com/orangterkucil/freelancebot/blob/main/PRD.md", label: "PRD" },
+                { href: "/jobs",   label: "Marketplace" },
+                { href: "/docs",   label: "Docs" },
                 { href: "https://github.com/orangterkucil/freelancebot", label: "GitHub" },
               ].map((l) => (
                 <li key={l.label}>
@@ -146,15 +148,13 @@ function HeroSection() {
               Open live demo
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
-            <a
-              href="https://github.com/orangterkucil/freelancebot"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/docs"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 shadow-sm transition-colors hover:border-brand hover:text-brand"
             >
-              <Github className="h-4 w-4" />
-              Star on GitHub
-            </a>
+              <Sparkles className="h-4 w-4" />
+              Read the docs
+            </Link>
           </div>
 
           <div className="mt-16 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -403,24 +403,20 @@ function CtaSection() {
           </h2>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row lg:justify-end">
-            <a
-              href="https://github.com/orangterkucil/freelancebot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-brand px-6 py-4 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-brand/30 transition-transform hover:scale-[1.02]"
+            <Link
+              href="/client"
+              className="group btn-gradient inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-4 font-display text-sm uppercase tracking-wider"
             >
-              <Github className="h-4 w-4" />
-              Star the repo
-            </a>
-            <a
-              href="https://github.com/orangterkucil/freelancebot/blob/main/PRD.md"
-              target="_blank"
-              rel="noopener noreferrer"
+              <Sparkles className="h-4 w-4" />
+              Try live demo
+            </Link>
+            <Link
+              href="/docs"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 transition-colors hover:border-brand hover:text-brand"
             >
-              Read the PRD
+              Read the docs
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@
  * in PRD.md; real auth lands in MVP 2.
  */
 
-import type { Order, Message, OrderStatus, Application, Field } from "./orders";
+import type { Order, Message, OrderStatus, Application, Field, ClientLinks, Rating, RatingSummary } from "./orders";
 
 async function jsonFetch<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   const attempts = 3;
@@ -70,6 +70,8 @@ export function createOrder(body: {
   title?: string | null;
   field?: Field;
   is_public?: boolean;
+  attachments?: unknown[];
+  client_links?: ClientLinks;
   amount_usdc: number;
   deadline?: string | null;
 }) {
@@ -168,4 +170,31 @@ export function decideApplication(applicationId: number, body: {
     method: "PATCH",
     body: JSON.stringify({ ...body, actor_email: actor }),
   });
+}
+
+// ---- Ratings (v0.11.0) ---------------------------------------------------
+
+export function submitRating(body: {
+  order_id: number;
+  ratee_email: string;
+  stars: number;
+  comment?: string;
+}, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail();
+  return jsonFetch<{ rating: Rating }>(`/api/ratings`, {
+    method: "POST",
+    body: JSON.stringify({ ...body, actor_email: actor }),
+  });
+}
+
+export function getRatingSummary(email: string) {
+  return jsonFetch<RatingSummary>(`/api/ratings?email=${encodeURIComponent(email)}&summary=1`);
+}
+
+export function listRatingsForRatee(email: string) {
+  return jsonFetch<{ ratings: Rating[] }>(`/api/ratings?email=${encodeURIComponent(email)}`);
+}
+
+export function listRatingsForOrder(orderId: number) {
+  return jsonFetch<{ ratings: Rating[] }>(`/api/ratings?order_id=${orderId}`);
 }

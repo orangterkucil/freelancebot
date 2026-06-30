@@ -6,8 +6,10 @@ import { useParams } from "next/navigation";
 import { ArrowLeft, Send } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { AttachmentsList } from "@/components/AttachmentsList";
+import { UserBadge } from "@/components/UserBadge";
 import { getOrder, applyToJob } from "@/lib/api";
 import type { Order } from "@/lib/orders";
+import { Twitter, Github, Globe, Linkedin } from "lucide-react";
 
 const FIELD_EMOJI: Record<string, string> = {
   design: "🎨", dev: "⚙️", writing: "✍️", video: "🎬",
@@ -136,7 +138,26 @@ export default function JobDetailPage() {
 
           <div className="mt-4 border-t border-slate-100 pt-4">
             <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Posted by</p>
-            <p className="mt-1 font-mono text-xs text-slate-700">{job.client_email}</p>
+            <div className="mt-1">
+              <UserBadge email={job.client_email} />
+            </div>
+
+            {job.client_links && Object.keys(job.client_links).length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {job.client_links.x && (
+                  <SocialChip Icon={Twitter} href={normalizeUrl("x", job.client_links.x)} label={`@${stripHandle(job.client_links.x)}`} />
+                )}
+                {job.client_links.github && (
+                  <SocialChip Icon={Github} href={normalizeUrl("github", job.client_links.github)} label={stripHandle(job.client_links.github)} />
+                )}
+                {job.client_links.website && (
+                  <SocialChip Icon={Globe} href={normalizeUrl("url", job.client_links.website)} label="Website" />
+                )}
+                {job.client_links.linkedin && (
+                  <SocialChip Icon={Linkedin} href={normalizeUrl("url", job.client_links.linkedin)} label="LinkedIn" />
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -197,7 +218,7 @@ export default function JobDetailPage() {
                 <div className="relative">
                   <input
                     type="number"
-                    min={1}
+                    min={0}
                     step="0.01"
                     value={bid}
                     onChange={(e) => setBid(e.target.value === "" ? "" : Number(e.target.value))}
@@ -250,4 +271,38 @@ function FormField({ label, hint, children }: { label: string; hint?: string; ch
       {hint && <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">{hint}</span>}
     </label>
   );
+}
+
+function SocialChip({
+  Icon,
+  href,
+  label,
+}: {
+  Icon: React.ComponentType<{ className?: string }>;
+  href: string;
+  label: string;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 font-mono text-[10px] text-slate-700 transition-colors hover:border-brand hover:text-brand"
+    >
+      <Icon className="h-3 w-3" />
+      {label}
+    </a>
+  );
+}
+
+function stripHandle(s: string): string {
+  return s.replace(/^https?:\/\/(www\.)?(twitter\.com|x\.com|github\.com)\//, "").replace(/^@/, "").replace(/\/$/, "");
+}
+
+function normalizeUrl(kind: "x" | "github" | "url", v: string): string {
+  const trimmed = v.trim().replace(/^@/, "");
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (kind === "x")      return `https://x.com/${trimmed}`;
+  if (kind === "github") return `https://github.com/${trimmed}`;
+  return `https://${trimmed}`;
 }

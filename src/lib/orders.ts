@@ -38,6 +38,14 @@ export type Attachment = {
   created_at:   string;
 };
 
+export type ClientLinks = {
+  x?:        string;   // twitter/x handle e.g. "geografinist" or full URL
+  github?:   string;   // github username e.g. "orangterkucil" or full URL
+  website?:  string;   // any URL
+  linkedin?: string;
+  other?:    string;
+};
+
 export type Order = {
   id: number;
   onchain_id: number | null;
@@ -53,7 +61,25 @@ export type Order = {
   deliverable_url: string | null;
   agent_notes: string | null;
   attachments: Attachment[];
+  client_links: ClientLinks;
   created_at: string;
+};
+
+export type Rating = {
+  id: number;
+  order_id: number;
+  rater_email: string;
+  ratee_email: string;
+  rater_role: "client" | "freelancer";
+  stars: number;
+  comment: string | null;
+  created_at: string;
+};
+
+export type RatingSummary = {
+  email: string;
+  count: number;
+  average: number; // 0..5, two decimals
 };
 
 export type Message = {
@@ -86,6 +112,7 @@ export async function createOrder(input: {
   field?: Field;
   is_public?: boolean;
   attachments?: Attachment[];
+  client_links?: ClientLinks;
   amount_usdc: number;
   deadline: string | null;
 }): Promise<Order> {
@@ -100,6 +127,7 @@ export async function createOrder(input: {
       field:            input.field ?? "other",
       is_public:        input.is_public ?? false,
       attachments:      input.attachments ?? [],
+      client_links:     input.client_links ?? {},
       amount_usdc:      input.amount_usdc,
       deadline:         input.deadline,
       status:           "draft",
@@ -108,6 +136,73 @@ export async function createOrder(input: {
     .single();
   if (error) throw error;
   return data as Order;
+}
+
+// ---------------------------------------------------------------------------
+// Ratings (v0.11.0)
+// ---------------------------------------------------------------------------
+
+export async function createRating(input: {
+  order_id: number;
+  rater_email: string;
+  ratee_email: string;
+  rater_role: "client" | "freelancer";
+  stars: number;
+  comment?: string | null;
+}): Promise<Rating> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("ratings")
+    .insert({
+      order_id:    input.order_id,
+      rater_email: input.rater_email.toLowerCase().trim(),
+      ratee_email: input.ratee_email.toLowerCase().trim(),
+      rater_role:  input.rater_role,
+      stars:       Math.max(1, Math.min(5, Math.floor(input.stars))),
+      comment:     input.comment?.trim() || null,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as Rating;
+}
+
+export async function listRatingsForOrder(orderId: number): Promise<Rating[]> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("ratings")
+    .select("*")
+    .eq("order_id", orderId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as Rating[];
+}
+
+export async function listRatingsForRatee(email: string, limit = 20): Promise<Rating[]> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("ratings")
+    .select("*")
+    .eq("ratee_email", email.toLowerCase().trim())
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []) as Rating[];
+}
+
+export async function getRatingSummary(email: string): Promise<RatingSummary> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("ratings")
+    .select("stars")
+    .eq("ratee_email", email.toLowerCase().trim());
+  if (error) throw error;
+  const stars = (data ?? []).map((r: any) => Number(r.stars));
+  const count = stars.length;
+  const average = count > 0
+    ? Math.round((stars.reduce((s, n) => s + n, 0) / count) * 100) / 100
+    : 0;
+  return { email, count, average };
 }
 
 export async function getOrder(orderId: number): Promise<Order | null> {

@@ -9,9 +9,8 @@ export const runtime = "nodejs";
  *   Returns all orders where the given email is either the client OR the freelancer.
  *
  * POST /api/orders
- *   Body: { client_email, freelancer_email, brief, amount_usdc, deadline? }
- *   Creates an order in "draft" status. The client funds the on-chain escrow
- *   from the frontend (week 5); we then update onchain_id + status -> "funded".
+ *   Body: { client_email, freelancer_email, brief, amount_usdc, deadline?, field?, title?, is_public?, attachments?, client_links? }
+ *   Creates an order in "draft" status.
  */
 export async function GET(req: Request) {
   try {
@@ -40,10 +39,12 @@ export async function POST(req: Request) {
     const field            = body.field ? String(body.field).trim() : "other";
     const is_public        = Boolean(body.is_public);
     const attachments      = Array.isArray(body.attachments) ? body.attachments : [];
+    const client_links     = typeof body.client_links === "object" && body.client_links ? body.client_links : {};
     const amount_usdc      = Number(body.amount_usdc);
     const deadline         = body.deadline ? String(body.deadline) : null;
 
-    if (!client_email || !freelancer_email || !brief || !amount_usdc || amount_usdc <= 0) {
+    // v0.11.0: allow $0 orders (microtasks / pro-bono). Only reject negative + invalid.
+    if (!client_email || !freelancer_email || !brief || !Number.isFinite(amount_usdc) || amount_usdc < 0) {
       return NextResponse.json({ error: "missing or invalid fields" }, { status: 400 });
     }
 
@@ -55,6 +56,7 @@ export async function POST(req: Request) {
       field: field as any,
       is_public,
       attachments,
+      client_links,
       amount_usdc,
       deadline,
     });

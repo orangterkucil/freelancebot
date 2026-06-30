@@ -12,6 +12,51 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.11.0] — 2026-06-30
+
+Marketplace credibility layer (ratings + social shill links), basic Settings page, full Docs/whitepaper page, plus polish: min order = 0, landing CTAs cleaned up, "GitHub repo" / "PRD" wording fixed, version pill moved to footer, sidebar Resources pinned to bottom-left.
+
+### Added
+- **Ratings system** — `ratings` table (1–5 stars + optional comment) with unique constraint per (order, rater, ratee). Three new components: `RatingStars` (display), `UserBadge` (inline trust pill with avg + count), `RatingForm` (post-release submission). New API: `POST /api/ratings`, `GET /api/ratings?order_id=N|email=X|email=X&summary=1`. Guards: only parties of released orders can rate the counterparty; one rating per direction. UserBadge appears next to client/freelancer emails on `/orders/[id]` meta strip.
+- **`client_links` on orders** — JSONB column for `{ x, github, website, linkedin }`. New "credibility" section in `CreateOrderForm` (collapsible, pre-fills from Settings defaults). Displayed as social chips on `/jobs/[id]` next to "Posted by".
+- **Settings page (`/settings`)** — Basic, intentionally non-fatal config:
+  - Profile defaults (X / GitHub / website / LinkedIn) — auto-fill on order posting
+  - Theme picker (Light + Dark/System placeholders pending v0.12.0)
+  - Language selector (EN / Chinese / Spanish / Hindi / Arabic) — preference stored; full UI i18n lands MVP 2
+  - Email notifications — opt-in toggles for new application / status change / agent verdict (wiring lands next milestone)
+  - Privacy & security notes — explicit "we never ask for keys" disclosure
+  - Signed-in sessions sign-out controls
+  - About + Links sidebar
+- **Docs / whitepaper page (`/docs`)** — Single-page, comprehensive product documentation:
+  - 11-section table of contents (sticky on desktop)
+  - Sections: Overview · Problem · Solution · Lifecycle · Marketplace · Trust · Agent · Contract · Privacy · Roadmap · FAQ
+  - Custom typography theme via `.prose-doc` styles
+  - Inline `Steps`, `Callout`, `Q` (FAQ) micro-components
+- **Sidebar Resources moved to bottom-left** — pinned to bottom of AppShell sidebar so it doesn't crowd the nav.
+
+### Changed
+- **Min order amount: 0** — allow $0 USDC orders (microtasks / pro-bono). API + form validation updated.
+- **Landing CTAs cleaned up** — removed "Star the repo" (dev-jargon, not useful for end users). Primary hero CTA: "Open live demo"; secondary: "Read the docs". Final CTA: "Try live demo" + "Read the docs".
+- **"PRD" nav link → "Docs"** — points to the new `/docs` page instead of the GitHub-hosted PRD.md. PRD.md is still linked from Settings → Links and from the Docs Roadmap section.
+- **"GitHub repo" / "GitHub repository" → "GitHub"** everywhere (AppShell sidebar, AppHeader, Settings, footer). Removes dev-jargon.
+- **Version pill removed from headers** — moved into landing page footer as a small inline mention. Headers are visually cleaner.
+- **Landing nav expanded** — added Marketplace + Docs links to the nav pill.
+
+### Schema migration required
+
+Re-apply `supabase/schema.sql` in your Supabase SQL Editor. It's idempotent and safe over existing data. Adds:
+- `orders.client_links jsonb default '{}'`
+- New `ratings` table with indexes + unique constraint
+- RLS enabled on ratings (policies in MVP 2)
+
+### Security notes (the "guard" doctrine)
+- Mutating routes continue to require `actor_email` and verify party membership.
+- Rating routes additionally require the order to be `released` and the ratee to be the counterparty.
+- Settings page lives entirely in browser localStorage — no secrets, no API keys, no contract config.
+- Explicit security disclosure rendered in Settings: "We never ask for API keys, private keys, or wallet seed phrases."
+
+---
+
 ## [v0.10.1] — 2026-06-30
 
 Restore the white-blue logo mark across all headers.

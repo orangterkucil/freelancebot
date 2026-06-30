@@ -31,6 +31,10 @@ create index if not exists idx_orders_status on orders (status);
 -- attachments is an array of { filename, url, size_bytes, content_type, uploaded_by, created_at }
 alter table orders add column if not exists attachments jsonb default '[]'::jsonb;
 
+-- v0.11.0 additions: social/shill links on the order (client profile snapshot)
+-- client_links shape: { "x": "geografinist", "github": "orangterkucil", "website": "https://...", "linkedin": "...", "other": "..." }
+alter table orders add column if not exists client_links jsonb default '{}'::jsonb;
+
 -- Storage bucket for uploaded files. Public bucket — privacy is enforced at
 -- the application layer (we only render URLs to parties / public-job viewers).
 insert into storage.buckets (id, name, public)
@@ -90,8 +94,27 @@ create index if not exists idx_applications_order  on applications (order_id);
 create index if not exists idx_applications_freelancer on applications (freelancer_email);
 
 -- ---------------------------------------------------------------
+-- Ratings (v0.11.0) — trust score between parties after a released order
+-- ---------------------------------------------------------------
+create table if not exists ratings (
+  id           bigserial primary key,
+  order_id     bigint references orders(id) on delete cascade,
+  rater_email  text not null,
+  ratee_email  text not null,
+  rater_role   text not null,           -- 'client' | 'freelancer'
+  stars        smallint not null check (stars between 1 and 5),
+  comment      text,
+  created_at   timestamptz default now()
+);
+
+create index if not exists idx_ratings_ratee on ratings (ratee_email);
+create index if not exists idx_ratings_order on ratings (order_id);
+create unique index if not exists uq_ratings_unique on ratings (order_id, rater_email, ratee_email);
+
+-- ---------------------------------------------------------------
 -- Row level security (enabled; policies added in week 4 of MVP 2)
 -- ---------------------------------------------------------------
 alter table orders       enable row level security;
 alter table messages     enable row level security;
 alter table applications enable row level security;
+alter table ratings      enable row level security;

@@ -28,7 +28,7 @@ const NAV: NavItem[] = [
   { href: "/freelancer", label: "Freelancer",  Icon: Compass },
   { href: "/jobs",       label: "Marketplace", Icon: Wallet },
   { href: "/freelancer/applications", label: "Applications", Icon: Activity },
-  { href: "/settings",   label: "Settings",    Icon: Settings, badge: "soon" },
+  { href: "/settings",   label: "Settings",    Icon: Settings },
 ];
 
 export function AppShell({
@@ -70,9 +70,6 @@ export function AppShell({
               <span className="font-display text-sm uppercase tracking-wider text-slate-900">
                 FreelanceBot
               </span>
-              <span className="hidden rounded-full border border-slate-200 bg-white px-1.5 py-px font-mono text-[9px] uppercase text-slate-500 group-hover:text-brand sm:inline-block">
-                v0.10.1
-              </span>
             </Link>
           </div>
 
@@ -90,7 +87,7 @@ export function AppShell({
       <div className="mx-auto grid max-w-landing grid-cols-1 lg:grid-cols-[240px_1fr]">
         <aside
           className={
-            "fixed inset-y-0 left-0 top-[57px] z-30 w-[260px] transform border-r border-slate-200 bg-white p-5 transition-transform lg:sticky lg:top-[57px] lg:h-[calc(100vh-57px)] lg:translate-x-0 lg:bg-transparent lg:p-6 " +
+            "fixed inset-y-0 left-0 top-[57px] z-30 flex w-[260px] transform flex-col justify-between border-r border-slate-200 bg-white p-5 transition-transform lg:sticky lg:top-[57px] lg:h-[calc(100vh-57px)] lg:translate-x-0 lg:bg-transparent lg:p-6 " +
             (mobileOpen ? "translate-x-0" : "-translate-x-full")
           }
           aria-label="Primary"
@@ -126,20 +123,21 @@ export function AppShell({
             })}
           </nav>
 
-          <div className="mt-8 border-t border-slate-200 pt-5">
+          {/* Resources pinned to bottom-left */}
+          <div className="border-t border-slate-200 pt-4">
             <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
               Resources
             </p>
-            <ul className="mt-3 space-y-2">
+            <ul className="mt-2 space-y-1">
               <li>
                 <a href="https://github.com/orangterkucil/freelancebot" target="_blank" rel="noopener noreferrer" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand">
-                  GitHub repo ↗
+                  GitHub ↗
                 </a>
               </li>
               <li>
-                <a href="https://github.com/orangterkucil/freelancebot/blob/main/PRD.md" target="_blank" rel="noopener noreferrer" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand">
-                  PRD ↗
-                </a>
+                <Link href="/docs" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand">
+                  Docs ↗
+                </Link>
               </li>
               <li>
                 <a href={`https://testnet.arcscan.app/address/${process.env.NEXT_PUBLIC_ESCROW_ADDRESS ?? ""}`} target="_blank" rel="noopener noreferrer" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand">

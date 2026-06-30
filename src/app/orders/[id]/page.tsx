@@ -9,8 +9,10 @@ import { OrderActions } from "@/components/OrderActions";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ApplicationsList } from "@/components/ApplicationsList";
 import { AttachmentsList } from "@/components/AttachmentsList";
-import { getOrder } from "@/lib/api";
-import type { Order } from "@/lib/orders";
+import { RatingForm } from "@/components/RatingForm";
+import { UserBadge } from "@/components/UserBadge";
+import { getOrder, listRatingsForOrder } from "@/lib/api";
+import type { Order, Rating } from "@/lib/orders";
 
 export default function OrderDetailPage() {
   const params = useParams<{ id: string }>();
@@ -21,6 +23,7 @@ export default function OrderDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [chatKey, setChatKey] = useState(0);
   const [role, setRole] = useState<"client" | "freelancer" | null>(null);
+  const [ratings, setRatings] = useState<Rating[]>([]);
 
   useEffect(() => {
     try {
@@ -49,6 +52,12 @@ export default function OrderDetailPage() {
       } else if (isClient) setRole("client");
       else if (isFreelancer) setRole("freelancer");
       else setRole(null);
+
+      // load ratings (silent fail)
+      try {
+        const { ratings } = await listRatingsForOrder(orderId);
+        setRatings(ratings);
+      } catch {}
     } catch (e: any) {
       setError(e?.message ?? "Failed to load order");
     } finally { setLoading(false); }
@@ -89,8 +98,8 @@ export default function OrderDetailPage() {
       actions={<StatusBadge status={order.status} />}
     >
       <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Field label="Client">{order.client_email}</Field>
-        <Field label="Freelancer">{order.freelancer_email}</Field>
+        <Field label="Client"><UserBadge email={order.client_email} hideEmail={false} /></Field>
+        <Field label="Freelancer"><UserBadge email={order.freelancer_email} hideEmail={false} /></Field>
         <Field label="Amount">
           <span className="font-display text-base text-brand">${order.amount_usdc.toLocaleString()}</span>
           <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">USDC</span>
