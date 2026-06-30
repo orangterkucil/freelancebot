@@ -1,20 +1,33 @@
 import { supabaseAdmin } from "./supabase";
 
 /**
- * Order + message DB helpers.
+ * Order + message + application DB helpers.
  *
  * The on-chain escrow lives in FreelanceEscrow.sol. This module is the off-chain
- * mirror: a database row per order, plus a chat thread per order. The on-chain
- * order id (`onchain_id`) is filled in once the client funds the escrow.
+ * mirror: a database row per order, a chat thread per order, and (v0.9.0) a
+ * marketplace + applications layer so jobs can be discovered publicly.
  */
 
 export type OrderStatus =
-  | "draft"        // created off-chain, not yet funded
+  | "draft"        // created off-chain, not yet funded (also: public job listing if is_public)
   | "funded"       // client has funded the on-chain escrow
-  | "delivered"   // freelancer submitted deliverable
-  | "released"    // funds released to freelancer
-  | "refunded"    // refunded back to client
-  | "disputed";   // not used in MVP, reserved
+  | "delivered"    // freelancer submitted deliverable
+  | "released"     // funds released to freelancer
+  | "refunded"     // refunded back to client
+  | "disputed";    // reserved
+
+/** Categories shown in the field filter on /jobs. */
+export const FIELDS = [
+  "design",      // logo, UX, illustration
+  "dev",         // web, mobile, backend, smart contract
+  "writing",     // copywriting, technical writing, translation
+  "video",       // video editing, motion graphics
+  "marketing",   // growth, SEO, ads
+  "research",    // user research, market research
+  "other",
+] as const;
+
+export type Field = typeof FIELDS[number];
 
 export type Order = {
   id: number;
@@ -22,6 +35,9 @@ export type Order = {
   client_email: string;
   freelancer_email: string;
   brief: string;
+  title: string | null;
+  field: Field;
+  is_public: boolean;
   amount_usdc: number;
   deadline: string | null;
   status: OrderStatus;
@@ -38,6 +54,16 @@ export type Message = {
   created_at: string;
 };
 
+export type Application = {
+  id: number;
+  order_id: number;
+  freelancer_email: string;
+  pitch: string | null;
+  bid_amount_usdc: number | null;
+  status: "pending" | "accepted" | "rejected" | "withdrawn";
+  created_at: string;
+};
+
 // ---------------------------------------------------------------------------
 // Orders
 // ---------------------------------------------------------------------------
@@ -46,6 +72,9 @@ export async function createOrder(input: {
   client_email: string;
   freelancer_email: string;
   brief: string;
+  title?: string | null;
+  field?: Field;
+  is_public?: boolean;
   amount_usdc: number;
   deadline: string | null;
 }): Promise<Order> {
@@ -56,6 +85,9 @@ export async function createOrder(input: {
       client_email:     input.client_email,
       freelancer_email: input.freelancer_email,
       brief:            input.brief,
+      title:            input.title ?? null,
+      field:            input.field ?? "other",
+      is_public:        input.is_public ?? false,
       amount_usdc:      input.amount_usdc,
       deadline:         input.deadline,
       status:           "draft",
@@ -88,6 +120,36 @@ export async function listOrdersForEmail(email: string): Promise<Order[]> {
   return (data ?? []) as Order[];
 }
 
+/** v0.9.0 — public marketplace feed. Lists open jobs anyone can see. */
+export async function listOpenJobs(opts: {
+  field?: Field | null;
+  minBudget?: number | null;
+  maxBudget?: number | null;
+  search?: string | null;
+  limit?: number;
+} = {}): Promise<Order[]> {
+  const sb = supabaseAdmin();
+  let q = sb
+    .from("orders")
+    .select("*")
+    .eq("is_public", true)
+    .eq("status", "draft")
+    .order("created_at", { ascending: false })
+    .limit(opts.limit ?? 50);
+
+  if (opts.field)     q = q.eq("field", opts.field);
+  if (opts.minBudget) q = q.gte("amount_usdc", opts.minBudget);
+  if (opts.maxBudget) q = q.lte("amount_usdc", opts.maxBudget);
+  if (opts.search) {
+    // simple ilike on brief + title
+    q = q.or(`brief.ilike.%${opts.search}%,title.ilike.%${opts.search}%`);
+  }
+
+  const { data, error } = await q;
+  if (error) throw error;
+  return (data ?? []) as Order[];
+}
+
 export async function setOrderOnchainId(orderId: number, onchainId: number): Promise<void> {
   const sb = supabaseAdmin();
   const { error } = await sb
@@ -102,6 +164,15 @@ export async function setOrderStatus(orderId: number, status: OrderStatus): Prom
   const { error } = await sb
     .from("orders")
     .update({ status })
+    .eq("id", orderId);
+  if (error) throw error;
+}
+
+export async function setOrderFreelancer(orderId: number, freelancer_email: string): Promise<void> {
+  const sb = supabaseAdmin();
+  const { error } = await sb
+    .from("orders")
+    .update({ freelancer_email, is_public: false })
     .eq("id", orderId);
   if (error) throw error;
 }
@@ -152,4 +223,61 @@ export async function appendMessage(
     .single();
   if (error) throw error;
   return data as Message;
+}
+
+// ---------------------------------------------------------------------------
+// Applications (v0.9.0 marketplace)
+// ---------------------------------------------------------------------------
+
+export async function createApplication(input: {
+  order_id: number;
+  freelancer_email: string;
+  pitch?: string;
+  bid_amount_usdc?: number;
+}): Promise<Application> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("applications")
+    .insert({
+      order_id:         input.order_id,
+      freelancer_email: input.freelancer_email,
+      pitch:            input.pitch ?? null,
+      bid_amount_usdc:  input.bid_amount_usdc ?? null,
+      status:           "pending",
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as Application;
+}
+
+export async function listApplicationsForOrder(orderId: number): Promise<Application[]> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("applications")
+    .select("*")
+    .eq("order_id", orderId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as Application[];
+}
+
+export async function listApplicationsByFreelancer(email: string): Promise<Application[]> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("applications")
+    .select("*")
+    .eq("freelancer_email", email)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as Application[];
+}
+
+export async function setApplicationStatus(applicationId: number, status: Application["status"]): Promise<void> {
+  const sb = supabaseAdmin();
+  const { error } = await sb
+    .from("applications")
+    .update({ status })
+    .eq("id", applicationId);
+  if (error) throw error;
 }
