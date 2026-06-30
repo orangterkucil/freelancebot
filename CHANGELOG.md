@@ -12,6 +12,31 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.8.0] — 2026-06-12
+
+Dark luxe extends to all app pages. Real dashboard shell with sidebar nav, filters, search, and proper empty states.
+
+### Added
+- **`AppShell` component** with persistent left sidebar nav (Client · Freelancer · Marketplace · Activity · Settings), sticky top header with logo + wallet pill, collapsible mobile drawer, and resource links section (GitHub, PRD, contract on arcscan).
+- **Filter + search** on `/client` and `/freelancer` order lists. Filter by status (All / Draft / Funded / Delivered / Released / Refunded). Free-text search across brief, counterparty email, and order ID.
+- **Stats row** on both dashboards: Total orders · Active · Released · Locked-in-escrow USDC (client) / Total earned USDC (freelancer).
+- **Polished empty state** on `/client` with onboarding tip cards (Fund · Verify · Release) instead of a blank panel.
+- **"Browse marketplace" CTA** on `/freelancer` linking to `/jobs` (v0.9.0 placeholder) so freelancers without active orders have a next step.
+
+### Changed
+- All app routes (`/client`, `/freelancer`, `/orders/[id]`) and shared components (`EmailGate`, `OrderCard`, `CreateOrderForm`, `AgentChat`, `OrderActions`, `StatusBadge`) refactored to **dark luxe theme** matching the landing — no more jarring light/dark transition at app boundary. Liquid-glass surfaces, signal-green primary action, JetBrains Mono labels, Anton uppercase headings.
+- Body background in `layout.tsx` switched from `bg-slate-50` to `bg-ink text-cream` for consistent dark across all routes.
+- `StatusBadge` colors swapped to dark-bg-friendly ring + tinted backgrounds (`bg-signal/15 text-signal ring-signal/40` etc).
+- `OrderCard` now shows on-chain badge when `onchain_id` is set, with hover-state signal-green ring + animated arrow.
+- `AgentChat` bubbles re-styled — viewer's messages in solid signal-green, agent messages in subtle signal-tinted glass, role labels in mono uppercase.
+
+### Notes
+- App routes intentionally match landing's dark luxe palette now. The previous app/landing split was confusing UX.
+- Marketplace feed (`/jobs`) shown in sidebar with "v0.9" badge — that's where the public job browse + apply flow ships next.
+- Theme toggle (light variant) deferred to a later release; defaults to dark for consistency with the brand.
+
+---
+
 ## [v0.7.2] — 2026-06-12
 
 Fix CTA layout collision + liquid-glass CSS specificity bug.

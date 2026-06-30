@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Sparkles, Send } from "lucide-react";
 import { getOrder, sendChat } from "@/lib/api";
 import type { Message } from "@/lib/orders";
 
@@ -11,7 +12,7 @@ export function AgentChat({
 }: {
   orderId: number;
   role: "client" | "freelancer";
-  refreshKey?: number; // bump from parent to force reload
+  refreshKey?: number;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -54,38 +55,50 @@ export function AgentChat({
   };
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white">
-      <div className="border-b border-slate-200 px-5 py-3">
-        <h3 className="text-sm font-semibold text-slate-900">Agent chat</h3>
-        <p className="text-xs text-slate-500">
-          You are the <strong>{role}</strong>. The agent sees this thread + the order context.
+    <div className="liquid-glass relative flex h-full flex-col rounded-2xl">
+      <div className="flex items-center justify-between border-b border-white/5 px-5 py-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-signal" />
+          <p className="font-display text-sm uppercase tracking-wider text-cream">
+            Agent chat
+          </p>
+        </div>
+        <p className="font-mono text-[10px] uppercase tracking-widest text-cream/40">
+          You are <span className="text-cream/80">{role}</span> · agent reads thread + order context
         </p>
       </div>
 
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
         {messages.length === 0 && (
-          <p className="text-sm text-slate-400">No messages yet. Say hi to the agent.</p>
+          <p className="font-mono text-xs uppercase tracking-wider text-cream/40">
+            No messages yet. Say hi to the agent.
+          </p>
         )}
         {messages.map((m) => (
           <Bubble key={m.id} message={m} viewer={role} />
         ))}
       </div>
 
-      {error && <p className="px-5 pb-2 text-sm text-rose-700">{error}</p>}
+      {error && (
+        <div className="border-t border-rose-400/30 bg-rose-500/10 px-5 py-2">
+          <p className="font-mono text-xs text-rose-300">{error}</p>
+        </div>
+      )}
 
-      <form onSubmit={send} className="flex gap-2 border-t border-slate-200 px-5 py-3">
+      <form onSubmit={send} className="flex gap-2 border-t border-white/5 px-5 py-3">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message…"
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand focus:outline-none"
+          className="flex-1 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 font-mono text-xs text-cream placeholder:text-cream/30 outline-none transition-colors focus:border-signal/60 focus:bg-white/[0.08]"
           disabled={busy}
         />
         <button
           type="submit"
           disabled={busy || !input.trim()}
-          className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-signal px-4 py-2 font-display text-xs uppercase tracking-wider text-ink transition-transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
         >
+          <Send className="h-3.5 w-3.5" />
           {busy ? "…" : "Send"}
         </button>
       </form>
@@ -100,23 +113,21 @@ function Bubble({ message, viewer }: { message: Message; viewer: "client" | "fre
 
   const align = isMine ? "items-end" : "items-start";
   const bubble = isMine
-    ? "bg-brand text-white"
+    ? "bg-signal text-ink"
     : isAgent
-    ? "bg-purple-50 text-purple-900 border border-purple-200"
+    ? "bg-signal/10 text-cream border border-signal/20"
     : isSystem
-    ? "bg-slate-100 text-slate-600 text-xs italic"
-    : "bg-slate-100 text-slate-900";
+    ? "bg-white/[0.04] text-cream/50 text-xs italic"
+    : "bg-white/[0.06] text-cream";
 
-  const label = isAgent
-    ? "FreelanceBot"
-    : isSystem
-    ? "system"
-    : message.role;
+  const label = isAgent ? "FreelanceBot" : isSystem ? "system" : message.role;
 
   return (
     <div className={`flex flex-col ${align}`}>
-      <span className="mb-0.5 text-[10px] uppercase tracking-wider text-slate-400">{label}</span>
-      <div className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2 text-sm ${bubble}`}>
+      <span className="mb-0.5 font-mono text-[9px] uppercase tracking-widest text-cream/40">
+        {label}
+      </span>
+      <div className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2 font-mono text-xs leading-relaxed ${bubble}`}>
         {message.content}
       </div>
     </div>

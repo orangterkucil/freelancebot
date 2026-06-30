@@ -53,7 +53,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${anton.variable} ${condiment.variable} ${jbMono.variable}`}>
-      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased">
+      <body className="min-h-screen bg-ink text-cream antialiased selection:bg-signal selection:text-ink">
         {children}
       </body>
     </html>
