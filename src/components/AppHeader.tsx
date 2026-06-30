@@ -26,8 +26,8 @@ export function AppHeader({
             <span className="block font-display text-base uppercase tracking-wider text-slate-900">
               FreelanceBot
             </span>
-            <span className="mt-0.5 inline-block rounded-full border border-slate-200 px-1.5 py-px font-mono text-[9px] uppercase text-slate-500 transition-colors group-hover:text-brand">
-              v0.10.1 · on arc
+            <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-widest text-brand">
+              payouts · on arc
             </span>
           </div>
         </Link>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Sparkles, Globe, Lock } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Sparkles, Globe, Lock, Twitter, Github, Linkedin } from "lucide-react";
 import { createOrder } from "@/lib/api";
-import { FIELDS, type Field, type Attachment } from "@/lib/orders";
+import { FIELDS, type Field, type Attachment, type ClientLinks } from "@/lib/orders";
 import { FileDropzone } from "./FileDropzone";
 
 const FIELD_LABELS: Record<Field, string> = {
@@ -34,11 +34,35 @@ export function CreateOrderForm({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Social links (pre-filled from /settings localStorage if available)
+  const [showLinks, setShowLinks] = useState(false);
+  const [xHandle, setXHandle]   = useState("");
+  const [github,  setGithub]    = useState("");
+  const [website, setWebsite]   = useState("");
+  const [linkedin, setLinkedin] = useState("");
+
+  useEffect(() => {
+    try {
+      const x = window.localStorage.getItem("fb_profile_x") ?? "";
+      const g = window.localStorage.getItem("fb_profile_github") ?? "";
+      const w = window.localStorage.getItem("fb_profile_website") ?? "";
+      const l = window.localStorage.getItem("fb_profile_linkedin") ?? "";
+      setXHandle(x); setGithub(g); setWebsite(w); setLinkedin(l);
+      if (x || g || w || l) setShowLinks(true);
+    } catch {}
+  }, []);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setError(null);
     try {
+      const client_links: ClientLinks = {};
+      if (xHandle.trim())  client_links.x        = xHandle.trim();
+      if (github.trim())   client_links.github   = github.trim();
+      if (website.trim())  client_links.website  = website.trim();
+      if (linkedin.trim()) client_links.linkedin = linkedin.trim();
+
       const res = await createOrder({
         client_email:     clientEmail,
         freelancer_email: mode === "public" ? clientEmail : freelancerEmail.trim().toLowerCase(),
@@ -46,6 +70,7 @@ export function CreateOrderForm({
         field,
         is_public:        mode === "public",
         attachments,
+        client_links,
         brief:            brief.trim(),
         amount_usdc:      Number(amount),
         deadline:         deadline ? new Date(deadline).toISOString() : null,
@@ -68,14 +93,10 @@ export function CreateOrderForm({
     <form onSubmit={submit} className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-brand" />
-        <span className="font-mono text-[11px] uppercase tracking-widest text-brand">
-          New escrow
-        </span>
+        <span className="font-mono text-[11px] uppercase tracking-widest text-brand">New escrow</span>
       </div>
 
-      <h2 className="font-display text-2xl uppercase text-slate-900">
-        Post a job
-      </h2>
+      <h2 className="font-display text-2xl uppercase text-slate-900">Post a job</h2>
 
       <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
         <button
@@ -83,9 +104,7 @@ export function CreateOrderForm({
           onClick={() => setMode("public")}
           className={
             "flex items-center justify-center gap-2 rounded-lg px-3 py-2 font-display text-xs uppercase tracking-wider transition-colors " +
-            (mode === "public"
-              ? "bg-brand text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900")
+            (mode === "public" ? "bg-brand text-white shadow-sm" : "text-slate-600 hover:text-slate-900")
           }
         >
           <Globe className="h-3.5 w-3.5" />
@@ -96,9 +115,7 @@ export function CreateOrderForm({
           onClick={() => setMode("private")}
           className={
             "flex items-center justify-center gap-2 rounded-lg px-3 py-2 font-display text-xs uppercase tracking-wider transition-colors " +
-            (mode === "private"
-              ? "bg-brand text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900")
+            (mode === "private" ? "bg-brand text-white shadow-sm" : "text-slate-600 hover:text-slate-900")
           }
         >
           <Lock className="h-3.5 w-3.5" />
@@ -149,7 +166,7 @@ export function CreateOrderForm({
         )}
 
         {mode === "private" && (
-          <FormField label="Freelancer email" hint="Their wallet will be auto-derived from this email">
+          <FormField label="Freelancer email">
             <input
               type="email"
               required
@@ -172,37 +189,24 @@ export function CreateOrderForm({
           />
         </FormField>
 
-        <FormField
-          label="Attachments (optional)"
-          hint={
-            mode === "public"
-              ? "Reference images, brand guides, examples. Visible to anyone in the marketplace."
-              : "Reference images, brand guides. Only visible to you and the freelancer."
-          }
-        >
-          <FileDropzone
-            value={attachments}
-            onChange={setAttachments}
-            uploadedBy={clientEmail}
-          />
+        <FormField label="Attachments (optional)" hint={mode === "public" ? "Visible to anyone in the marketplace." : "Only visible to you and the freelancer."}>
+          <FileDropzone value={attachments} onChange={setAttachments} uploadedBy={clientEmail} />
         </FormField>
 
         <div className="grid grid-cols-2 gap-4">
-          <FormField label="Amount" hint="USDC on Arc Testnet">
+          <FormField label="Amount" hint="USDC on Arc Testnet · 0 = pro-bono">
             <div className="relative">
               <input
                 type="number"
                 required
-                min={1}
+                min={0}
                 step="0.01"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value === "" ? "" : Number(e.target.value))}
                 placeholder="300"
                 className={inputClass + " pr-16"}
               />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-slate-400">
-                USDC
-              </span>
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-slate-400">USDC</span>
             </div>
           </FormField>
           <FormField label="Deadline" hint="Refund opens 7 days after">
@@ -213,6 +217,40 @@ export function CreateOrderForm({
               className={inputClass}
             />
           </FormField>
+        </div>
+
+        {/* Social links — collapsible "shill" section */}
+        <div className="rounded-xl border border-sky-200 bg-sky-50/50 p-4">
+          <button
+            type="button"
+            onClick={() => setShowLinks((s) => !s)}
+            className="flex w-full items-center justify-between"
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-brand" />
+              <span className="font-display text-sm uppercase tracking-wider text-slate-900">
+                Your credibility (optional)
+              </span>
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-brand">
+              {showLinks ? "Hide" : "Add"}
+            </span>
+          </button>
+          <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-500">
+            Shill your X, GitHub, website. Freelancers see them and decide whether to apply.
+          </p>
+
+          {showLinks && (
+            <div className="mt-4 space-y-3">
+              <SocialField Icon={Twitter} label="X / Twitter" value={xHandle}  onChange={setXHandle}  placeholder="geografinist" />
+              <SocialField Icon={Github}  label="GitHub"      value={github}   onChange={setGithub}   placeholder="orangterkucil" />
+              <SocialField Icon={Globe}   label="Website"     value={website}  onChange={setWebsite}  placeholder="https://yourdomain.com" />
+              <SocialField Icon={Linkedin} label="LinkedIn"   value={linkedin} onChange={setLinkedin} placeholder="https://linkedin.com/in/you" />
+              <p className="font-mono text-[10px] text-slate-500">
+                Tip: set defaults in <a href="/settings" className="text-brand hover:underline">Settings</a> so they auto-fill next time.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -225,7 +263,7 @@ export function CreateOrderForm({
       <button
         type="submit"
         disabled={busy}
-        className="w-full rounded-xl bg-brand px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-brand/30 transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
+        className="btn-gradient w-full rounded-xl px-4 py-3 font-display text-sm uppercase tracking-wider"
       >
         {busy ? "Creating…" : mode === "public" ? "Post to marketplace" : "Send direct order"}
       </button>
@@ -240,26 +278,42 @@ export function CreateOrderForm({
 const inputClass =
   "w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand";
 
-function FormField({
+function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">{label}</span>
+      <div className="mt-1.5">{children}</div>
+      {hint && <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">{hint}</span>}
+    </label>
+  );
+}
+
+function SocialField({
+  Icon,
   label,
-  hint,
-  children,
+  value,
+  onChange,
+  placeholder,
 }: {
+  Icon: React.ComponentType<{ className?: string }>;
   label: string;
-  hint?: string;
-  children: React.ReactNode;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
 }) {
   return (
     <label className="block">
-      <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">
+      <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-600">
+        <Icon className="h-3 w-3" />
         {label}
       </span>
-      <div className="mt-1.5">{children}</div>
-      {hint && (
-        <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">
-          {hint}
-        </span>
-      )}
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
+      />
     </label>
   );
 }
