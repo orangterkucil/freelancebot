@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -54,11 +55,24 @@ function HeroSection() {
       <div className="relative mx-auto max-w-landing px-6 pb-24 pt-8 lg:px-12 lg:pt-10">
         <header className="flex items-center justify-between gap-6">
           <Link href="/" className="flex items-center gap-3 group">
-            <span className="font-display text-base uppercase tracking-wider text-slate-900">
-              FreelanceBot
-            </span>
+            <Image
+              src="/logo-mark.svg"
+              alt="FreelanceBot"
+              width={44}
+              height={44}
+              priority
+              className="drop-shadow-sm transition-transform group-hover:scale-105"
+            />
+            <div className="flex flex-col leading-none">
+              <span className="font-display text-lg uppercase tracking-wider text-slate-900">
+                FreelanceBot
+              </span>
+              <span className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-brand">
+                payouts · on arc
+              </span>
+            </div>
             <span className="rounded-full border border-slate-300 bg-white px-2 py-0.5 font-mono text-[10px] uppercase text-slate-600 group-hover:text-brand">
-              v0.10.0
+              v0.10.1
             </span>
           </Link>
 

@@ -1,6 +1,6 @@
 {
   "name": "freelancebot",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "private": true,
   "description": "Autonomous AI payment agent for global freelancers on Arc",
   "scripts": {
