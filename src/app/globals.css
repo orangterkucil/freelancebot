@@ -20,8 +20,12 @@ body {
 /* -----------------------------------------------------------------------
    Liquid glass utility (Apple-Vision-Pro-ish)
    Used on landing nav, cards, buttons.
+
+   Wrapped in :where() so the rule has 0 specificity — Tailwind utilities
+   like `absolute` or `fixed` can override the default `relative` without a
+   specificity war. The `::before` border-gradient stays glued via inherit.
    ----------------------------------------------------------------------- */
-.liquid-glass {
+:where(.liquid-glass) {
   position: relative;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.02);

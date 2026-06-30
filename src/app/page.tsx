@@ -383,60 +383,24 @@ function FlowSection() {
 
 function CtaSection() {
   return (
-    <section className="relative overflow-hidden bg-space pt-20 sm:pt-28 lg:pt-32">
+    <section className="relative overflow-hidden bg-space py-24 sm:py-28 lg:py-36">
       <div className="absolute inset-0 bg-stars opacity-60" />
       <div className="absolute inset-0 bg-gradient-to-b from-ink via-transparent to-ink" />
 
-      <div className="relative mx-auto max-w-landing px-6 pb-32 lg:px-[15%] lg:pb-40 lg:pr-[20%]">
-        <div className="relative ml-auto max-w-2xl text-right">
-          <span
-            aria-hidden
-            className="font-script absolute -top-8 right-0 text-2xl text-signal opacity-90 mix-blend-exclusion sm:text-4xl lg:-top-12 lg:text-[60px]"
-          >
-            Go beyond
-          </span>
-
-          <h2 className="font-display text-[28px] uppercase leading-[1.05] tracking-tight sm:text-5xl lg:text-[60px]">
-            <span className="mb-4 block sm:mb-8 lg:mb-12">Join us.</span>
-            <span className="block">Fork the repo.</span>
-            <span className="block">Ship your own.</span>
-            <span className="block">Follow the signal.</span>
-          </h2>
-
-          <div className="mt-12 flex flex-col items-end gap-3 sm:flex-row sm:justify-end">
-            <a
-              href="https://github.com/orangterkucil/freelancebot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2 rounded-2xl bg-signal px-6 py-4 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.02]"
-            >
-              <Github className="h-4 w-4" />
-              Star the repo
-            </a>
-            <a
-              href="https://github.com/orangterkucil/freelancebot/blob/main/PRD.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="liquid-glass inline-flex items-center gap-2 rounded-2xl px-6 py-4 font-display text-sm uppercase tracking-wider text-cream transition-colors hover:bg-white/10"
-            >
-              Read the PRD
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </a>
-          </div>
-        </div>
-
-        {/* Vertical social icons — bottom-left */}
-        <div className="liquid-glass absolute bottom-12 left-[8%] hidden flex-col rounded-2xl lg:flex">
+      <div className="relative mx-auto grid max-w-landing grid-cols-1 items-center gap-16 px-6 lg:grid-cols-[auto_1fr] lg:gap-24 lg:px-12">
+        {/* LEFT — vertical social icons, tight 64px stack */}
+        <div className="liquid-glass relative mx-auto w-fit flex-shrink-0 flex flex-col rounded-2xl lg:mx-0">
           {[
-            { Icon: Mail,    href: "mailto:orangterkucil@gmail.com" },
-            { Icon: Twitter, href: "https://x.com/geografinist" },
-            { Icon: Github,  href: "https://github.com/orangterkucil/freelancebot" },
-          ].map(({ Icon, href }, i, arr) => (
+            { Icon: Mail,    href: "mailto:orangterkucil@gmail.com", label: "Email" },
+            { Icon: Twitter, href: "https://x.com/geografinist",      label: "Twitter" },
+            { Icon: Github,  href: "https://github.com/orangterkucil/freelancebot", label: "GitHub" },
+          ].map(({ Icon, href, label }, i, arr) => (
             <a
               key={i}
               href={href}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={label}
               className={
                 "grid h-16 w-16 place-items-center transition-colors hover:bg-white/10" +
                 (i < arr.length - 1 ? " border-b border-white/10" : "")
@@ -445,6 +409,45 @@ function CtaSection() {
               <Icon className="h-5 w-5 text-cream" />
             </a>
           ))}
+        </div>
+
+        {/* RIGHT — heading + buttons */}
+        <div className="relative max-w-2xl text-left lg:text-right">
+          {/* "Go beyond" cursive accent */}
+          <span
+            aria-hidden
+            className="font-script mb-2 block text-3xl text-signal sm:text-4xl lg:text-5xl"
+          >
+            Go beyond
+          </span>
+
+          <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight sm:text-5xl lg:text-[64px]">
+            <span className="block">Join us.</span>
+            <span className="block">Fork the repo.</span>
+            <span className="block">Ship your own.</span>
+            <span className="block">Follow the signal.</span>
+          </h2>
+
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row lg:justify-end">
+            <a
+              href="https://github.com/orangterkucil/freelancebot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-signal px-6 py-4 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.02]"
+            >
+              <Github className="h-4 w-4" />
+              Star the repo
+            </a>
+            <a
+              href="https://github.com/orangterkucil/freelancebot/blob/main/PRD.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="liquid-glass relative inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-4 font-display text-sm uppercase tracking-wider text-cream transition-colors hover:bg-white/10"
+            >
+              Read the PRD
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </a>
+          </div>
         </div>
       </div>
     </section>
