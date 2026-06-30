@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -58,15 +59,19 @@ export function AppShell({
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
-            <Link href="/" className="group flex items-center gap-2">
-              <div className="grid h-8 w-8 place-items-center rounded-lg bg-brand text-white shadow-sm shadow-brand/30">
-                <span className="font-display text-sm">F</span>
-              </div>
+            <Link href="/" className="group flex items-center gap-2.5">
+              <Image
+                src="/logo-mark.svg"
+                alt="FreelanceBot"
+                width={32}
+                height={32}
+                className="transition-transform group-hover:scale-105"
+              />
               <span className="font-display text-sm uppercase tracking-wider text-slate-900">
                 FreelanceBot
               </span>
-              <span className="hidden rounded-full border border-slate-200 px-1.5 py-px font-mono text-[9px] uppercase text-slate-500 group-hover:text-brand sm:inline-block">
-                v0.10.0
+              <span className="hidden rounded-full border border-slate-200 bg-white px-1.5 py-px font-mono text-[9px] uppercase text-slate-500 group-hover:text-brand sm:inline-block">
+                v0.10.1
               </span>
             </Link>
           </div>

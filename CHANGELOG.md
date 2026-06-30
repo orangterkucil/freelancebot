@@ -12,6 +12,22 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.10.1] — 2026-06-30
+
+Restore the white-blue logo mark across all headers.
+
+### Added
+- Logo image (`/logo-mark.svg`) now displays in:
+  - Landing hero header (44×44 with wordmark + "PAYOUTS · ON ARC" tagline)
+  - App shell sidebar header (32×32)
+  - AppHeader used by EmailGate sign-in screen (40×40)
+- Logo SVG repainted with a cyan→blue→indigo gradient fill and bright white "F" + white pulse dot. Matches the new energetic palette while keeping the original white-on-blue identity.
+
+### Changed
+- Version pill bumped to `v0.10.1` in headers.
+
+---
+
 ## [v0.10.0] — 2026-06-30
 
 Full UI revert to bright, energetic light theme (putih + biru + multi-accent gradients). README priority flip: "use the demo" first, "self-host" later.
