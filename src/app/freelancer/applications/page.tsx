@@ -23,16 +23,13 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
 
   useEffect(() => {
     (async () => {
-      setLoading(true);
-      setError(null);
+      setLoading(true); setError(null);
       try {
         const { applications } = await listMyApplications(email);
         setApps(applications);
       } catch (e: any) {
         setError(e?.message ?? "Failed to load applications");
-      } finally {
-        setLoading(false);
-      }
+      } finally { setLoading(false); }
     })();
   }, [email]);
 
@@ -48,52 +45,52 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
       title="My applications"
       subtitle={
         <>
-          Signed in as <span className="text-cream/80">{email}</span>
+          Signed in as <span className="text-slate-700">{email}</span>
           {" · "}
-          <button onClick={signOut} className="text-signal hover:underline">switch</button>
+          <button onClick={signOut} className="text-brand hover:underline">switch</button>
         </>
       }
       breadcrumb={<>Freelancer / Applications</>}
       actions={
         <Link
           href="/jobs"
-          className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 font-display text-xs uppercase tracking-wider text-cream/80 transition-colors hover:bg-white/[0.08] hover:text-signal"
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 font-display text-xs uppercase tracking-wider text-slate-700 transition-colors hover:border-brand hover:text-brand"
         >
           Browse marketplace →
         </Link>
       }
     >
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Total"     value={apps.length} />
+        <Stat label="Total"     value={apps.length}             accent="sky" />
         <Stat label="Pending"   value={grouped.pending.length}  accent="amber" />
-        <Stat label="Accepted"  value={grouped.accepted.length} accent="signal" />
-        <Stat label="Rejected"  value={grouped.rejected.length} />
+        <Stat label="Accepted"  value={grouped.accepted.length} accent="emerald" />
+        <Stat label="Rejected"  value={grouped.rejected.length} accent="rose" />
       </div>
 
       {loading && (
-        <div className="liquid-glass mt-8 rounded-2xl p-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-cream/50">Loading…</p>
+        <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+          <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
         </div>
       )}
 
       {error && (
-        <div className="mt-8 rounded-2xl border border-rose-400/30 bg-rose-500/10 p-4">
-          <p className="font-mono text-xs uppercase tracking-wider text-rose-300">{error}</p>
+        <div className="mt-8 rounded-2xl border border-rose-200 bg-rose-50 p-4">
+          <p className="font-mono text-xs uppercase tracking-wider text-rose-700">{error}</p>
         </div>
       )}
 
       {!loading && !error && apps.length === 0 && (
-        <div className="liquid-glass relative mt-8 rounded-3xl p-10 text-center">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-signal/10 ring-1 ring-signal/30">
-            <Inbox className="h-7 w-7 text-signal" strokeWidth={1.5} />
+        <div className="mt-8 rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md ring-1 ring-sky-200">
+            <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
           </div>
-          <h3 className="mt-5 font-display text-xl uppercase text-cream">No applications yet</h3>
-          <p className="mx-auto mt-2 max-w-md font-mono text-xs uppercase leading-relaxed tracking-wide text-cream/60">
+          <h3 className="mt-5 font-display text-xl uppercase text-slate-900">No applications yet</h3>
+          <p className="mx-auto mt-2 max-w-md font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600">
             Browse the public marketplace and apply to open jobs.
           </p>
           <Link
             href="/jobs"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-signal px-5 py-2.5 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.02]"
+            className="btn-gradient mt-6 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 font-display text-sm uppercase tracking-wider"
           >
             <Briefcase className="h-4 w-4" />
             Browse jobs
@@ -115,62 +112,60 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
 function Stat({
   label,
   value,
-  accent,
+  accent = "sky",
 }: {
   label: string;
   value: string | number;
-  accent?: "signal" | "amber";
+  accent?: "sky" | "amber" | "emerald" | "rose";
 }) {
-  const accentColor =
-    accent === "signal" ? "text-signal" :
-    accent === "amber"  ? "text-amber-300" :
-                          "text-cream";
+  const accentMap = {
+    sky:     "from-sky-50 to-white text-sky-700 ring-sky-200",
+    amber:   "from-amber-50 to-white text-amber-700 ring-amber-200",
+    emerald: "from-emerald-50 to-white text-emerald-700 ring-emerald-200",
+    rose:    "from-rose-50 to-white text-rose-700 ring-rose-200",
+  };
   return (
-    <div className="liquid-glass relative rounded-2xl p-4">
-      <p className="font-mono text-[10px] uppercase tracking-widest text-cream/40">{label}</p>
-      <p className={`mt-1 font-display text-2xl ${accentColor}`}>{value}</p>
+    <div className={`relative rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm ${accentMap[accent]}`}>
+      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
+      <p className="mt-1 font-display text-2xl">{value}</p>
     </div>
   );
 }
 
 function ApplicationRow({ app }: { app: Application }) {
   const statusStyle = {
-    pending:   "bg-white/[0.05] text-cream/70 ring-white/10",
-    accepted:  "bg-signal/15 text-signal ring-signal/40",
-    rejected:  "bg-rose-500/15 text-rose-300 ring-rose-400/30",
-    withdrawn: "bg-amber-500/15 text-amber-300 ring-amber-400/30",
+    pending:   "bg-slate-100 text-slate-700 ring-slate-200",
+    accepted:  "bg-emerald-100 text-emerald-800 ring-emerald-200",
+    rejected:  "bg-rose-100 text-rose-800 ring-rose-200",
+    withdrawn: "bg-amber-100 text-amber-800 ring-amber-200",
   }[app.status];
 
   return (
     <Link
       href={`/jobs/${app.order_id}`}
-      className="liquid-glass group relative block rounded-2xl p-4 transition-all hover:bg-white/[0.06] hover:ring-1 hover:ring-signal/30"
+      className="group relative block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-cream/40">
-              Job #{app.order_id}
-            </span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Job #{app.order_id}</span>
             <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest ring-1 ${statusStyle}`}>
               {app.status}
             </span>
           </div>
           {app.pitch && (
-            <p className="mt-2 line-clamp-2 font-mono text-[11px] leading-relaxed text-cream/70">
-              {app.pitch}
-            </p>
+            <p className="mt-2 line-clamp-2 font-mono text-[11px] leading-relaxed text-slate-700">{app.pitch}</p>
           )}
           {app.bid_amount_usdc !== null && app.bid_amount_usdc !== undefined && (
-            <p className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-cream/40">
-              Counter-bid: <span className="text-cream/80">${app.bid_amount_usdc}</span>
+            <p className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+              Counter-bid: <span className="text-slate-900">${app.bid_amount_usdc}</span>
             </p>
           )}
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-cream/30">
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">
             Applied {new Date(app.created_at).toLocaleString()}
           </p>
         </div>
-        <ExternalLink className="h-4 w-4 text-cream/40 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-signal" />
+        <ExternalLink className="h-4 w-4 text-slate-400 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand" />
       </div>
     </Link>
   );

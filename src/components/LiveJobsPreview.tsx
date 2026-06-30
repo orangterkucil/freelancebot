@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Briefcase, Clock } from "lucide-react";
+import { ArrowRight, Briefcase, Clock, Sparkles } from "lucide-react";
 import { listJobs } from "@/lib/api";
 import type { Order } from "@/lib/orders";
 
@@ -11,10 +11,6 @@ const FIELD_EMOJI: Record<string, string> = {
   marketing: "📣", research: "🔬", other: "📦",
 };
 
-/**
- * Slim preview of the latest 6 marketplace jobs, embedded in the landing page
- * so non-logged-in visitors immediately see real activity.
- */
 export function LiveJobsPreview() {
   const [jobs, setJobs] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,33 +20,30 @@ export function LiveJobsPreview() {
       try {
         const { jobs } = await listJobs({ limit: 6 });
         setJobs(jobs);
-      } catch {
-        // fail silently — landing should still render
-      } finally {
-        setLoading(false);
-      }
+      } catch {}
+      finally { setLoading(false); }
     })();
   }, []);
 
-  // If no jobs and not loading, fall back to a placeholder card encouraging post
   return (
-    <section className="relative bg-ink py-20 sm:py-24">
+    <section className="relative bg-gradient-to-b from-white via-sky-50/40 to-white py-20 sm:py-24">
       <div className="mx-auto max-w-landing px-6 lg:px-12">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="font-mono text-[11px] uppercase tracking-widest text-signal">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-emerald-700">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
               Live · marketplace
             </span>
-            <h2 className="mt-1 font-display text-[32px] uppercase leading-tight tracking-tight sm:text-5xl">
+            <h2 className="mt-3 font-display text-[32px] uppercase leading-tight tracking-tight text-slate-900 sm:text-5xl">
               Open jobs right now
             </h2>
-            <p className="mt-2 max-w-md font-mono text-xs uppercase tracking-wide text-cream/60">
+            <p className="mt-2 max-w-md font-mono text-xs uppercase tracking-wide text-slate-600">
               Real escrow orders posted by clients. Apply with one click. USDC released the second you deliver.
             </p>
           </div>
           <Link
             href="/jobs"
-            className="liquid-glass relative inline-flex items-center gap-2 rounded-2xl px-5 py-3 font-display text-sm uppercase tracking-wider text-cream transition-colors hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 font-display text-sm uppercase tracking-wider text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:text-brand hover:shadow-md"
           >
             See all jobs
             <ArrowRight className="h-4 w-4" />
@@ -60,23 +53,23 @@ export function LiveJobsPreview() {
         {loading ? (
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="liquid-glass h-44 rounded-2xl" />
+              <div key={i} className="h-44 rounded-2xl border border-slate-200 bg-white" />
             ))}
           </div>
         ) : jobs.length === 0 ? (
-          <div className="liquid-glass mt-10 rounded-2xl p-8 text-center">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-signal/10 ring-1 ring-signal/30">
-              <Briefcase className="h-5 w-5 text-signal" strokeWidth={1.5} />
+          <div className="mt-10 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 to-indigo-50 p-8 text-center">
+            <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-white shadow-md ring-1 ring-sky-200">
+              <Sparkles className="h-5 w-5 text-brand" strokeWidth={1.5} />
             </div>
-            <p className="mt-4 font-display text-lg uppercase text-cream">
+            <p className="mt-4 font-display text-lg uppercase text-slate-900">
               Be the first to post
             </p>
-            <p className="mt-1 max-w-md mx-auto font-mono text-[11px] uppercase tracking-wide text-cream/60">
+            <p className="mt-1 max-w-md mx-auto font-mono text-[11px] uppercase tracking-wide text-slate-600">
               No public jobs in the feed yet. Post yours and freelancers can apply within minutes.
             </p>
             <Link
               href="/client"
-              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-signal px-4 py-2.5 font-display text-xs uppercase tracking-wider text-ink"
+              className="btn-gradient mt-5 inline-flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs uppercase tracking-wider"
             >
               + Post a job
             </Link>
@@ -87,25 +80,25 @@ export function LiveJobsPreview() {
               <Link
                 key={j.id}
                 href={`/jobs/${j.id}`}
-                className="liquid-glass group relative block rounded-2xl p-5 transition-all hover:bg-white/[0.06] hover:ring-1 hover:ring-signal/30"
+                className="group relative block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
               >
-                <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-cream/60">
+                <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-600">
                   <span>{FIELD_EMOJI[j.field] ?? "📦"}</span> {j.field}
                 </span>
 
-                <h3 className="mt-3 line-clamp-2 font-display text-base uppercase leading-tight text-cream">
+                <h3 className="mt-3 line-clamp-2 font-display text-base uppercase leading-tight text-slate-900">
                   {j.title ?? j.brief.slice(0, 60)}
                 </h3>
-                <p className="mt-1 line-clamp-2 font-mono text-[11px] leading-relaxed text-cream/50">
+                <p className="mt-1 line-clamp-2 font-mono text-[11px] leading-relaxed text-slate-500">
                   {j.brief}
                 </p>
 
-                <div className="mt-4 flex items-end justify-between border-t border-white/5 pt-3">
-                  <span className="font-display text-lg text-signal">
+                <div className="mt-4 flex items-end justify-between border-t border-slate-100 pt-3">
+                  <span className="font-display text-lg text-brand">
                     ${j.amount_usdc.toLocaleString()}
-                    <span className="ml-1 font-mono text-[9px] uppercase tracking-widest text-cream/40">USDC</span>
+                    <span className="ml-1 font-mono text-[9px] uppercase tracking-widest text-slate-400">USDC</span>
                   </span>
-                  <span className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-cream/40">
+                  <span className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">
                     <Clock className="h-3 w-3" />
                     {j.deadline ? new Date(j.deadline).toLocaleDateString() : "Open"}
                   </span>

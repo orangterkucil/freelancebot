@@ -1,12 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { connectWallet, getUsdcReadonly, fromUsdcUnits, addressUrl, ARC_CHAIN_ID } from "@/lib/contracts";
+import { connectWallet, getUsdcReadonly, fromUsdcUnits, addressUrl } from "@/lib/contracts";
 
-/**
- * Tiny "Connect wallet" pill, top-right of the order detail page.
- * Shows the connected address + USDC balance once linked.
- */
 export function WalletStatus() {
   const [address, setAddress] = useState<string | null>(null);
   const [balance, setBalance] = useState<string | null>(null);
@@ -14,7 +10,6 @@ export function WalletStatus() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // best-effort silent reconnect if user already authorized this site
     if (typeof window === "undefined") return;
     const eth = (window as any).ethereum;
     if (!eth?.selectedAddress) return;

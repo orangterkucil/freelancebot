@@ -65,28 +65,27 @@ export function CreateOrderForm({
   };
 
   return (
-    <form onSubmit={submit} className="liquid-glass relative space-y-5 rounded-2xl p-6">
+    <form onSubmit={submit} className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-signal" />
-        <span className="font-mono text-[11px] uppercase tracking-widest text-signal">
+        <Sparkles className="h-4 w-4 text-brand" />
+        <span className="font-mono text-[11px] uppercase tracking-widest text-brand">
           New escrow
         </span>
       </div>
 
-      <h2 className="font-display text-2xl uppercase text-cream">
+      <h2 className="font-display text-2xl uppercase text-slate-900">
         Post a job
       </h2>
 
-      {/* Public / private toggle */}
-      <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/10 bg-white/[0.02] p-1">
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
         <button
           type="button"
           onClick={() => setMode("public")}
           className={
             "flex items-center justify-center gap-2 rounded-lg px-3 py-2 font-display text-xs uppercase tracking-wider transition-colors " +
             (mode === "public"
-              ? "bg-signal text-ink"
-              : "text-cream/60 hover:text-cream")
+              ? "bg-brand text-white shadow-sm"
+              : "text-slate-600 hover:text-slate-900")
           }
         >
           <Globe className="h-3.5 w-3.5" />
@@ -98,24 +97,23 @@ export function CreateOrderForm({
           className={
             "flex items-center justify-center gap-2 rounded-lg px-3 py-2 font-display text-xs uppercase tracking-wider transition-colors " +
             (mode === "private"
-              ? "bg-signal text-ink"
-              : "text-cream/60 hover:text-cream")
+              ? "bg-brand text-white shadow-sm"
+              : "text-slate-600 hover:text-slate-900")
           }
         >
           <Lock className="h-3.5 w-3.5" />
           Direct (private)
         </button>
       </div>
-      <p className="font-mono text-[10px] leading-relaxed text-cream/40">
+      <p className="font-mono text-[10px] leading-relaxed text-slate-500">
         {mode === "public"
           ? "Listed on /jobs for any freelancer to apply. You pick one applicant, then escrow flow starts."
           : "Sent directly to a freelancer you already know. Not listed publicly."}
       </p>
 
       <div className="space-y-4">
-        {/* Field selector (public only) */}
         {mode === "public" && (
-          <Field label="Category" hint="Helps freelancers find your job">
+          <FormField label="Category" hint="Helps freelancers find your job">
             <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
               {FIELDS.map((f) => (
                 <button
@@ -125,19 +123,19 @@ export function CreateOrderForm({
                   className={
                     "rounded-lg px-2 py-1.5 font-mono text-[10px] uppercase tracking-wider transition-colors " +
                     (field === f
-                      ? "bg-signal text-ink"
-                      : "border border-white/10 bg-white/[0.04] text-cream/70 hover:bg-white/[0.08]")
+                      ? "bg-brand text-white shadow-sm"
+                      : "border border-slate-200 bg-white text-slate-700 hover:border-brand hover:text-brand")
                   }
                 >
                   {FIELD_LABELS[f]}
                 </button>
               ))}
             </div>
-          </Field>
+          </FormField>
         )}
 
         {mode === "public" && (
-          <Field label="Title" hint="Short headline — appears in feed">
+          <FormField label="Title" hint="Short headline — appears in feed">
             <input
               type="text"
               required
@@ -147,11 +145,11 @@ export function CreateOrderForm({
               className={inputClass}
               maxLength={80}
             />
-          </Field>
+          </FormField>
         )}
 
         {mode === "private" && (
-          <Field label="Freelancer email" hint="Their wallet will be auto-derived from this email">
+          <FormField label="Freelancer email" hint="Their wallet will be auto-derived from this email">
             <input
               type="email"
               required
@@ -160,10 +158,10 @@ export function CreateOrderForm({
               placeholder="freelancer@example.com"
               className={inputClass}
             />
-          </Field>
+          </FormField>
         )}
 
-        <Field label="Brief" hint="What needs to be delivered — be specific for better agent verification">
+        <FormField label="Brief" hint="What needs to be delivered — be specific for better agent verification">
           <textarea
             required
             rows={4}
@@ -172,9 +170,9 @@ export function CreateOrderForm({
             placeholder="e.g. Need a logo design with 3 color variations, delivered as SVG + PNG via Figma link. Modern style, fintech vibe..."
             className={inputClass}
           />
-        </Field>
+        </FormField>
 
-        <Field
+        <FormField
           label="Attachments (optional)"
           hint={
             mode === "public"
@@ -187,10 +185,10 @@ export function CreateOrderForm({
             onChange={setAttachments}
             uploadedBy={clientEmail}
           />
-        </Field>
+        </FormField>
 
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Amount" hint="USDC on Arc Testnet">
+          <FormField label="Amount" hint="USDC on Arc Testnet">
             <div className="relative">
               <input
                 type="number"
@@ -202,24 +200,24 @@ export function CreateOrderForm({
                 placeholder="300"
                 className={inputClass + " pr-16"}
               />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-cream/40">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-slate-400">
                 USDC
               </span>
             </div>
-          </Field>
-          <Field label="Deadline" hint="Refund opens 7 days after">
+          </FormField>
+          <FormField label="Deadline" hint="Refund opens 7 days after">
             <input
               type="date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              className={inputClass + " [color-scheme:dark]"}
+              className={inputClass}
             />
-          </Field>
+          </FormField>
         </div>
       </div>
 
       {error && (
-        <div className="rounded-xl border border-rose-400/30 bg-rose-500/10 px-3 py-2 font-mono text-xs text-rose-300">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 font-mono text-xs text-rose-700">
           {error}
         </div>
       )}
@@ -227,12 +225,12 @@ export function CreateOrderForm({
       <button
         type="submit"
         disabled={busy}
-        className="w-full rounded-xl bg-signal px-4 py-3 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
+        className="w-full rounded-xl bg-brand px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-brand/30 transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
       >
         {busy ? "Creating…" : mode === "public" ? "Post to marketplace" : "Send direct order"}
       </button>
 
-      <p className="border-t border-white/5 pt-3 font-mono text-[10px] uppercase tracking-widest text-cream/40">
+      <p className="border-t border-slate-200 pt-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
         Step 1 of 3 · {mode === "public" ? "Wait for applications, then pick" : "Next: fund the escrow"}
       </p>
     </form>
@@ -240,9 +238,9 @@ export function CreateOrderForm({
 }
 
 const inputClass =
-  "w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 font-mono text-sm text-cream placeholder:text-cream/30 outline-none transition-colors focus:border-signal/60 focus:bg-white/[0.08]";
+  "w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand";
 
-function Field({
+function FormField({
   label,
   hint,
   children,
@@ -253,12 +251,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block font-mono text-[10px] uppercase tracking-widest text-cream/60">
+      <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">
         {label}
       </span>
       <div className="mt-1.5">{children}</div>
       {hint && (
-        <span className="mt-1 block font-mono text-[10px] tracking-wide text-cream/30">
+        <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">
           {hint}
         </span>
       )}

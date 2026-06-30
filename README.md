@@ -223,7 +223,29 @@ All routes under `src/app/api/`.
 
 Full test suite: 18 cases in `contracts/test/FreelanceEscrow.test.js` covering happy path, edge cases, admin functions, and end-to-end Jakarta→NYC scenario.
 
-## Local development
+## Try the live demo — no install required
+
+**👉 https://freelancebot-alpha.vercel.app**
+
+The demo is a hosted instance with a real source-verified contract on Arc Testnet. 90-second walkthrough:
+
+1. **Open the demo** — click **"Open live demo"** from the landing page, or visit `/client` directly.
+2. **Sign in as a client** — any email (no verification — demo mode). You land in the client dashboard.
+3. **Post a job** — `+ New order` → pick **Public marketplace** → choose a category (Design / Dev / Writing / Video / Marketing / Research) → write a brief → set a USDC amount → post. Job goes live on the marketplace.
+4. **Browse `/jobs`** — open in another tab. Your job appears, filterable by field and budget.
+5. **Apply as freelancer** — click your job, fill a pitch + optional counter-bid, send the application.
+6. **Accept** — back on the order as the client, see the applicant, click **Accept**. Order becomes private and escrow flow begins.
+7. **Fund** — click **Fund USDC**. With MetaMask on Arc Testnet (Chain `5042002`) and USDC from [faucet.circle.com](https://faucet.circle.com), the escrow contract pulls the USDC on-chain. Otherwise the demo simulates.
+8. **Deliver** — switch to freelancer view, submit a deliverable URL. The Groq Llama 3.3 70B agent checks reachability + deadline + brief alignment, returns a verdict.
+9. **Release** — as client, click **Approve & release**. USDC settles to the freelancer in sub-second finality on Arc.
+
+No clone, no install — open the link and try it.
+
+---
+
+## For contributors and self-hosters
+
+Skip this section if you're just here to use the demo. The rest is for forking the repo and running your own instance.
 
 ### Prerequisites
 - Node.js 20+
@@ -241,6 +263,8 @@ cp .env.example .env.local   # then fill in your values
 npm run dev
 # open http://localhost:3000
 ```
+
+Apply the database schema once: copy `supabase/schema.sql` into your Supabase project's SQL Editor and run it. Idempotent.
 
 ### Compile + test contracts
 

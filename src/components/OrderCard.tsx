@@ -10,40 +10,40 @@ export function OrderCard({ order, perspective }: { order: Order; perspective: "
   return (
     <Link
       href={`/orders/${order.id}`}
-      className="liquid-glass group relative block rounded-2xl p-5 transition-all hover:bg-white/[0.06] hover:ring-1 hover:ring-signal/30"
+      className="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-cream/40">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
               Order #{order.id}
             </span>
             {order.onchain_id && (
-              <span className="font-mono text-[10px] uppercase tracking-widest text-signal/70">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-brand">
                 · on-chain
               </span>
             )}
           </div>
-          <p className="mt-1 truncate font-display text-lg uppercase text-cream">
+          <p className="mt-1 truncate font-display text-lg uppercase text-slate-900">
             {order.brief}
           </p>
-          <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-cream/50">
-            {counterpartyLabel}: <span className="text-cream/70">{counterparty}</span>
+          <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-slate-500">
+            {counterpartyLabel}: <span className="text-slate-700">{counterparty}</span>
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
           <StatusBadge status={order.status} />
-          <ArrowUpRight className="h-4 w-4 text-cream/40 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-signal" />
+          <ArrowUpRight className="h-4 w-4 text-slate-400 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand" />
         </div>
       </div>
-      <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3">
-        <span className="font-display text-xl text-signal">
+      <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+        <span className="font-display text-xl text-brand">
           ${order.amount_usdc.toLocaleString()}
-          <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-cream/40">
+          <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">
             USDC
           </span>
         </span>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-cream/40">
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
           {order.deadline
             ? `Due ${new Date(order.deadline).toLocaleDateString()}`
             : "No deadline"}

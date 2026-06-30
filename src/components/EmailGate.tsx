@@ -4,16 +4,6 @@ import { useEffect, useState } from "react";
 import { AppHeader } from "./AppHeader";
 import { ArrowRight } from "lucide-react";
 
-/**
- * Sign-in gate (dark luxe). Shared by /client and /freelancer.
- *
- * - AppHeader at top (logo + version + wallet connect)
- * - Centered liquid-glass card with the sign-in form
- * - Decorative orbit ring background
- *
- * No real auth — this is the demo "identity" placeholder. Real auth
- * (Supabase Auth magic link or Circle Wallets) lands in MVP 2.
- */
 export function EmailGate({
   storageKey,
   label,
@@ -37,10 +27,10 @@ export function EmailGate({
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-ink">
+      <div className="min-h-screen bg-slate-50">
         <AppHeader showWallet={false} />
         <main className="mx-auto max-w-3xl px-6 py-16">
-          <p className="font-mono text-xs uppercase tracking-wider text-cream/40">
+          <p className="font-mono text-xs uppercase tracking-wider text-slate-400">
             Loading…
           </p>
         </main>
@@ -51,28 +41,22 @@ export function EmailGate({
   if (!email) {
     return (
       <div className="relative min-h-screen overflow-hidden bg-space">
-        <div className="absolute inset-0 bg-stars opacity-50" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-ink/30 to-ink" />
-
-        {/* Orbital decoration */}
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.04]" />
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.03]" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/60" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/40" />
 
         <div className="relative">
           <AppHeader showWallet={false} />
 
           <main className="mx-auto flex min-h-[calc(100vh-72px)] max-w-md items-center px-6">
-            <div className="liquid-glass relative w-full rounded-3xl p-8">
-              <p className="mb-2 font-mono text-[11px] uppercase tracking-widest text-signal/80">
+            <div className="w-full rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <p className="mb-2 font-mono text-[11px] uppercase tracking-widest text-brand">
                 Step 01 · Identity
               </p>
-              <h1 className="font-display text-3xl uppercase leading-tight tracking-tight text-cream sm:text-4xl">
+              <h1 className="font-display text-3xl uppercase leading-tight tracking-tight text-slate-900 sm:text-4xl">
                 {label}
               </h1>
-              <p className="mt-3 font-mono text-xs uppercase leading-relaxed tracking-wide text-cream/60">
-                Enter the email you want to use for this session. Demo mode — no
-                verification. Real auth (magic-link + embedded wallet) lands in
-                MVP 2.
+              <p className="mt-3 font-mono text-xs leading-relaxed text-slate-600">
+                Enter the email you want to use for this session. Demo mode — no verification. Real auth (magic-link + embedded wallet) lands in MVP 2.
               </p>
 
               <form
@@ -94,18 +78,18 @@ export function EmailGate({
                   placeholder="you@example.com"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 font-mono text-sm text-cream placeholder:text-cream/30 outline-none transition-colors focus:border-signal/60 focus:bg-white/10"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-mono text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
                 />
                 <button
                   type="submit"
-                  className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-signal px-4 py-3 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.01]"
+                  className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-brand/30 transition-transform hover:scale-[1.01]"
                 >
                   Continue
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </button>
               </form>
 
-              <p className="mt-6 border-t border-white/5 pt-4 font-mono text-[10px] uppercase tracking-wider text-cream/40">
+              <p className="mt-6 border-t border-slate-200 pt-4 font-mono text-[10px] uppercase tracking-wider text-slate-500">
                 · USDC escrow on Arc
                 <br />· AI agent verifies deliverables
                 <br />· Sub-second settlement

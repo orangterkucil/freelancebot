@@ -20,22 +20,19 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [chatKey, setChatKey] = useState(0);
-
   const [role, setRole] = useState<"client" | "freelancer" | null>(null);
 
   useEffect(() => {
     try {
       const clientEmail     = window.localStorage.getItem("fb_client_email");
       const freelancerEmail = window.localStorage.getItem("fb_freelancer_email");
-      const ctx = { clientEmail, freelancerEmail };
-      (window as any).__fbAuthCtx = ctx;
+      (window as any).__fbAuthCtx = { clientEmail, freelancerEmail };
     } catch {}
   }, []);
 
   const load = useCallback(async () => {
     if (!orderId) return;
-    setLoading(true);
-    setError(null);
+    setLoading(true); setError(null);
     try {
       const { order } = await getOrder(orderId);
       setOrder(order);
@@ -49,23 +46,15 @@ export default function OrderDetailPage() {
         else if (order.status === "delivered") setRole("client");
         else if (order.status === "draft") setRole("client");
         else setRole("client");
-      } else if (isClient) {
-        setRole("client");
-      } else if (isFreelancer) {
-        setRole("freelancer");
-      } else {
-        setRole(null);
-      }
+      } else if (isClient) setRole("client");
+      else if (isFreelancer) setRole("freelancer");
+      else setRole(null);
     } catch (e: any) {
       setError(e?.message ?? "Failed to load order");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }, [orderId]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const reloadAll = () => {
     setChatKey((k) => k + 1);
@@ -74,9 +63,9 @@ export default function OrderDetailPage() {
 
   if (loading) {
     return (
-      <AppShell title="Loading…" subtitle="Fetching order from Supabase">
-        <div className="liquid-glass rounded-2xl p-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-cream/50">Loading…</p>
+      <AppShell title="Loading…" subtitle="Fetching order">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
         </div>
       </AppShell>
     );
@@ -85,7 +74,7 @@ export default function OrderDetailPage() {
   if (error || !order) {
     return (
       <AppShell title="Order not found" subtitle={error ?? "This order does not exist or you do not have access"}>
-        <Link href="/client" className="liquid-glass inline-flex rounded-xl px-4 py-2 font-display text-xs uppercase tracking-wider text-cream hover:bg-white/10">
+        <Link href="/client" className="inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 font-display text-xs uppercase tracking-wider text-slate-700 hover:border-brand hover:text-brand">
           ← back to dashboard
         </Link>
       </AppShell>
@@ -96,32 +85,22 @@ export default function OrderDetailPage() {
     <AppShell
       title={`Order #${order.id}`}
       subtitle={order.brief}
-      breadcrumb={
-        <>
-          {role === "freelancer" ? "Freelancer" : "Client"} / Orders / #{order.id}
-        </>
-      }
+      breadcrumb={<>{role === "freelancer" ? "Freelancer" : "Client"} / Orders / #{order.id}</>}
       actions={<StatusBadge status={order.status} />}
     >
-      {/* Meta strip */}
       <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Field label="Client">{order.client_email}</Field>
         <Field label="Freelancer">{order.freelancer_email}</Field>
         <Field label="Amount">
-          <span className="font-display text-base text-signal">
-            ${order.amount_usdc.toLocaleString()}
-          </span>
-          <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-cream/40">USDC</span>
+          <span className="font-display text-base text-brand">${order.amount_usdc.toLocaleString()}</span>
+          <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">USDC</span>
         </Field>
-        <Field label="Deadline">
-          {order.deadline ? new Date(order.deadline).toLocaleDateString() : "—"}
-        </Field>
+        <Field label="Deadline">{order.deadline ? new Date(order.deadline).toLocaleDateString() : "—"}</Field>
       </dl>
 
-      {/* Attachments */}
       {order.attachments && order.attachments.length > 0 && (
-        <div className="mt-6 liquid-glass rounded-2xl p-5">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-cream/40">
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
             Attachments ({order.attachments.length})
           </p>
           <AttachmentsList
@@ -133,8 +112,8 @@ export default function OrderDetailPage() {
       )}
 
       {!role && (
-        <div className="mt-6 rounded-xl border border-amber-400/30 bg-amber-500/10 p-4">
-          <p className="font-mono text-xs uppercase tracking-wider text-amber-300">
+        <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-800">
             You are viewing this order but not signed in as the client or freelancer.{" "}
             <Link href="/client" className="underline">Sign in as client</Link> or{" "}
             <Link href="/freelancer" className="underline">freelancer</Link> to take actions.
@@ -150,12 +129,11 @@ export default function OrderDetailPage() {
           {role ? (
             <OrderActions order={order} role={role} onChanged={reloadAll} />
           ) : (
-            <div className="liquid-glass rounded-2xl p-5 text-sm font-mono uppercase tracking-wider text-cream/50">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm font-mono uppercase tracking-wider text-slate-500 shadow-sm">
               Sign in to act on this order.
             </div>
           )}
 
-          {/* Applications panel — only for client viewing a public order */}
           {role === "client" && order.is_public && order.status === "draft" && (
             <ApplicationsList orderId={order.id} onAccepted={reloadAll} />
           )}
@@ -167,9 +145,9 @@ export default function OrderDetailPage() {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="liquid-glass rounded-2xl p-3">
-      <dt className="font-mono text-[10px] uppercase tracking-widest text-cream/40">{label}</dt>
-      <dd className="mt-1 font-mono text-xs text-cream truncate">{children}</dd>
+    <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+      <dt className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</dt>
+      <dd className="mt-1 font-mono text-xs text-slate-900 truncate">{children}</dd>
     </div>
   );
 }

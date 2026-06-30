@@ -1,16 +1,6 @@
 import { FileIcon, ImageIcon, FileText, Download, Lock } from "lucide-react";
 import type { Attachment } from "@/lib/orders";
 
-/**
- * Read-only display of an order's attachments.
- *
- * Privacy:
- *   - If `isPublic` is true (job is on the marketplace), anyone viewing can
- *     see the attachments — they were posted as part of the brief.
- *   - If `isPublic` is false and `isViewerParty` is false, we hide everything
- *     and show a "lock" notice. (Server still trusts the URL — defense in
- *     depth lives in MVP 2 with signed URLs.)
- */
 export function AttachmentsList({
   attachments,
   isPublic,
@@ -28,8 +18,8 @@ export function AttachmentsList({
 
   if (!canSee) {
     return (
-      <div className={"rounded-xl border border-white/10 bg-white/[0.02] p-3 " + className}>
-        <div className="flex items-center gap-2 text-cream/50">
+      <div className={"rounded-xl border border-slate-200 bg-slate-50 p-3 " + className}>
+        <div className="flex items-center gap-2 text-slate-500">
           <Lock className="h-3.5 w-3.5" />
           <span className="font-mono text-[11px] uppercase tracking-wider">
             {attachments.length} attachment{attachments.length === 1 ? "" : "s"} · sign in as a party to view
@@ -52,7 +42,7 @@ export function AttachmentsList({
               href={a.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative block aspect-square overflow-hidden rounded-lg border border-white/10 bg-white/[0.04]"
+              className="group relative block aspect-square overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -61,7 +51,7 @@ export function AttachmentsList({
                 className="h-full w-full object-cover transition-transform group-hover:scale-105"
                 loading="lazy"
               />
-              <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-ink/90 to-transparent px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-cream/80">
+              <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-slate-900/85 to-transparent px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-white">
                 {a.filename}
               </span>
             </a>
@@ -77,17 +67,17 @@ export function AttachmentsList({
                 href={a.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 transition-colors hover:bg-white/[0.08]"
+                className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 transition-colors hover:border-brand hover:bg-sky-50"
               >
-                <span className="flex min-w-0 flex-1 items-center gap-2 text-cream/80">
+                <span className="flex min-w-0 flex-1 items-center gap-2 text-slate-700">
                   <FileTypeIcon contentType={a.content_type} />
                   <span className="truncate font-mono text-xs">{a.filename}</span>
                 </span>
                 <span className="flex shrink-0 items-center gap-2">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-cream/40">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
                     {formatBytes(a.size_bytes)}
                   </span>
-                  <Download className="h-3.5 w-3.5 text-cream/40" />
+                  <Download className="h-3.5 w-3.5 text-slate-400" />
                 </span>
               </a>
             </li>
@@ -99,10 +89,10 @@ export function AttachmentsList({
 }
 
 function FileTypeIcon({ contentType }: { contentType: string }) {
-  if (contentType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-cream/50" />;
-  if (contentType.includes("pdf"))      return <FileText className="h-4 w-4 text-cream/50" />;
-  if (contentType.includes("text"))     return <FileText className="h-4 w-4 text-cream/50" />;
-  return <FileIcon className="h-4 w-4 text-cream/50" />;
+  if (contentType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-slate-400" />;
+  if (contentType.includes("pdf"))      return <FileText className="h-4 w-4 text-slate-400" />;
+  if (contentType.includes("text"))     return <FileText className="h-4 w-4 text-slate-400" />;
+  return <FileIcon className="h-4 w-4 text-slate-400" />;
 }
 
 function formatBytes(n: number): string {

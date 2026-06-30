@@ -3,91 +3,78 @@
 @tailwind utilities;
 
 /* -----------------------------------------------------------------------
-   Landing variables (used only on / — app pages keep their own light theme)
+   v0.10.0 — bright energetic light theme.
+   White base, vivid gradients, multi-accent colors for dopamine pop.
    ----------------------------------------------------------------------- */
-:root {
-  --brand: 14 165 233;
-  --ink:    1   8   40;     /* #010828 */
-  --cream:  239 244 255;    /* #EFF4FF */
-  --signal: 0   209 140;    /* #00D18C */
-}
 
-html,
-body {
-  height: 100%;
-}
+html, body { height: 100%; }
+
+/* Slight off-white body to soften white-on-white card edges */
+body { background-color: #f7fafc; }
 
 /* -----------------------------------------------------------------------
-   Liquid glass utility (Apple-Vision-Pro-ish)
-   Used on landing nav, cards, buttons.
-
-   Wrapped in :where() so the rule has 0 specificity — Tailwind utilities
-   like `absolute` or `fixed` can override the default `relative` without a
-   specificity war. The `::before` border-gradient stays glued via inherit.
+   Liquid glass — bright variant. Crisp white card, subtle sky-tinted ring,
+   soft glow shadow. No backdrop blur (light theme doesn't need it).
+   Wrapped in :where() so Tailwind positioning utilities win.
    ----------------------------------------------------------------------- */
 :where(.liquid-glass) {
   position: relative;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.02);
-  background-blend-mode: luminosity;
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter:         blur(6px);
-  border: none;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  border: 1px solid rgb(186 230 253);            /* sky-200 */
+  box-shadow:
+    0 1px 2px rgba(14, 165, 233, 0.06),
+    0 4px 10px rgba(14, 165, 233, 0.04);
 }
-
-.liquid-glass::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.4px;
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.45) 0%,
-    rgba(255,255,255,0.15) 20%,
-    rgba(255,255,255,0)    40%,
-    rgba(255,255,255,0)    60%,
-    rgba(255,255,255,0.15) 80%,
-    rgba(255,255,255,0.45) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  pointer-events: none;
-}
+.liquid-glass::before { content: none; }
 
 /* -----------------------------------------------------------------------
-   Static "space" background — replaces the CloudFront video.
-   Layered radial gradients + faint star dots.
+   "Space" background → multi-color vibrant pastel gradient.
+   Used on Hero + CTA for dopamine pop.
    ----------------------------------------------------------------------- */
 .bg-space {
-  background-color: #010828;
+  background-color: #ffffff;
   background-image:
-    radial-gradient(ellipse at 20% 10%, rgba(0, 209, 140, 0.10) 0%, transparent 45%),
-    radial-gradient(ellipse at 85% 85%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 50%, rgba(168, 85, 247, 0.06) 0%, transparent 60%);
+    radial-gradient(ellipse at 15% 10%, rgba(14, 165, 233, 0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 20%, rgba(99, 102, 241, 0.16) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 90%, rgba(244, 114, 182, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 30% 70%, rgba(34, 211, 238, 0.14) 0%, transparent 55%);
 }
 
-.bg-stars {
+/* Warm pastel variant for the CTA section — different vibe from hero */
+.bg-warm {
+  background-color: #ffffff;
   background-image:
-    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.6) 50%, transparent),
-    radial-gradient(1px 1px at 75% 70%, rgba(255,255,255,0.4) 50%, transparent),
-    radial-gradient(1.5px 1.5px at 40% 80%, rgba(255,255,255,0.7) 50%, transparent),
-    radial-gradient(1px 1px at 90% 20%, rgba(255,255,255,0.5) 50%, transparent),
-    radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.35) 50%, transparent),
-    radial-gradient(1.5px 1.5px at 55% 15%, rgba(255,255,255,0.55) 50%, transparent),
-    radial-gradient(1px 1px at 30% 90%, rgba(255,255,255,0.4) 50%, transparent),
-    radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.5) 50%, transparent);
-  background-size: 800px 800px;
+    radial-gradient(ellipse at 20% 30%, rgba(251, 191, 36, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(244, 114, 182, 0.14) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(14, 165, 233, 0.10) 0%, transparent 60%);
+}
+
+.bg-stars { background: transparent; }
+
+.texture-overlay {
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0.04 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
   background-repeat: repeat;
+  mix-blend-mode: multiply;
+  opacity: 0.3;
 }
 
 /* -----------------------------------------------------------------------
-   Texture overlay (no PNG required — pure CSS noise via SVG data URI)
+   Gradient button utility — used on primary CTAs for dopamine pop.
    ----------------------------------------------------------------------- */
-.texture-overlay {
-  pointer-events: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.12 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
-  background-repeat: repeat;
-  mix-blend-mode: lighten;
+.btn-gradient {
+  background-image: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 50%, #6366f1 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35),
+              0 2px 4px rgba(14, 165, 233, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-gradient:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(14, 165, 233, 0.45),
+              0 3px 6px rgba(14, 165, 233, 0.25);
+}
+.btn-gradient:disabled {
   opacity: 0.5;
+  transform: none;
 }
