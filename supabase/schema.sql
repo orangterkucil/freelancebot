@@ -27,6 +27,41 @@ alter table orders add column if not exists title text;
 create index if not exists idx_orders_public_field on orders (is_public, field) where is_public = true;
 create index if not exists idx_orders_status on orders (status);
 
+-- v0.9.2 additions for file attachments
+-- attachments is an array of { filename, url, size_bytes, content_type, uploaded_by, created_at }
+alter table orders add column if not exists attachments jsonb default '[]'::jsonb;
+
+-- Storage bucket for uploaded files. Public bucket — privacy is enforced at
+-- the application layer (we only render URLs to parties / public-job viewers).
+insert into storage.buckets (id, name, public)
+  values ('attachments', 'attachments', true)
+  on conflict (id) do nothing;
+
+-- Open read access to the bucket (any URL works as long as caller has it).
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and policyname = 'attachments_public_read'
+  ) then
+    create policy "attachments_public_read" on storage.objects
+      for select using (bucket_id = 'attachments');
+  end if;
+end $$;
+
+-- Open write access (browser uploads with publishable key). Hardening for
+-- per-user paths lands in MVP 2 alongside real auth.
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and policyname = 'attachments_public_write'
+  ) then
+    create policy "attachments_public_write" on storage.objects
+      for insert with check (bucket_id = 'attachments');
+  end if;
+end $$;
+
 -- ---------------------------------------------------------------
 -- Messages (agent chat thread)
 -- ---------------------------------------------------------------

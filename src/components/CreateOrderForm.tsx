@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Sparkles, Globe, Lock } from "lucide-react";
 import { createOrder } from "@/lib/api";
-import { FIELDS, type Field } from "@/lib/orders";
+import { FIELDS, type Field, type Attachment } from "@/lib/orders";
+import { FileDropzone } from "./FileDropzone";
 
 const FIELD_LABELS: Record<Field, string> = {
   design:    "🎨 Design",
@@ -29,6 +30,7 @@ export function CreateOrderForm({
   const [field, setField] = useState<Field>("design");
   const [amount, setAmount] = useState<number | "">("");
   const [deadline, setDeadline] = useState("");
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +45,7 @@ export function CreateOrderForm({
         title:            title.trim() || null,
         field,
         is_public:        mode === "public",
+        attachments,
         brief:            brief.trim(),
         amount_usdc:      Number(amount),
         deadline:         deadline ? new Date(deadline).toISOString() : null,
@@ -53,6 +56,7 @@ export function CreateOrderForm({
       setBrief("");
       setAmount("");
       setDeadline("");
+      setAttachments([]);
     } catch (e: any) {
       setError(e?.message ?? "Failed to create order");
     } finally {
@@ -167,6 +171,21 @@ export function CreateOrderForm({
             onChange={(e) => setBrief(e.target.value)}
             placeholder="e.g. Need a logo design with 3 color variations, delivered as SVG + PNG via Figma link. Modern style, fintech vibe..."
             className={inputClass}
+          />
+        </Field>
+
+        <Field
+          label="Attachments (optional)"
+          hint={
+            mode === "public"
+              ? "Reference images, brand guides, examples. Visible to anyone in the marketplace."
+              : "Reference images, brand guides. Only visible to you and the freelancer."
+          }
+        >
+          <FileDropzone
+            value={attachments}
+            onChange={setAttachments}
+            uploadedBy={clientEmail}
           />
         </Field>
 

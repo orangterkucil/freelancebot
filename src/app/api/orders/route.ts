@@ -39,6 +39,7 @@ export async function POST(req: Request) {
     const title            = body.title ? String(body.title).trim() : null;
     const field            = body.field ? String(body.field).trim() : "other";
     const is_public        = Boolean(body.is_public);
+    const attachments      = Array.isArray(body.attachments) ? body.attachments : [];
     const amount_usdc      = Number(body.amount_usdc);
     const deadline         = body.deadline ? String(body.deadline) : null;
 
@@ -53,6 +54,7 @@ export async function POST(req: Request) {
       title,
       field: field as any,
       is_public,
+      attachments,
       amount_usdc,
       deadline,
     });

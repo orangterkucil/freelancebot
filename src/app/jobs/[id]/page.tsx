@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Send } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { AttachmentsList } from "@/components/AttachmentsList";
 import { getOrder } from "@/lib/api";
 import { applyToJob } from "@/lib/api";
 import type { Order } from "@/lib/orders";
@@ -139,6 +140,19 @@ export default function JobDetailPage() {
             </Field>
             <Field label="Field" className="capitalize">{job.field}</Field>
           </div>
+
+          {job.attachments && job.attachments.length > 0 && (
+            <div className="mt-6 border-t border-white/5 pt-4">
+              <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-cream/40">
+                Attachments
+              </p>
+              <AttachmentsList
+                attachments={job.attachments}
+                isPublic={job.is_public}
+                isViewerParty={false}
+              />
+            </div>
+          )}
 
           <div className="mt-4 border-t border-white/5 pt-4">
             <p className="font-mono text-[10px] uppercase tracking-widest text-cream/40">

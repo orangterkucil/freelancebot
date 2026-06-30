@@ -29,6 +29,15 @@ export const FIELDS = [
 
 export type Field = typeof FIELDS[number];
 
+export type Attachment = {
+  filename:     string;
+  url:          string;
+  size_bytes:   number;
+  content_type: string;
+  uploaded_by:  string;
+  created_at:   string;
+};
+
 export type Order = {
   id: number;
   onchain_id: number | null;
@@ -43,6 +52,7 @@ export type Order = {
   status: OrderStatus;
   deliverable_url: string | null;
   agent_notes: string | null;
+  attachments: Attachment[];
   created_at: string;
 };
 
@@ -75,6 +85,7 @@ export async function createOrder(input: {
   title?: string | null;
   field?: Field;
   is_public?: boolean;
+  attachments?: Attachment[];
   amount_usdc: number;
   deadline: string | null;
 }): Promise<Order> {
@@ -88,6 +99,7 @@ export async function createOrder(input: {
       title:            input.title ?? null,
       field:            input.field ?? "other",
       is_public:        input.is_public ?? false,
+      attachments:      input.attachments ?? [],
       amount_usdc:      input.amount_usdc,
       deadline:         input.deadline,
       status:           "draft",
