@@ -1,30 +1,37 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * v0.10.0 — reverted to a light "putih + biru" palette.
+ *
+ * Semantic token names (ink / cream / signal / glass) kept so existing class
+ * usage across the codebase keeps working without churn. Values are remapped:
+ *   - ink    → page background (white / slate-50)
+ *   - cream  → primary text (slate-900)
+ *   - signal → accent + CTA (brand blue)
+ *   - glass  → subtle dark-on-light tint for translucent surfaces
+ */
 const config: Config = {
   darkMode: "class",
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
-        // App (kept for /client, /freelancer, /orders pages)
         brand: {
           DEFAULT: "#0ea5e9",
-          dark: "#0369a1",
+          dark:    "#0369a1",
         },
-        // Landing (Orbis-inspired) palette
-        ink:    "#010828", // deep navy bg
-        cream:  "#EFF4FF", // off-white text
-        signal: "#00D18C", // stablecoin green accent (replaces #6FFF00 highlighter)
-        glass:  "rgba(255,255,255,0.04)",
+        // semantic tokens (LIGHT theme)
+        ink:    "#ffffff",      // was #010828
+        cream:  "#0f172a",      // was #EFF4FF — now slate-900 for primary text
+        signal: "#0ea5e9",      // was #00D18C — now brand blue
+        glass:  "rgba(15,23,42,0.03)",
       },
       fontFamily: {
-        // Landing — uses next/font CSS variables defined in layout.tsx
         display: ['var(--font-anton)', 'Anton', 'Impact', 'sans-serif'],
         script:  ['var(--font-condiment)', 'Condiment', 'cursive'],
         mono:    ['var(--font-jb-mono)', '"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       maxWidth: {
-        // Orbis spec: max content width 1831px
         landing: '1831px',
       },
       animation: {

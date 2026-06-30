@@ -12,6 +12,47 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.10.0] — 2026-06-30
+
+Full UI revert to bright, energetic light theme (putih + biru + multi-accent gradients). README priority flip: "use the demo" first, "self-host" later.
+
+### Visual
+- **Light theme everywhere** — landing, app pages, components. Replaces the dark luxe Orbis aesthetic introduced in v0.7.0–v0.8.0. White surfaces, slate-900 text, brand-blue accent.
+- **Energetic palette** — multi-color radial gradient backgrounds on Hero + CTA (sky, indigo, pink, cyan tints). Stat cards use color-coded gradient backgrounds (sky / amber / emerald / indigo / rose) matching their meaning.
+- **`.btn-gradient` utility** for primary CTAs — cyan→blue→indigo gradient with glowing shadow + scale on hover. Used on landing CTA, post-job, accept-application, browse-marketplace buttons.
+- **Liquid-glass remapped to light** — soft white card with sky-200 ring + subtle shadow instead of dark backdrop blur. `:where(.liquid-glass)` selector keeps Tailwind positioning utilities winning.
+- **`bg-warm`** alternate background for sections that want warm pastels (amber + pink + cyan tints) instead of cool sky+indigo.
+
+### Semantic tokens (light remap)
+| Token   | Old value (dark)  | New value (light)        |
+|---------|-------------------|--------------------------|
+| `ink`    | `#010828`        | `#ffffff`                |
+| `cream`  | `#EFF4FF`        | `#0f172a` (slate-900)    |
+| `signal` | `#00D18C` (green) | `#0ea5e9` (brand blue)   |
+| `glass`  | white tint        | dark-on-light tint       |
+
+Token names kept so existing class usage works without rename — just remap.
+
+### README priority flip
+- **Lead with "Try the live demo"** — 9-step walkthrough using the hosted instance at `freelancebot-alpha.vercel.app`. No install, no clone required.
+- **"For contributors and self-hosters" section** moved below the demo walkthrough. Install + run + compile + deploy steps are still there, just no longer the first thing visitors see.
+- Reason: previously the README looked like a self-host template, implying "you need to redeploy this yourself." But the project IS the hosted demo. Demo-first communicates: "this works, click and try" — like a Stripe-style product README.
+
+### Files touched (refactor pass)
+- `tailwind.config.ts`, `src/app/globals.css`, `src/app/layout.tsx`
+- `src/app/page.tsx` (landing)
+- `src/app/client/page.tsx`, `src/app/freelancer/page.tsx`, `src/app/jobs/page.tsx`, `src/app/jobs/[id]/page.tsx`, `src/app/orders/[id]/page.tsx`, `src/app/freelancer/applications/page.tsx`
+- `src/components/AppShell.tsx`, `src/components/AppHeader.tsx`, `src/components/EmailGate.tsx`, `src/components/WalletStatus.tsx`, `src/components/StatusBadge.tsx`, `src/components/OrderCard.tsx`, `src/components/CreateOrderForm.tsx`, `src/components/AgentChat.tsx`, `src/components/OrderActions.tsx`, `src/components/ApplicationsList.tsx`, `src/components/AttachmentsList.tsx`, `src/components/FileDropzone.tsx`, `src/components/LiveJobsPreview.tsx`
+- `README.md`
+
+### What is NOT changed
+- All v0.9.0–v0.9.2 functionality (marketplace, applications, attachments, auth guards) stays intact.
+- API surface, schema, contract — untouched.
+- Anton + Condiment + JetBrains Mono fonts retained.
+- Sidebar nav structure retained.
+
+---
+
 ## [v0.9.2] — 2026-06-30
 
 File attachments on orders (images, PDFs, docs) with privacy honoring the order's public/private flag.

@@ -97,18 +97,17 @@ export function OrderActions({
   };
 
   return (
-    <div className="liquid-glass relative space-y-4 rounded-2xl p-5">
-      <div className="flex items-center gap-2 border-b border-white/5 pb-3">
-        <Coins className="h-4 w-4 text-signal" />
-        <p className="font-display text-sm uppercase tracking-wider text-cream">Actions</p>
+    <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+        <Coins className="h-4 w-4 text-brand" />
+        <p className="font-display text-sm uppercase tracking-wider text-slate-900">Actions</p>
       </div>
 
-      {/* CLIENT: fund */}
       {role === "client" && order.status === "draft" && (
         <button
           disabled={busy}
           onClick={() => run(hasOnchain ? fundOnChain : fundSimulated)}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-signal px-4 py-3 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-brand/30 transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
         >
           <ArrowRightCircle className="h-4 w-4" />
           {busy ? "Sending…" : hasOnchain
@@ -117,11 +116,10 @@ export function OrderActions({
         </button>
       )}
 
-      {/* FREELANCER: submit deliverable */}
       {role === "freelancer" && order.status === "funded" && (
         <div className="space-y-3">
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-widest text-cream/60">
+            <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">
               Deliverable URL
             </span>
             <input
@@ -129,9 +127,9 @@ export function OrderActions({
               value={deliverable}
               onChange={(e) => setDeliverable(e.target.value)}
               placeholder="https://figma.com/file/..."
-              className="mt-1.5 w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 font-mono text-xs text-cream placeholder:text-cream/30 outline-none transition-colors focus:border-signal/60 focus:bg-white/[0.08]"
+              className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
             />
-            <span className="mt-1 block font-mono text-[10px] tracking-wide text-cream/30">
+            <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">
               Agent will check reachability, deadline, and brief alignment.
             </span>
           </label>
@@ -143,7 +141,7 @@ export function OrderActions({
                 setVerdict(v);
               })
             }
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-signal px-4 py-3 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-brand/30 transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
           >
             <CheckCircle2 className="h-4 w-4" />
             {busy ? "Verifying…" : "Submit deliverable"}
@@ -151,12 +149,11 @@ export function OrderActions({
         </div>
       )}
 
-      {/* CLIENT: approve + release */}
       {role === "client" && order.status === "delivered" && (
         <button
           disabled={busy}
           onClick={() => run(hasOnchain ? releaseOnChain : releaseSimulated)}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-signal px-4 py-3 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-emerald-500/30 transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
         >
           <CheckCircle2 className="h-4 w-4" />
           {busy ? "Sending…" : hasOnchain
@@ -165,17 +162,16 @@ export function OrderActions({
         </button>
       )}
 
-      {/* TX receipt */}
       {lastTxHash && (
-        <div className="rounded-xl border border-signal/30 bg-signal/10 p-3">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-signal">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-emerald-700">
             Transaction confirmed
           </p>
           <a
             href={txUrl(lastTxHash)}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1 inline-flex items-center gap-1 break-all font-mono text-[11px] text-cream/80 hover:text-signal"
+            className="mt-1 inline-flex items-center gap-1 break-all font-mono text-[11px] text-emerald-900 hover:underline"
           >
             {lastTxHash.slice(0, 10)}…{lastTxHash.slice(-8)}
             <ExternalLink className="h-3 w-3" />
@@ -183,47 +179,45 @@ export function OrderActions({
         </div>
       )}
 
-      {/* Verdict */}
       {verdict && (
-        <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-cream/60">Agent verdict</p>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Agent verdict</p>
           <p className="mt-1 font-display text-sm uppercase">
-            <span className={verdict.verified ? "text-signal" : "text-amber-300"}>
+            <span className={verdict.verified ? "text-emerald-700" : "text-amber-700"}>
               {verdict.verified ? "Ready to release" : "Hold for review"}
             </span>
-            <span className="ml-2 font-mono text-[10px] text-cream/40">
+            <span className="ml-2 font-mono text-[10px] text-slate-400">
               ({verdict.confidence} confidence)
             </span>
           </p>
-          <p className="mt-2 font-mono text-[11px] leading-relaxed text-cream/70">
+          <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-700">
             {verdict.reasoning}
           </p>
         </div>
       )}
 
-      {/* Final states */}
       {order.status === "released" && (
-        <div className="rounded-xl border border-signal/30 bg-signal/10 p-3 font-mono text-xs uppercase tracking-wider text-signal">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 font-mono text-xs uppercase tracking-wider text-emerald-700">
           ✓ Payment released to freelancer · order complete
         </div>
       )}
       {order.status === "refunded" && (
-        <div className="rounded-xl border border-rose-400/30 bg-rose-500/10 p-3 font-mono text-xs uppercase tracking-wider text-rose-300">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 font-mono text-xs uppercase tracking-wider text-rose-700">
           ↩ Refunded to client · order complete
         </div>
       )}
 
       {error && (
-        <div className="rounded-xl border border-rose-400/30 bg-rose-500/10 p-3 font-mono text-xs text-rose-300">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 font-mono text-xs text-rose-700">
           {error}
         </div>
       )}
 
-      <details className="border-t border-white/5 pt-3">
-        <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-cream/40">
+      <details className="border-t border-slate-100 pt-3">
+        <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-slate-500">
           {hasOnchain ? "Contract details" : "On-chain not configured"}
         </summary>
-        <div className="mt-2 space-y-2 font-mono text-[10px] leading-relaxed text-cream/50">
+        <div className="mt-2 space-y-2 font-mono text-[10px] leading-relaxed text-slate-500">
           {hasOnchain ? (
             <>
               <p>
@@ -232,7 +226,7 @@ export function OrderActions({
                   href={`https://testnet.arcscan.app/address/${ESCROW_ADDRESS}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-signal hover:underline"
+                  className="text-brand hover:underline"
                 >
                   {ESCROW_ADDRESS.slice(0, 8)}…{ESCROW_ADDRESS.slice(-6)}
                 </a>
@@ -244,7 +238,7 @@ export function OrderActions({
             </>
           ) : (
             <p>
-              Set <code className="text-signal">NEXT_PUBLIC_ESCROW_ADDRESS</code> to
+              Set <code className="text-brand">NEXT_PUBLIC_ESCROW_ADDRESS</code> to
               enable real on-chain fund/release.
             </p>
           )}

@@ -76,61 +76,55 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
       title="Client dashboard"
       subtitle={
         <>
-          Signed in as <span className="text-cream/80">{email}</span>
+          Signed in as <span className="text-slate-700">{email}</span>
           {" · "}
-          <button onClick={signOut} className="text-signal hover:underline">switch</button>
+          <button onClick={signOut} className="text-brand hover:underline">switch</button>
         </>
       }
       breadcrumb={<>Client / Orders</>}
       actions={
         <button
           onClick={() => setShowForm((s) => !s)}
-          className="inline-flex items-center gap-2 rounded-xl bg-signal px-4 py-2.5 font-display text-xs uppercase tracking-wider text-ink transition-transform hover:scale-[1.02]"
+          className="btn-gradient inline-flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs uppercase tracking-wider"
         >
           <Plus className="h-4 w-4" />
           {showForm ? "Close" : "New order"}
         </button>
       }
     >
-      {/* Stats row */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Total orders"     value={stats.total} />
+        <Stat label="Total orders"     value={stats.total}    accent="sky" />
         <Stat label="Active"            value={stats.active}   accent="amber" />
-        <Stat label="Released"          value={stats.released} accent="signal" />
-        <Stat label="Locked in escrow" value={`$${stats.locked.toLocaleString()}`} sub="USDC" />
+        <Stat label="Released"          value={stats.released} accent="emerald" />
+        <Stat label="Locked in escrow"  value={`$${stats.locked.toLocaleString()}`} sub="USDC" accent="indigo" />
       </div>
 
-      {/* Create form */}
       {showForm && (
         <div className="mt-8">
           <CreateOrderForm
             clientEmail={email}
-            onCreated={() => {
-              setShowForm(false);
-              load();
-            }}
+            onCreated={() => { setShowForm(false); load(); }}
           />
         </div>
       )}
 
-      {/* Orders list */}
       <section className="mt-10">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="font-display text-xl uppercase text-cream">History</h2>
+          <h2 className="font-display text-xl uppercase text-slate-900">History</h2>
 
           {orders.length > 0 && (
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cream/40" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search brief, freelancer, ID..."
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-9 pr-3 font-mono text-xs text-cream placeholder:text-cream/30 outline-none transition-colors focus:border-signal/60 focus:bg-white/[0.08] sm:w-72"
+                  className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand sm:w-72"
                 />
               </div>
-              <div className="flex gap-1 overflow-x-auto rounded-lg border border-white/10 bg-white/[0.04] p-1">
+              <div className="flex gap-1 overflow-x-auto rounded-lg border border-slate-200 bg-white p-1">
                 {STATUS_FILTERS.map((f) => (
                   <button
                     key={f.value}
@@ -138,8 +132,8 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
                     className={
                       "shrink-0 rounded-md px-3 py-1 font-mono text-[10px] uppercase tracking-wider transition-colors " +
                       (statusFilter === f.value
-                        ? "bg-signal text-ink"
-                        : "text-cream/60 hover:text-cream")
+                        ? "bg-brand text-white shadow-sm"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100")
                     }
                   >
                     {f.label}
@@ -150,39 +144,34 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
           )}
 
           {orders.length > 0 && (
-            <span className="font-mono text-[10px] uppercase tracking-widest text-cream/40 sm:ml-2">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400 sm:ml-2">
               {filtered.length} of {orders.length}
             </span>
           )}
         </div>
 
         {loading && (
-          <div className="liquid-glass rounded-2xl p-6">
-            <p className="font-mono text-xs uppercase tracking-wider text-cream/50">Loading…</p>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+            <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
           </div>
         )}
 
         {error && (
-          <div className="rounded-2xl border border-rose-400/30 bg-rose-500/10 p-4">
-            <p className="font-mono text-xs uppercase tracking-wider text-rose-300">{error}</p>
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
+            <p className="font-mono text-xs uppercase tracking-wider text-rose-700">{error}</p>
           </div>
         )}
 
-        {!loading && !error && orders.length === 0 && (
-          <EmptyState onCreate={() => setShowForm(true)} />
-        )}
+        {!loading && !error && orders.length === 0 && <EmptyState onCreate={() => setShowForm(true)} />}
 
         {!loading && !error && orders.length > 0 && filtered.length === 0 && (
-          <div className="liquid-glass rounded-2xl p-6 text-center">
-            <p className="font-mono text-xs uppercase tracking-wider text-cream/50">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center">
+            <p className="font-mono text-xs uppercase tracking-wider text-slate-500">
               No orders match this filter.
             </p>
             <button
-              onClick={() => {
-                setStatusFilter("all");
-                setSearch("");
-              }}
-              className="mt-3 font-mono text-xs text-signal hover:underline"
+              onClick={() => { setStatusFilter("all"); setSearch(""); }}
+              className="mt-3 font-mono text-xs text-brand hover:underline"
             >
               Clear filters
             </button>
@@ -203,23 +192,25 @@ function Stat({
   label,
   value,
   sub,
-  accent,
+  accent = "sky",
 }: {
   label: string;
   value: string | number;
   sub?: string;
-  accent?: "signal" | "amber";
+  accent?: "sky" | "amber" | "emerald" | "indigo";
 }) {
-  const accentColor =
-    accent === "signal" ? "text-signal" :
-    accent === "amber"  ? "text-amber-300" :
-                          "text-cream";
+  const accentMap = {
+    sky:     "from-sky-50 to-white text-sky-700 ring-sky-200",
+    amber:   "from-amber-50 to-white text-amber-700 ring-amber-200",
+    emerald: "from-emerald-50 to-white text-emerald-700 ring-emerald-200",
+    indigo:  "from-indigo-50 to-white text-indigo-700 ring-indigo-200",
+  };
   return (
-    <div className="liquid-glass relative rounded-2xl p-4">
-      <p className="font-mono text-[10px] uppercase tracking-widest text-cream/40">{label}</p>
-      <p className={`mt-1 font-display text-2xl ${accentColor}`}>
+    <div className={`relative rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm ${accentMap[accent]}`}>
+      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
+      <p className="mt-1 font-display text-2xl">
         {value}
-        {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-cream/40">{sub}</span>}
+        {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">{sub}</span>}
       </p>
     </div>
   );
@@ -227,17 +218,17 @@ function Stat({
 
 function EmptyState({ onCreate }: { onCreate: () => void }) {
   return (
-    <div className="liquid-glass relative rounded-3xl p-10 text-center">
-      <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-signal/10 ring-1 ring-signal/30">
-        <Inbox className="h-7 w-7 text-signal" strokeWidth={1.5} />
+    <div className="relative rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm">
+      <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md ring-1 ring-sky-200">
+        <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
       </div>
-      <h3 className="mt-5 font-display text-xl uppercase text-cream">No orders yet</h3>
-      <p className="mx-auto mt-2 max-w-sm font-mono text-xs uppercase leading-relaxed tracking-wide text-cream/60">
+      <h3 className="mt-5 font-display text-xl uppercase text-slate-900">No orders yet</h3>
+      <p className="mx-auto mt-2 max-w-sm font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600">
         Create an escrow to hire a freelancer. USDC locks on Arc, the AI agent verifies the deliverable, and you release when ready.
       </p>
       <button
         onClick={onCreate}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-signal px-5 py-2.5 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.02]"
+        className="btn-gradient mt-6 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 font-display text-sm uppercase tracking-wider"
       >
         <Plus className="h-4 w-4" />
         Create first order
@@ -245,14 +236,14 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
 
       <div className="mt-8 grid gap-2 text-left sm:grid-cols-3">
         {[
-          { step: "01", title: "Fund",    desc: "Lock USDC in the on-chain escrow with one signed tx." },
-          { step: "02", title: "Verify",  desc: "Agent checks deliverable URL, deadline, brief alignment." },
-          { step: "03", title: "Release", desc: "Approve and the freelancer receives funds in <1 sec." },
+          { step: "01", title: "Fund",    desc: "Lock USDC in the on-chain escrow with one signed tx.", color: "from-sky-100" },
+          { step: "02", title: "Verify",  desc: "Agent checks deliverable URL, deadline, brief alignment.", color: "from-amber-100" },
+          { step: "03", title: "Release", desc: "Approve and the freelancer receives funds in <1 sec.", color: "from-emerald-100" },
         ].map((s) => (
-          <div key={s.step} className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-signal">Step {s.step}</span>
-            <p className="mt-1 font-display text-sm uppercase text-cream">{s.title}</p>
-            <p className="mt-1 font-mono text-[10px] leading-relaxed text-cream/50">{s.desc}</p>
+          <div key={s.step} className={`rounded-xl border border-slate-200 bg-gradient-to-br ${s.color} to-white p-3`}>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-brand">Step {s.step}</span>
+            <p className="mt-1 font-display text-sm uppercase text-slate-900">{s.title}</p>
+            <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-600">{s.desc}</p>
           </div>
         ))}
       </div>

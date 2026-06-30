@@ -1,12 +1,12 @@
 import type { OrderStatus } from "@/lib/orders";
 
 const STYLES: Record<OrderStatus, string> = {
-  draft:     "bg-white/5 text-cream/70 ring-white/10",
-  funded:    "bg-amber-500/15 text-amber-300 ring-amber-400/30",
-  delivered: "bg-sky-500/15 text-sky-300 ring-sky-400/30",
-  released:  "bg-signal/15 text-signal ring-signal/40",
-  refunded:  "bg-rose-500/15 text-rose-300 ring-rose-400/30",
-  disputed:  "bg-purple-500/15 text-purple-300 ring-purple-400/30",
+  draft:     "bg-slate-100 text-slate-700 ring-slate-200",
+  funded:    "bg-amber-100 text-amber-800 ring-amber-200",
+  delivered: "bg-sky-100 text-sky-800 ring-sky-200",
+  released:  "bg-emerald-100 text-emerald-800 ring-emerald-200",
+  refunded:  "bg-rose-100 text-rose-800 ring-rose-200",
+  disputed:  "bg-purple-100 text-purple-800 ring-purple-200",
 };
 
 const LABELS: Record<OrderStatus, string> = {

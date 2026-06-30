@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ArrowLeft, Send } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { AttachmentsList } from "@/components/AttachmentsList";
-import { getOrder } from "@/lib/api";
-import { applyToJob } from "@/lib/api";
+import { getOrder, applyToJob } from "@/lib/api";
 import type { Order } from "@/lib/orders";
 
 const FIELD_EMOJI: Record<string, string> = {
@@ -17,14 +16,12 @@ const FIELD_EMOJI: Record<string, string> = {
 
 export default function JobDetailPage() {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
   const orderId = Number(params.id);
 
   const [job, setJob] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Apply form state
   const [freelancerEmail, setFreelancerEmail] = useState("");
   const [pitch, setPitch] = useState("");
   const [bid, setBid] = useState<number | "">("");
@@ -35,29 +32,25 @@ export default function JobDetailPage() {
   useEffect(() => {
     if (!orderId) return;
     (async () => {
-      setLoading(true);
-      setError(null);
+      setLoading(true); setError(null);
       try {
         const { order } = await getOrder(orderId);
         setJob(order);
-        // Prefill freelancer email from localStorage if present
         try {
           const e = window.localStorage.getItem("fb_freelancer_email");
           if (e) setFreelancerEmail(e);
         } catch {}
       } catch (e: any) {
         setError(e?.message ?? "Failed to load job");
-      } finally {
-        setLoading(false);
-      }
+      } finally { setLoading(false); }
     })();
   }, [orderId]);
 
   if (loading) {
     return (
       <AppShell title="Loading…" subtitle="Fetching job">
-        <div className="liquid-glass rounded-2xl p-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-cream/50">Loading…</p>
+        <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
         </div>
       </AppShell>
     );
@@ -66,7 +59,7 @@ export default function JobDetailPage() {
   if (error || !job) {
     return (
       <AppShell title="Job not found" subtitle={error ?? "This job does not exist"}>
-        <Link href="/jobs" className="liquid-glass inline-flex rounded-xl px-4 py-2 font-display text-xs uppercase tracking-wider text-cream hover:bg-white/10">
+        <Link href="/jobs" className="inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 font-display text-xs uppercase tracking-wider text-slate-700 hover:border-brand hover:text-brand">
           ← back to marketplace
         </Link>
       </AppShell>
@@ -77,8 +70,7 @@ export default function JobDetailPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
-    setSubmitError(null);
+    setSubmitting(true); setSubmitError(null);
     try {
       await applyToJob({
         order_id: job.id,
@@ -90,9 +82,7 @@ export default function JobDetailPage() {
       setSubmitted(true);
     } catch (e: any) {
       setSubmitError(e?.message ?? "Failed to apply");
-    } finally {
-      setSubmitting(false);
-    }
+    } finally { setSubmitting(false); }
   };
 
   return (
@@ -104,36 +94,26 @@ export default function JobDetailPage() {
           <span className="capitalize">{job.field}</span>
           <span>·</span>
           <span>${job.amount_usdc.toLocaleString()} USDC</span>
-          {job.deadline && (
-            <>
-              <span>·</span>
-              <span>Due {new Date(job.deadline).toLocaleDateString()}</span>
-            </>
-          )}
+          {job.deadline && (<><span>·</span><span>Due {new Date(job.deadline).toLocaleDateString()}</span></>)}
         </span>
       }
       breadcrumb={<>Marketplace / Job #{job.id}</>}
     >
-      <Link href="/jobs" className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-cream/40 hover:text-signal">
+      <Link href="/jobs" className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-brand">
         <ArrowLeft className="h-3 w-3" />
         Back to marketplace
       </Link>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_400px]">
-        {/* LEFT — job description */}
-        <div className="liquid-glass rounded-2xl p-6">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-cream/40">
-            Brief
-          </p>
-          <p className="mt-2 whitespace-pre-wrap font-mono text-sm leading-relaxed text-cream/90">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Brief</p>
+          <p className="mt-2 whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-700">
             {job.brief}
           </p>
 
-          <div className="mt-6 grid grid-cols-3 gap-3 border-t border-white/5 pt-4">
+          <div className="mt-6 grid grid-cols-3 gap-3 border-t border-slate-100 pt-4">
             <Field label="Budget">
-              <span className="font-display text-lg text-signal">
-                ${job.amount_usdc.toLocaleString()}
-              </span>
+              <span className="font-display text-lg text-brand">${job.amount_usdc.toLocaleString()}</span>
             </Field>
             <Field label="Deadline">
               {job.deadline ? new Date(job.deadline).toLocaleDateString() : "Flexible"}
@@ -142,8 +122,8 @@ export default function JobDetailPage() {
           </div>
 
           {job.attachments && job.attachments.length > 0 && (
-            <div className="mt-6 border-t border-white/5 pt-4">
-              <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-cream/40">
+            <div className="mt-6 border-t border-slate-100 pt-4">
+              <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-slate-500">
                 Attachments
               </p>
               <AttachmentsList
@@ -154,63 +134,40 @@ export default function JobDetailPage() {
             </div>
           )}
 
-          <div className="mt-4 border-t border-white/5 pt-4">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-cream/40">
-              Posted by
-            </p>
-            <p className="mt-1 font-mono text-xs text-cream/80">
-              {job.client_email}
-            </p>
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Posted by</p>
+            <p className="mt-1 font-mono text-xs text-slate-700">{job.client_email}</p>
           </div>
         </div>
 
-        {/* RIGHT — apply card */}
-        <div className="liquid-glass rounded-2xl p-6">
+        <div className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-6 shadow-sm">
           {!isOpen ? (
             <div>
-              <p className="font-mono text-[11px] uppercase tracking-widest text-amber-300">
-                · Closed
+              <p className="font-mono text-[11px] uppercase tracking-widest text-amber-700">· Closed</p>
+              <p className="mt-2 font-display text-lg uppercase text-slate-900">This job is no longer open</p>
+              <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600">
+                Either the client picked a freelancer or withdrew the listing. Status: <span className="text-slate-700">{job.status}</span>.
               </p>
-              <p className="mt-2 font-display text-lg uppercase text-cream">
-                This job is no longer open
-              </p>
-              <p className="mt-1 font-mono text-[11px] leading-relaxed text-cream/60">
-                Either the client picked a freelancer or withdrew the listing.
-                Status: <span className="text-cream/80">{job.status}</span>.
-              </p>
-              <Link
-                href="/jobs"
-                className="mt-4 inline-flex rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 font-display text-xs uppercase tracking-wider text-cream hover:bg-white/[0.08]"
-              >
+              <Link href="/jobs" className="mt-4 inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2.5 font-display text-xs uppercase tracking-wider text-slate-700 hover:border-brand hover:text-brand">
                 Browse other jobs →
               </Link>
             </div>
           ) : submitted ? (
             <div>
-              <p className="font-mono text-[11px] uppercase tracking-widest text-signal">
-                ✓ Applied
+              <p className="font-mono text-[11px] uppercase tracking-widest text-emerald-700">✓ Applied</p>
+              <p className="mt-2 font-display text-lg uppercase text-slate-900">Application sent</p>
+              <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600">
+                The client will review and pick. You can see your applications in the freelancer dashboard.
               </p>
-              <p className="mt-2 font-display text-lg uppercase text-cream">
-                Application sent
-              </p>
-              <p className="mt-1 font-mono text-[11px] leading-relaxed text-cream/60">
-                The client will review and pick. You can see your applications
-                in the freelancer dashboard.
-              </p>
-              <Link
-                href="/freelancer"
-                className="mt-4 inline-flex rounded-xl bg-signal px-4 py-2.5 font-display text-xs uppercase tracking-wider text-ink"
-              >
-                Go to freelancer dashboard →
+              <Link href="/freelancer/applications" className="btn-gradient mt-4 inline-flex rounded-xl px-4 py-2.5 font-display text-xs uppercase tracking-wider">
+                See my applications →
               </Link>
             </div>
           ) : (
             <form onSubmit={submit} className="space-y-4">
               <div>
-                <p className="font-mono text-[11px] uppercase tracking-widest text-signal">
-                  Apply to this job
-                </p>
-                <p className="mt-1 font-mono text-[10px] leading-relaxed text-cream/50">
+                <p className="font-mono text-[11px] uppercase tracking-widest text-brand">Apply to this job</p>
+                <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-500">
                   Quick pitch + bid. Client picks one applicant, then escrow flow starts.
                 </p>
               </div>
@@ -236,7 +193,7 @@ export default function JobDetailPage() {
                 />
               </FormField>
 
-              <FormField label="Counter-bid (optional)" hint={`Leave blank to accept budget of $${job.amount_usdc} USDC`}>
+              <FormField label="Counter-bid (optional)" hint={`Leave blank to accept $${job.amount_usdc} USDC`}>
                 <div className="relative">
                   <input
                     type="number"
@@ -247,14 +204,12 @@ export default function JobDetailPage() {
                     placeholder={String(job.amount_usdc)}
                     className={inputClass + " pr-16"}
                   />
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-cream/40">
-                    USDC
-                  </span>
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-slate-400">USDC</span>
                 </div>
               </FormField>
 
               {submitError && (
-                <div className="rounded-xl border border-rose-400/30 bg-rose-500/10 px-3 py-2 font-mono text-xs text-rose-300">
+                <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 font-mono text-xs text-rose-700">
                   {submitError}
                 </div>
               )}
@@ -262,7 +217,7 @@ export default function JobDetailPage() {
               <button
                 type="submit"
                 disabled={submitting || !freelancerEmail.trim()}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-signal px-4 py-3 font-display text-sm uppercase tracking-wider text-ink transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
+                className="btn-gradient inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-display text-sm uppercase tracking-wider"
               >
                 <Send className="h-4 w-4" />
                 {submitting ? "Sending…" : "Send application"}
@@ -276,13 +231,13 @@ export default function JobDetailPage() {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 font-mono text-xs text-cream placeholder:text-cream/30 outline-none transition-colors focus:border-signal/60 focus:bg-white/[0.08]";
+  "w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand";
 
 function Field({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
   return (
     <div>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-cream/40">{label}</p>
-      <p className={"mt-1 font-mono text-xs text-cream " + className}>{children}</p>
+      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
+      <p className={"mt-1 font-mono text-xs text-slate-700 " + className}>{children}</p>
     </div>
   );
 }
@@ -290,9 +245,9 @@ function Field({ label, children, className = "" }: { label: string; children: R
 function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block font-mono text-[10px] uppercase tracking-widest text-cream/60">{label}</span>
+      <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">{label}</span>
       <div className="mt-1.5">{children}</div>
-      {hint && <span className="mt-1 block font-mono text-[10px] tracking-wide text-cream/30">{hint}</span>}
+      {hint && <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">{hint}</span>}
     </label>
   );
 }

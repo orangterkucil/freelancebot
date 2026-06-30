@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Inbox, Search } from "lucide-react";
+import { Inbox, Search, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { EmailGate } from "@/components/EmailGate";
 import { OrderCard } from "@/components/OrderCard";
@@ -51,10 +51,10 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
   }, [email]);
 
   const stats = {
-    total:        orders.length,
-    funded:       orders.filter((o) => o.status === "funded").length,
-    awaiting:     orders.filter((o) => o.status === "delivered").length,
-    earned:       orders.filter((o) => o.status === "released").reduce((s, o) => s + Number(o.amount_usdc), 0),
+    total:    orders.length,
+    funded:   orders.filter((o) => o.status === "funded").length,
+    awaiting: orders.filter((o) => o.status === "delivered").length,
+    earned:   orders.filter((o) => o.status === "released").reduce((s, o) => s + Number(o.amount_usdc), 0),
   };
 
   const filtered = useMemo(() => {
@@ -74,59 +74,62 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
       title="Freelancer dashboard"
       subtitle={
         <>
-          Signed in as <span className="text-cream/80">{email}</span>
+          Signed in as <span className="text-slate-700">{email}</span>
           {" · "}
-          <button onClick={signOut} className="text-signal hover:underline">switch</button>
+          <button onClick={signOut} className="text-brand hover:underline">switch</button>
         </>
       }
       breadcrumb={<>Freelancer / Orders</>}
     >
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Total orders"        value={stats.total} />
-        <Stat label="Newly funded"        value={stats.funded}   accent="amber" />
-        <Stat label="Awaiting release"    value={stats.awaiting} accent="signal" />
-        <Stat label="Total earned"        value={`$${stats.earned.toLocaleString()}`} sub="USDC" accent="signal" />
+        <Stat label="Total orders"     value={stats.total}    accent="sky" />
+        <Stat label="Newly funded"     value={stats.funded}   accent="amber" />
+        <Stat label="Awaiting release" value={stats.awaiting} accent="indigo" />
+        <Stat label="Total earned"     value={`$${stats.earned.toLocaleString()}`} sub="USDC" accent="emerald" />
       </div>
 
-      {/* Find work CTA */}
-      <div className="liquid-glass mt-8 flex flex-col gap-3 rounded-2xl p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="font-mono text-[11px] uppercase tracking-widest text-signal">
-            Looking for new work?
-          </p>
-          <p className="mt-1 font-display text-base uppercase text-cream">
-            Browse the public marketplace
-          </p>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-cream/50">
-            Coming v0.9.0 — public job feed with filter by field, budget, deadline.
-          </p>
+      <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white shadow-sm ring-1 ring-sky-200">
+            <Sparkles className="h-5 w-5 text-brand" />
+          </div>
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-brand">
+              Looking for new work?
+            </p>
+            <p className="mt-1 font-display text-base uppercase text-slate-900">
+              Browse the public marketplace
+            </p>
+            <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-slate-500">
+              Filter by field, budget, deadline. Apply with one click.
+            </p>
+          </div>
         </div>
         <Link
           href="/jobs"
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 font-display text-xs uppercase tracking-wider text-cream/80 transition-colors hover:bg-white/[0.08] hover:text-signal"
+          className="btn-gradient inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs uppercase tracking-wider"
         >
           Browse jobs →
         </Link>
       </div>
 
-      {/* Orders list */}
       <section className="mt-10">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="font-display text-xl uppercase text-cream">My orders</h2>
+          <h2 className="font-display text-xl uppercase text-slate-900">My orders</h2>
 
           {orders.length > 0 && (
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cream/40" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search brief, client, ID..."
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-9 pr-3 font-mono text-xs text-cream placeholder:text-cream/30 outline-none transition-colors focus:border-signal/60 focus:bg-white/[0.08] sm:w-72"
+                  className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand sm:w-72"
                 />
               </div>
-              <div className="flex gap-1 overflow-x-auto rounded-lg border border-white/10 bg-white/[0.04] p-1">
+              <div className="flex gap-1 overflow-x-auto rounded-lg border border-slate-200 bg-white p-1">
                 {STATUS_FILTERS.map((f) => (
                   <button
                     key={f.value}
@@ -134,8 +137,8 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
                     className={
                       "shrink-0 rounded-md px-3 py-1 font-mono text-[10px] uppercase tracking-wider transition-colors " +
                       (statusFilter === f.value
-                        ? "bg-signal text-ink"
-                        : "text-cream/60 hover:text-cream")
+                        ? "bg-brand text-white shadow-sm"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100")
                     }
                   >
                     {f.label}
@@ -147,33 +150,31 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
         </div>
 
         {loading && (
-          <div className="liquid-glass rounded-2xl p-6">
-            <p className="font-mono text-xs uppercase tracking-wider text-cream/50">Loading…</p>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+            <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
           </div>
         )}
 
         {error && (
-          <div className="rounded-2xl border border-rose-400/30 bg-rose-500/10 p-4">
-            <p className="font-mono text-xs uppercase tracking-wider text-rose-300">{error}</p>
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
+            <p className="font-mono text-xs uppercase tracking-wider text-rose-700">{error}</p>
           </div>
         )}
 
         {!loading && !error && orders.length === 0 && (
-          <div className="liquid-glass relative rounded-3xl p-10 text-center">
-            <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-signal/10 ring-1 ring-signal/30">
-              <Inbox className="h-7 w-7 text-signal" strokeWidth={1.5} />
+          <div className="rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm">
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md ring-1 ring-sky-200">
+              <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
             </div>
-            <h3 className="mt-5 font-display text-xl uppercase text-cream">
+            <h3 className="mt-5 font-display text-xl uppercase text-slate-900">
               No incoming orders yet
             </h3>
-            <p className="mx-auto mt-2 max-w-sm font-mono text-xs uppercase leading-relaxed tracking-wide text-cream/60">
-              Ask a client to create an order on the client dashboard using your
-              email: <span className="text-signal">{email}</span>. Once they fund
-              the escrow, it shows up here for you to deliver.
+            <p className="mx-auto mt-2 max-w-sm font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600">
+              Browse the public marketplace and apply to open jobs.
             </p>
             <Link
               href="/jobs"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-2.5 font-display text-sm uppercase tracking-wider text-cream/80 hover:text-signal"
+              className="btn-gradient mt-6 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 font-display text-sm uppercase tracking-wider"
             >
               Browse marketplace →
             </Link>
@@ -181,16 +182,13 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
         )}
 
         {!loading && !error && orders.length > 0 && filtered.length === 0 && (
-          <div className="liquid-glass rounded-2xl p-6 text-center">
-            <p className="font-mono text-xs uppercase tracking-wider text-cream/50">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center">
+            <p className="font-mono text-xs uppercase tracking-wider text-slate-500">
               No orders match this filter.
             </p>
             <button
-              onClick={() => {
-                setStatusFilter("all");
-                setSearch("");
-              }}
-              className="mt-3 font-mono text-xs text-signal hover:underline"
+              onClick={() => { setStatusFilter("all"); setSearch(""); }}
+              className="mt-3 font-mono text-xs text-brand hover:underline"
             >
               Clear filters
             </button>
@@ -211,23 +209,25 @@ function Stat({
   label,
   value,
   sub,
-  accent,
+  accent = "sky",
 }: {
   label: string;
   value: string | number;
   sub?: string;
-  accent?: "signal" | "amber";
+  accent?: "sky" | "amber" | "emerald" | "indigo";
 }) {
-  const accentColor =
-    accent === "signal" ? "text-signal" :
-    accent === "amber"  ? "text-amber-300" :
-                          "text-cream";
+  const accentMap = {
+    sky:     "from-sky-50 to-white text-sky-700 ring-sky-200",
+    amber:   "from-amber-50 to-white text-amber-700 ring-amber-200",
+    emerald: "from-emerald-50 to-white text-emerald-700 ring-emerald-200",
+    indigo:  "from-indigo-50 to-white text-indigo-700 ring-indigo-200",
+  };
   return (
-    <div className="liquid-glass relative rounded-2xl p-4">
-      <p className="font-mono text-[10px] uppercase tracking-widest text-cream/40">{label}</p>
-      <p className={`mt-1 font-display text-2xl ${accentColor}`}>
+    <div className={`relative rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm ${accentMap[accent]}`}>
+      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
+      <p className="mt-1 font-display text-2xl">
         {value}
-        {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-cream/40">{sub}</span>}
+        {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">{sub}</span>}
       </p>
     </div>
   );

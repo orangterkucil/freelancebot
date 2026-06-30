@@ -19,15 +19,6 @@ const ACCEPTED_TYPES = [
   "application/zip",
 ];
 
-/**
- * Drag-and-drop file upload widget.
- *
- * Uploads directly from the browser to Supabase Storage `attachments` bucket
- * (no server hop). Stores returned public URLs in `value`. Parent owns state
- * via onChange so the form can persist the list with the rest of the order.
- *
- * Constraints: max 8 MB per file, max 6 files, image/document types only.
- */
 export function FileDropzone({
   value,
   onChange,
@@ -105,7 +96,6 @@ export function FileDropzone({
 
   return (
     <div className="space-y-3">
-      {/* Dropzone */}
       <div
         onDragOver={(e) => { e.preventDefault(); if (!disabled) setDrag(true); }}
         onDragLeave={() => setDrag(false)}
@@ -118,7 +108,7 @@ export function FileDropzone({
         onClick={() => !disabled && inputRef.current?.click()}
         className={
           "cursor-pointer rounded-xl border-2 border-dashed p-5 text-center transition-colors " +
-          (drag ? "border-signal/60 bg-signal/[0.06]" : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]") +
+          (drag ? "border-brand bg-sky-50" : "border-slate-300 bg-slate-50 hover:border-brand hover:bg-sky-50/50") +
           (disabled ? " pointer-events-none opacity-50" : "")
         }
       >
@@ -133,40 +123,39 @@ export function FileDropzone({
         />
         <div className="flex flex-col items-center gap-2">
           {busy ? (
-            <Loader2 className="h-5 w-5 animate-spin text-signal" />
+            <Loader2 className="h-5 w-5 animate-spin text-brand" />
           ) : (
-            <Upload className="h-5 w-5 text-cream/50" />
+            <Upload className="h-5 w-5 text-slate-500" />
           )}
-          <p className="font-mono text-[11px] uppercase tracking-wider text-cream/70">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-slate-700">
             {busy ? "Uploading…" : "Drop files or click to upload"}
           </p>
-          <p className="font-mono text-[10px] tracking-wide text-cream/40">
+          <p className="font-mono text-[10px] tracking-wide text-slate-400">
             Up to {MAX_FILES} files · {MAX_SIZE_MB} MB each · images, PDF, doc, csv, zip
           </p>
         </div>
       </div>
 
       {error && (
-        <p className="font-mono text-[11px] text-rose-300">{error}</p>
+        <p className="font-mono text-[11px] text-rose-700">{error}</p>
       )}
 
-      {/* Uploaded list */}
       {value.length > 0 && (
         <ul className="space-y-2">
           {value.map((a, i) => (
             <li
               key={a.url}
-              className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2"
+              className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2"
             >
               <a
                 href={a.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex min-w-0 flex-1 items-center gap-2 text-cream/80 hover:text-signal"
+                className="flex min-w-0 flex-1 items-center gap-2 text-slate-700 hover:text-brand"
               >
                 <FileTypeIcon contentType={a.content_type} />
                 <span className="truncate font-mono text-xs">{a.filename}</span>
-                <span className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-cream/40">
+                <span className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-slate-400">
                   {formatBytes(a.size_bytes)}
                 </span>
               </a>
@@ -174,7 +163,7 @@ export function FileDropzone({
                 <button
                   type="button"
                   onClick={() => remove(i)}
-                  className="grid h-7 w-7 place-items-center rounded-md border border-white/10 text-cream/50 transition-colors hover:border-rose-400/40 hover:text-rose-300"
+                  className="grid h-7 w-7 place-items-center rounded-md border border-slate-200 text-slate-500 transition-colors hover:border-rose-400 hover:text-rose-600"
                   aria-label={`Remove ${a.filename}`}
                 >
                   <X className="h-3.5 w-3.5" />
@@ -189,10 +178,10 @@ export function FileDropzone({
 }
 
 function FileTypeIcon({ contentType }: { contentType: string }) {
-  if (contentType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-cream/50" />;
-  if (contentType.includes("pdf"))      return <FileText className="h-4 w-4 text-cream/50" />;
-  if (contentType.includes("text"))     return <FileText className="h-4 w-4 text-cream/50" />;
-  return <FileIcon className="h-4 w-4 text-cream/50" />;
+  if (contentType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-slate-400" />;
+  if (contentType.includes("pdf"))      return <FileText className="h-4 w-4 text-slate-400" />;
+  if (contentType.includes("text"))     return <FileText className="h-4 w-4 text-slate-400" />;
+  return <FileIcon className="h-4 w-4 text-slate-400" />;
 }
 
 function formatBytes(n: number): string {
