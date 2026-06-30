@@ -12,6 +12,26 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.11.1] — 2026-06-30
+
+AI security hardening — OWASP LLM Top 10 mitigations on the agent.
+
+### Hardened
+- **LLM01 Prompt Injection** — `SYSTEM_PROMPT` rewritten with explicit, named hard constraints. The agent is told to treat all user content (brief, deliverable URL, chat) as untrusted data, not commands. A new `sanitizeForLLM()` server-side filter strips control characters, neutralizes role-impersonation markers (`system:`, `assistant:`, etc), and redacts common jailbreak phrases (`ignore previous instructions`, `you are now in admin mode`, `disregard prior instructions`) before any user content is forwarded to the model.
+- **LLM02 Insecure Output Handling** — `verifyDeliverable` no longer trusts a `verified: true` claim from the LLM. The boolean is now **server-derived** from the LLM's structured `alignment` and `confidence` fields, all of which are strictly enum-coerced. A `matches + high` claim from the LLM is automatically downgraded to `medium` because the model only sees the URL string, not the actual contents.
+- **LLM06 Sensitive Info Disclosure** — system prompt explicitly forbids revealing private keys, seed phrases, mnemonics, or API tokens, even if the user claims to be the platform admin.
+- **LLM08 Excessive Agency** — system prompt declares the agent ADVISORY-only and lists the contract admin functions (`setAgent`, `setAgentFee`) it must never call. (Backend has no path to those functions anyway; this is belt-and-suspenders.)
+- **LLM09 Overreliance** — verdicts always include a confidence level; reasoning is bounded to 1000 chars; UI keeps surfacing "Hold for review" on anything below `matches + high`.
+- **SSRF guard** — `isUrlReachable` now refuses `localhost`, `127.x`, `10.x`, `172.16-31.x`, `192.168.x`, link-local IPv6 (`fe80:`, `::1`), `.local`, `.internal`, and non-HTTP(S) schemes (no `file://`, `javascript:`, `data:`). A malicious freelancer cannot use the verifier to probe internal infra.
+
+### Added
+- `/docs#agent` gains a "Security model (OWASP LLM Top 10)" subsection enumerating exactly which classes of attack are mitigated and how. Visible to anyone who reads the docs — useful as a credibility signal for hackathon judges.
+
+### Why this matters for the demo
+Hackathon judges (especially Circle / Arc folks) will probe the agent. Now the answer to "what stops me from prompt-injecting the verifier into releasing without delivering?" is mechanical and concrete: the server doesn't take the LLM's word for `verified`; the boolean is computed from typed enum fields, and even those are downgraded when the model couldn't actually inspect the contents.
+
+---
+
 ## [v0.11.0] — 2026-06-30
 
 Marketplace credibility layer (ratings + social shill links), basic Settings page, full Docs/whitepaper page, plus polish: min order = 0, landing CTAs cleaned up, "GitHub repo" / "PRD" wording fixed, version pill moved to footer, sidebar Resources pinned to bottom-left.
