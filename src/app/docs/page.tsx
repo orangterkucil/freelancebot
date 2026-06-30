@@ -174,9 +174,20 @@ export default function DocsPage() {
               <p>The agent (Groq Llama 3.3 70B by default; swap for OpenAI / Anthropic / Ollama in MVP 2) does two jobs:</p>
               <ul>
                 <li><strong>chat</strong> — answers questions from either party with full order context (brief, amount, deadline, status). Replies in the user&apos;s language automatically.</li>
-                <li><strong>verifyDeliverable</strong> — given a deliverable URL: (1) HEAD-checks reachability, (2) compares against the original brief via LLM, (3) emits a JSON verdict <code>{`{verified, confidence, reasoning, checks}`}</code>.</li>
+                <li><strong>verifyDeliverable</strong> — given a deliverable URL: (1) HEAD-checks reachability, (2) refuses private / link-local hosts (SSRF guard), (3) compares against the original brief via LLM, (4) emits a JSON verdict <code>{`{verified, confidence, reasoning, checks}`}</code>.</li>
               </ul>
               <p>The verdict is advisory — the client still clicks the release button. The agent <em>never</em> moves funds autonomously.</p>
+
+              <h3 className="mt-6 font-display text-base uppercase tracking-wider text-slate-900">Security model (OWASP LLM Top 10)</h3>
+              <p>The agent is hardened against the most common LLM attack patterns:</p>
+              <ul>
+                <li><strong>LLM01 — Prompt injection:</strong> system prompt explicitly tells the agent to treat all user content (brief, URL, chat) as untrusted data, not commands. Common jailbreak phrases ("ignore previous instructions", "you are now in admin mode") are neutralized server-side before being sent to the model.</li>
+                <li><strong>LLM02 — Insecure output handling:</strong> the verdict shape is strictly typed. Any value outside the allowed enum collapses to safe defaults (<code>partial</code>/<code>low</code>). The <code>verified</code> boolean is <em>server-derived</em> from the LLM&apos;s structured fields, not asserted by the LLM directly.</li>
+                <li><strong>LLM06 — Sensitive info disclosure:</strong> the agent is instructed to never repeat seed phrases, private keys, or API tokens — even if the user claims to be the platform admin.</li>
+                <li><strong>LLM08 — Excessive agency:</strong> the agent has zero authority to move funds. It cannot call <code>approveAndRelease</code>, <code>refund</code>, or any contract function. Release is always a human click in the UI.</li>
+                <li><strong>LLM09 — Overreliance:</strong> every verdict carries a confidence level. UI surfaces &quot;Hold for review&quot; on anything below <code>matches + high</code>, and the server downgrades any <code>matches + high</code> claim to <code>medium</code> because the LLM only sees the URL string, not the actual contents.</li>
+                <li><strong>SSRF:</strong> the URL reachability check refuses <code>localhost</code>, <code>127.x</code>, <code>10.x</code>, <code>172.16-31.x</code>, <code>192.168.x</code>, link-local IPv6, and non-HTTP(S) schemes. A malicious freelancer cannot use the verifier to probe internal infra.</li>
+              </ul>
             </Section>
 
             <Section id="contract" title="Smart contract" emoji="🪙">
