@@ -68,11 +68,27 @@
     position: absolute; inset: 0;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    opacity: 0; transition: opacity 250ms ease;
+    opacity: 0;
+    transform: scale(1.035);
+    filter: blur(10px);
+    transition:
+      opacity 500ms cubic-bezier(.2,.9,.3,1),
+      transform 750ms cubic-bezier(.2,.9,.3,1),
+      filter 500ms cubic-bezier(.2,.9,.3,1);
     padding: 2vh 3vw;
     pointer-events: none;
   }
-  .scene.active { opacity: 1; pointer-events: auto; }
+  .scene.active {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+    pointer-events: auto;
+  }
+  .scene.leaving {
+    opacity: 0;
+    transform: scale(0.97);
+    filter: blur(8px);
+  }
 
   /* start gate */
   #gate {
@@ -317,10 +333,10 @@
     border-left: 3px solid var(--red);
     animation: slideRightIn 0.5s cubic-bezier(.34,1.56,.64,1) forwards;
   }
-  #scene-2 .deductions div:nth-child(1) { animation-delay: 1.7s; }
-  #scene-2 .deductions div:nth-child(2) { animation-delay: 2.3s; }
-  #scene-2 .deductions div:nth-child(3) { animation-delay: 2.9s; }
-  #scene-2 .deductions div:nth-child(4) { animation-delay: 3.5s; }
+  #scene-2 .deductions div:nth-child(1) { animation-delay: 0.7s; }
+  #scene-2 .deductions div:nth-child(2) { animation-delay: 1.0s; }
+  #scene-2 .deductions div:nth-child(3) { animation-delay: 1.3s; }
+  #scene-2 .deductions div:nth-child(4) { animation-delay: 1.6s; }
   #scene-2 .clock {
     margin-top: 20px;
     font-family: var(--font-display);
@@ -328,7 +344,7 @@
     color: var(--amber);
     letter-spacing: 0.05em;
     opacity: 0;
-    animation: fadeIn 0.6s ease 4.1s forwards;
+    animation: fadeIn 0.5s ease 1.9s forwards;
     text-shadow: 0 0 30px rgba(245,158,11,0.4);
   }
   #scene-2 .verdict {
@@ -338,7 +354,7 @@
     color: var(--red);
     text-shadow: 0 0 50px rgba(239,68,68,0.6);
     opacity: 0;
-    animation: slideUpIn 0.9s ease 4.8s forwards, verdictPulse 1.4s ease 5.7s infinite;
+    animation: slideUpIn 0.7s ease 2.3s forwards, verdictPulse 1.4s ease 3.2s infinite;
     letter-spacing: 0.02em;
   }
 
@@ -396,14 +412,14 @@
     opacity: 0; transform: scale(0.7);
     box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5);
   }
-  #scene-3 .node.n1 { animation: nodeIn 0.7s cubic-bezier(.34,1.56,.64,1) 0.8s forwards; }
+  #scene-3 .node.n1 { animation: nodeIn 0.5s cubic-bezier(.34,1.56,.64,1) 0.4s forwards; }
   #scene-3 .node.n2 {
     background: linear-gradient(135deg, rgba(34,211,238,0.15), rgba(99,102,241,0.15));
     border-color: var(--cyan);
     box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5), 0 0 80px -15px rgba(34,211,238,0.5);
-    animation: nodeIn 0.7s cubic-bezier(.34,1.56,.64,1) 1.3s forwards, glow 2.5s ease 2.5s infinite;
+    animation: nodeIn 0.5s cubic-bezier(.34,1.56,.64,1) 0.7s forwards, glow 2.5s ease 1.5s infinite;
   }
-  #scene-3 .node.n3 { animation: nodeIn 0.7s cubic-bezier(.34,1.56,.64,1) 1.8s forwards; }
+  #scene-3 .node.n3 { animation: nodeIn 0.5s cubic-bezier(.34,1.56,.64,1) 1.0s forwards; }
   #scene-3 .node .icon { font-size: 60px; }
   #scene-3 .node .name {
     font-family: var(--font-mono); font-size: 12px;
@@ -416,7 +432,7 @@
     position: relative;
     max-width: 130px;
     opacity: 0;
-    animation: fadeIn 0.4s ease 2.2s forwards;
+    animation: fadeIn 0.3s ease 1.2s forwards;
   }
   #scene-3 .connector::before {
     content: ""; position: absolute;
@@ -424,7 +440,7 @@
     width: 20px; height: 20px; border-radius: 50%;
     background: var(--cyan);
     box-shadow: 0 0 20px var(--cyan);
-    animation: travel 1.6s linear 2.6s infinite;
+    animation: travel 1.6s linear 1.5s infinite;
     opacity: 0;
     animation-fill-mode: forwards;
   }
@@ -433,7 +449,7 @@
     font-family: var(--font-mono); font-size: 14px;
     color: var(--dim);
     opacity: 0;
-    animation: fadeIn 0.6s ease 3.2s forwards;
+    animation: fadeIn 0.5s ease 1.8s forwards;
     margin-bottom: 24px;
   }
   #scene-3 .steps span {
@@ -447,7 +463,7 @@
   #scene-3 .verdict {
     display: flex; align-items: baseline; gap: 24px;
     opacity: 0;
-    animation: slideUpIn 0.9s ease 4s forwards;
+    animation: slideUpIn 0.7s ease 2.3s forwards;
   }
   #scene-3 .verdict .num {
     font-family: var(--font-display);
@@ -465,7 +481,7 @@
     color: var(--green);
     letter-spacing: 0.15em;
     opacity: 0;
-    animation: fadeIn 0.6s ease 4.7s forwards;
+    animation: fadeIn 0.5s ease 2.8s forwards;
     text-shadow: 0 0 30px rgba(34,197,94,0.4);
   }
 
@@ -868,9 +884,9 @@
     animation: slideUpIn 0.8s cubic-bezier(.2,.9,.3,1) forwards;
     box-shadow: 0 20px 50px -10px rgba(0,0,0,0.4);
   }
-  #scene-6 .box:nth-child(1) { animation-delay: 0.7s; }
-  #scene-6 .box:nth-child(2) { animation-delay: 1s; }
-  #scene-6 .box:nth-child(3) { animation-delay: 1.3s; }
+  #scene-6 .box:nth-child(1) { animation-delay: 0.3s; }
+  #scene-6 .box:nth-child(2) { animation-delay: 0.5s; }
+  #scene-6 .box:nth-child(3) { animation-delay: 0.7s; }
   #scene-6 .box .num {
     font-family: var(--font-display); font-size: 80px;
     background: linear-gradient(135deg, var(--cyan), var(--indigo));
@@ -891,7 +907,7 @@
   #scene-6 .badges {
     display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
     opacity: 0;
-    animation: fadeIn 0.7s ease 2s forwards;
+    animation: fadeIn 0.5s ease 1.2s forwards;
   }
   #scene-6 .badges span {
     padding: 12px 22px;
@@ -1004,14 +1020,23 @@
   #controls button:hover { background: rgba(255,255,255,0.1); }
   #controls .time { color: var(--dim); padding: 0 10px; }
   #controls .bar {
-    width: 240px; height: 4px;
-    background: rgba(255,255,255,0.1); border-radius: 2px;
+    width: 280px; height: 6px;
+    background: rgba(255,255,255,0.1); border-radius: 3px;
     overflow: hidden;
+    cursor: pointer;
+    position: relative;
   }
+  #controls .bar:hover { height: 8px; margin: -1px 0; background: rgba(255,255,255,0.15); }
   #controls .bar > i {
     display: block; height: 100%; width: 0%;
     background: linear-gradient(90deg, var(--cyan), var(--indigo));
-    transition: width 200ms linear;
+    transition: width 120ms linear;
+    pointer-events: none;
+  }
+  #controls .bar .tick {
+    position: absolute; top: 0; bottom: 0;
+    width: 1px; background: rgba(255,255,255,0.25);
+    pointer-events: none;
   }
 
   #scene-label {
@@ -1495,7 +1520,7 @@
   <button id="btn-toggle">⏸ Pause</button>
   <button id="btn-restart">↺ Restart</button>
   <button id="btn-hide">Hide UI (H)</button>
-  <span class="time" id="time">0:00 / 2:30</span>
+  <span class="time" id="time">0:00 / 2:07</span>
   <div class="bar"><i id="progress"></i></div>
 </div>
 
@@ -1505,13 +1530,13 @@
   // Scene definitions
   // ============================================================
   const SCENES = [
-    { id: 1, dur: 8,  tts: "FreelanceBot. Payouts on Arc.", label: "OPENING" },
-    { id: 2, dur: 20, tts: "A 300 dollar job. Two weeks later, only 220 arrives. Eighty dollars gone.", label: "PROBLEM" },
-    { id: 3, dur: 18, tts: "FreelanceBot fixes it. USDC on Arc. Verified. Released in under one second.", label: "SOLUTION" },
+    { id: 1, dur: 7,  tts: "FreelanceBot. Payouts on Arc.", label: "OPENING" },
+    { id: 2, dur: 12, tts: "A 300 dollar job. Two weeks later, only 220 arrives. Eighty dollars gone.", label: "PROBLEM" },
+    { id: 3, dur: 10, tts: "FreelanceBot fixes it. USDC on Arc. Verified. Released in under one second.", label: "SOLUTION" },
     { id: 4, dur: 40, tts: "Client side: post a job. Pick applicants. Fund escrow in one signature. Agent verifies. Release.", label: "CLIENT TUTORIAL" },
     { id: 5, dur: 40, tts: "Freelancer side: browse jobs. Apply. Deliver. Get paid on Arc, zero point eight seconds.", label: "FREELANCER TUTORIAL" },
-    { id: 6, dur: 12, tts: "Source verified. OWASP hardened. Open source, MIT.", label: "TECH" },
-    { id: 7, dur: 12, tts: "FreelanceBot. Try the live demo now.", label: "CLOSE" },
+    { id: 6, dur: 8,  tts: "Source verified. OWASP hardened. Open source, MIT.", label: "TECH" },
+    { id: 7, dur: 10, tts: "FreelanceBot. Try the live demo now.", label: "CLOSE" },
   ];
 
   // Frame timing per tutorial scene (offsets within scene)
@@ -1640,7 +1665,12 @@
   }
   speechSynthesis.onvoiceschanged = () => { voice = pickVoice(); };
   voice = pickVoice();
+  // URL param: ?tts=off disables built-in Web Speech so an extension
+  // (Speechify, ElevenLabs Reader, NaturalReader) can voice instead.
+  const TTS_ENABLED = !/[?&]tts=off\b/.test(location.search);
+
   function say(text) {
+    if (!TTS_ENABLED) return;
     try { speechSynthesis.cancel(); } catch (e) {}
     const u = new SpeechSynthesisUtterance(text);
     if (voice) u.voice = voice;
@@ -1655,10 +1685,10 @@
     const el = document.getElementById('counter-2');
     if (!el) return;
     const steps = [
-      { at: 1.8, label: '$275' },
-      { at: 2.4, label: '$257' },
-      { at: 3.0, label: '$227' },
-      { at: 3.6, label: '$220' },
+      { at: 0.8, label: '$275' },
+      { at: 1.1, label: '$257' },
+      { at: 1.4, label: '$227' },
+      { at: 1.7, label: '$220' },
     ];
     for (const s of steps) {
       setTimeout(() => {
@@ -1830,13 +1860,82 @@
     label.classList.toggle('hidden', uiHidden);
     document.getElementById('rec-dot').style.opacity = uiHidden ? '0' : '1';
   });
+  // ============================================================
+  // Seek — click progress bar OR arrow keys
+  // ============================================================
+  function seekTo(seconds) {
+    seconds = Math.max(0, Math.min(totalDuration - 0.1, seconds));
+    // find scene containing this timestamp
+    let acc = 0, targetIdx = 0, offsetInScene = 0;
+    for (let i = 0; i < SCENES.length; i++) {
+      if (seconds < acc + SCENES[i].dur) {
+        targetIdx = i;
+        offsetInScene = seconds - acc;
+        break;
+      }
+      acc += SCENES[i].dur;
+    }
+    elapsed = seconds;
+    sceneElapsed = offsetInScene;
+    if (currentIdx !== targetIdx) {
+      currentIdx = targetIdx;
+      try { speechSynthesis.cancel(); } catch (e) {}
+      clearTutorialTimers();
+      activateScene(targetIdx);
+    }
+    timeEl.textContent = fmt(elapsed) + ' / ' + fmt(totalDuration);
+    progressEl.style.width = (elapsed / totalDuration * 100) + '%';
+  }
+
+  const bar = document.querySelector('#controls .bar');
+  // draw tick marks at scene boundaries
+  let acc = 0;
+  for (let i = 0; i < SCENES.length - 1; i++) {
+    acc += SCENES[i].dur;
+    const t = document.createElement('div');
+    t.className = 'tick';
+    t.style.left = (acc / totalDuration * 100) + '%';
+    bar.appendChild(t);
+  }
+  bar.addEventListener('click', (e) => {
+    const rect = bar.getBoundingClientRect();
+    const frac = (e.clientX - rect.left) / rect.width;
+    seekTo(frac * totalDuration);
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'h' || e.key === 'H') btnHide.click();
-    if (e.key === ' ') { e.preventDefault(); btnToggle.click(); }
+    if (e.key === ' ' && started) { e.preventDefault(); btnToggle.click(); }
     if (e.key === 'r' || e.key === 'R') restart();
     if (e.key === 'f' || e.key === 'F') {
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
+    }
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      if (e.shiftKey) seekTo(elapsed + 5);
+      else {
+        // jump to next scene start
+        let cum = 0;
+        for (let i = 0; i < SCENES.length; i++) {
+          if (i > currentIdx) { seekTo(cum); return; }
+          cum += SCENES[i].dur;
+        }
+      }
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      if (e.shiftKey) seekTo(elapsed - 5);
+      else {
+        // jump to prev scene start (or current start if >2s in)
+        if (sceneElapsed > 2) { seekTo(elapsed - sceneElapsed); return; }
+        let cum = 0;
+        for (let i = 0; i < currentIdx; i++) cum += SCENES[i].dur;
+        // cum is start of currentIdx; go to prev
+        if (currentIdx > 0) {
+          seekTo(cum - SCENES[currentIdx - 1].dur);
+        }
+      }
     }
   });
   // ============================================================
