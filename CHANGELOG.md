@@ -12,6 +12,22 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.11.2] — 2026-07-02
+
+Real demo asset in the README — no more TODO placeholders.
+
+### Added
+- `public/marketplace-flow.gif` (833 KB, 1568×761, 8 frames) — captured live from `freelancebot-alpha.vercel.app` showing landing → click Marketplace → filter by Development → open job → apply form. Recorded via the Claude in Chrome MCP `gif_creator` tool with click indicators + progress bar overlays.
+- README `## Demo` section now embeds the GIF at the top with a caption, replacing the previous "TODO for tarjo" placeholder block and the empty screenshot table. Removes the "how to take screenshots yourself" instructions block.
+
+### Changed
+- Roadmap: Week 7 checkbox ticked (frontend on-chain wiring, polish, marketplace, ratings, settings, docs, OWASP hardening — v0.7 through v0.11.2 all shipped in this window). Week 8 rewrites to "Record video, submit to Ignyte" — the only two things left.
+
+### Why
+Judges landing on the GitHub repo now see a real animation of the app working before they read a single word of prose. Previous README had a placeholder that screamed "unfinished". This closes that gap without cost.
+
+---
+
 ## [v0.11.1] — 2026-06-30
 
 AI security hardening — OWASP LLM Top 10 mitigations on the agent.

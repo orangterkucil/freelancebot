@@ -23,20 +23,11 @@
 
 ## Demo
 
-> **TODO** (for tarjo): replace the placeholders below with real screenshots.
-> Quick-record GIF: install [Kap](https://getkap.co) (free Mac app) or [LICEcap](https://www.cockos.com/licecap/) → record the full flow (client create → fund → freelancer submit → agent verify → release) → save as `docs/demo.gif` and uncomment the line below.
+![FreelanceBot marketplace flow](./public/marketplace-flow.gif)
 
-<!-- ![Demo flow](./docs/demo.gif) -->
+_Landing → marketplace → filter by field → open a job → apply. Recorded on the live app at `freelancebot-alpha.vercel.app`._
 
-| Landing | Order detail with chat |
-|---|---|
-| _add `docs/landing.png` here_ | _add `docs/order-detail.png` here_ |
-
-To take screenshots:
-1. Open https://freelancebot-alpha.vercel.app
-2. Cmd+Shift+4 → Space → click window (Mac) / Win+Shift+S (Windows)
-3. Save to `freelancebot/docs/landing.png` and `freelancebot/docs/order-detail.png`
-4. Replace placeholder text above with `![Landing](./docs/landing.png)` etc.
+**Prefer to click around yourself?** [Open the live demo →](https://freelancebot-alpha.vercel.app)
 
 ## Features
 
@@ -291,8 +282,8 @@ Or use Remix in the browser — no local Node install required. See [`contracts/
 - [x] Week 3 — AI agent + verifier + orders API
 - [x] Week 4–5 — Frontend MVP (client + freelancer + order detail + chat)
 - [x] Week 6 — Smart contract deployed + verified on Arc testnet
-- [ ] Week 7 — Wire frontend to on-chain (ethers.js), polish, record video
-- [ ] Week 8 — Submit to Ignyte
+- [x] Week 7 — Wire frontend to on-chain (ethers.js), polish, marketplace + ratings + settings + docs + OWASP hardening (v0.7 → v0.11.2)
+- [ ] Week 8 — Record video, submit to Ignyte
 
 ## Project documents
 
