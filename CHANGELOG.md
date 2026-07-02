@@ -12,6 +12,32 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.11.5] — 2026-07-02
+
+Demo reel usability + polish overhaul — smoother, faster, seekable, extension-friendly.
+
+### Changed
+- **Scene reveal delays compressed 60–70%** — scene 2 deductions fire at 0.7/1.0/1.3/1.6s instead of 1.7/2.3/2.9/3.5s. Counter animation ticks at 0.8/1.1/1.4/1.7s. Scene 3 nodes/verdict now show inside 3 seconds instead of 5+. Kills the "waiting" feeling the reel had between reveals.
+- **Scene durations shortened** — scene 1 (7s), 2 (12s), 3 (10s), 6 (8s), 7 (10s) since content reveals faster now. Total runtime **2:07** (down from 2:30).
+- **Transitions upgraded** — scenes now fade in with scale (1.035 → 1) + blur (10px → 0) rack-focus over 500–750ms cubic-bezier. Adds cinematic depth without being busy.
+- **Font sizes right-sized** — scene 2/3/6 h1 96px → 68px, verdict 72px → 52px, tutorial h1 80px → 52px. Fixes overflow on 900px viewports and looks better proportioned.
+
+### Added
+- **Seekable progress bar** — click anywhere on the timeline to jump to that timestamp. Bar has tick marks at each scene boundary.
+- **Arrow key seek** — `←` / `→` jump to prev/next scene start. `Shift + ← / →` scrub ±5 seconds.
+- **`?tts=off` URL param** — disables the built-in Web Speech synthesis so a Chrome extension (ElevenLabs Reader, Speechify, NaturalReader) can do the voiceover instead. Prevents double-audio.
+- **`voiceover-script.md`** — new file at repo root with all TTS narration cleanly formatted per scene, ready to paste into ElevenLabs / Speechify / NaturalReader for pro voice quality. Includes cue timings, char counts, and 3 recording workflows (pre-generated MP3, editor sync, live).
+
+### Why
+User feedback in v0.11.3–v0.11.4 testing:
+1. "Text kepotong" — overflow fixed by reducing font sizes + centering justify-content.
+2. "Ga bisa skip video ke detik berapa" — added seek bar + keyboard shortcuts.
+3. "Suaranya terlalu AI" — added `?tts=off` + voiceover-script.md for extension-based human voice.
+4. "Nunggu antar slide 1–5 detik" — compressed all reveal delays.
+5. "Transisi ga smooth, ga aesthetic" — replaced flat opacity fade with scale + blur cinematic transitions.
+
+---
+
 ## [v0.11.4] — 2026-07-02
 
 Demo reel polish — clean recording state, click-to-start gate, wider viewport fill.
