@@ -68,32 +68,63 @@
     position: absolute; inset: 0;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    opacity: 0; transition: opacity 700ms ease;
-    padding: 3vh 5vw;
+    opacity: 0; transition: opacity 250ms ease;
+    padding: 2vh 3vw;
     pointer-events: none;
   }
   .scene.active { opacity: 1; pointer-events: auto; }
 
-  /* red REC dot */
-  #rec-dot {
-    position: fixed; top: 20px; right: 20px;
-    display: flex; align-items: center; gap: 6px;
-    padding: 6px 12px;
-    background: rgba(15,23,42,0.6);
-    border: 1px solid rgba(239,68,68,0.4);
-    border-radius: 999px;
-    z-index: 999;
-    font-family: var(--font-mono);
-    font-size: 11px; letter-spacing: 0.15em; color: var(--red);
-    transition: opacity 400ms;
+  /* start gate */
+  #gate {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: #000;
+    z-index: 5000;
+    cursor: pointer;
+    transition: opacity 400ms ease;
   }
-  #rec-dot .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--red);
-    box-shadow: 0 0 12px var(--red);
-    animation: recBlink 1.4s ease infinite;
+  #gate.gone { opacity: 0; pointer-events: none; }
+  #gate .gm {
+    width: 120px; height: 120px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue), var(--indigo));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 84px; color: white;
+    box-shadow: 0 30px 60px -20px rgba(34,211,238,0.6);
+    animation: gatePulse 2s ease infinite;
   }
-  @keyframes recBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  #gate h2 {
+    margin-top: 32px;
+    font-family: var(--font-display); font-size: 48px;
+    color: var(--ink);
+  }
+  #gate p {
+    margin-top: 12px;
+    font-family: var(--font-mono); font-size: 14px;
+    color: var(--dim); letter-spacing: 0.2em; text-transform: uppercase;
+  }
+  #gate .cta {
+    margin-top: 40px;
+    padding: 16px 40px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue), var(--indigo));
+    color: white; border-radius: 14px;
+    font-family: var(--font-mono); font-size: 14px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    box-shadow: 0 12px 32px -8px rgba(59,130,246,0.6);
+  }
+  #gate .hint {
+    margin-top: 20px;
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--dimmer); letter-spacing: 0.15em;
+  }
+  @keyframes gatePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 30px 60px -20px rgba(34,211,238,0.6); }
+    50% { transform: scale(1.06); box-shadow: 0 30px 80px -10px rgba(34,211,238,0.9); }
+  }
+
+  /* REC dot + scene label default hidden (recording-clean) */
+  #rec-dot, #scene-label { display: none !important; }
 
   /* ============================================================
      SCENE 1 — Logo intro (cinematic reveal)
@@ -498,8 +529,8 @@
   }
 
   .stage-box {
-    width: 92%; max-width: 1500px;
-    aspect-ratio: 16/8;
+    width: 96%; max-width: 1720px;
+    aspect-ratio: 16/8.2;
     background: #f8fafc;
     color: #0f172a;
     border-radius: 20px;
@@ -998,6 +1029,14 @@
 </style>
 </head>
 <body>
+<div id="gate">
+  <div class="gm">F</div>
+  <h2>FreelanceBot Demo Reel</h2>
+  <p>2:30 · voice · auto-play</p>
+  <div class="cta">▶ Click to start</div>
+  <div class="hint">Press F for fullscreen · Space to pause · H to hide UI</div>
+</div>
+
 <div id="stage">
   <canvas id="particles"></canvas>
   <div id="grain"></div>
@@ -1800,14 +1839,59 @@
       else document.documentElement.requestFullscreen();
     }
   });
-  document.body.addEventListener('click', initAudio, { once: true });
-  document.body.addEventListener('keydown', initAudio, { once: true });
+  // ============================================================
+  // Start gate — user must click to unlock audio + fullscreen
+  // ============================================================
+  const gate = document.getElementById('gate');
+  let started = false;
 
-  activateScene(0);
-  requestAnimationFrame(tickPlayer);
+  function primeVoicesAndSpeak(text) {
+    // Chrome sometimes returns [] for getVoices() until first speak()
+    // Force a warm-up with an empty utterance
+    try {
+      const warm = new SpeechSynthesisUtterance('');
+      warm.volume = 0;
+      speechSynthesis.speak(warm);
+    } catch (e) {}
+    // small delay then real speech
+    setTimeout(() => {
+      voice = pickVoice();
+      say(text);
+    }, 120);
+  }
+
+  function startReel() {
+    if (started) return;
+    started = true;
+    // hide gate
+    gate.classList.add('gone');
+    setTimeout(() => { gate.style.display = 'none'; }, 500);
+    // unlock audio ctx
+    initAudio();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    // try fullscreen (may fail if user policy denies, no big deal)
+    try { document.documentElement.requestFullscreen(); } catch (e) {}
+    // kick off first scene
+    last = performance.now();
+    elapsed = 0; sceneElapsed = 0; playing = true;
+    currentIdx = 0;
+    // activate scene 1 with primed TTS
+    sceneEls.forEach((el, k) => el.classList.toggle('active', k === 0));
+    label.textContent = 'SCENE 1 / ' + SCENES.length + ' · ' + SCENES[0].label;
+    setTimeout(whoosh, 100);
+    setTimeout(ding, 1200);
+    primeVoicesAndSpeak(SCENES[0].tts);
+    // start player loop
+    requestAnimationFrame(tickPlayer);
+  }
+
+  gate.addEventListener('click', startReel);
+  document.addEventListener('keydown', (e) => {
+    if (!started && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); startReel(); }
+  });
 
   setTimeout(() => {
-    console.log('%cFreelanceBot Demo Reel · v2', 'font-size:20px;color:#22d3ee;font-weight:bold;');
+    console.log('%cFreelanceBot Demo Reel · v3', 'font-size:20px;color:#22d3ee;font-weight:bold;');
     console.log('Keys: [space] pause · [r] restart · [h] hide UI · [f] fullscreen');
     console.log('Total runtime: ' + fmt(totalDuration));
   }, 400);

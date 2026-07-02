@@ -12,6 +12,24 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.11.4] — 2026-07-02
+
+Demo reel polish — clean recording state, click-to-start gate, wider viewport fill.
+
+### Changed
+- **REC dot + SCENE label removed by default** — no more debug chrome overlaid on the recording. Controls bar still available on hover / H key toggle.
+- **Click-to-start gate** — landing screen with big "Click to start" button. Solves two problems: unlocks browser TTS (which requires user gesture) and auto-triggers `requestFullscreen()` so recording captures the whole viewport without browser chrome.
+- **Wider stage** — scene padding reduced from `3vh 5vw` to `2vh 3vw`; tutorial browser mockup widened from 92% (max 1500px) to 96% (max 1720px). Fills the frame far more aggressively when recording at 1920×1080.
+- **Scene transitions** — fade from 700ms → 250ms. Less dead time between scenes.
+- **TTS priming** — silent warm-up utterance forces Chrome to load voices before the first spoken line, eliminating the "first scene has no voice" bug some browsers hit.
+
+### Voice quality notice
+Browser TTS remains robotic. For a production-quality voiceover, use one of:
+1. **Record your own voice** with QuickTime microphone while the reel plays muted
+2. **ElevenLabs / Play.ht** — paste the TTS strings from the `SCENES` array, generate MP3, dub over the muted recording
+
+---
+
 ## [v0.11.3] — 2026-07-02
 
 Cinematic auto-playing demo reel at `/demo-reel.html` — 2:30 runtime, browser TTS voiceover, no MP4 required at the source.
