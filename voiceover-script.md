@@ -1,125 +1,113 @@
 # FreelanceBot Demo Reel — Voiceover Script
 
-Total runtime: **2:30**. Seven scenes. Paste each block into ElevenLabs / Speechify / your extension of choice, generate MP3, sync in editing.
+Total runtime: **1:29**. Seven scenes. Paste each block into ElevenLabs / Speechify / your extension of choice, generate MP3, sync in editing.
 
-**Recommended voice**: **Adam** (ElevenLabs, deep confident male) or **Rachel** (ElevenLabs, natural female). Both sound near-human. Free tier: 10,000 chars/month — this whole script uses ~800.
+**Recommended voice**: **Adam** (ElevenLabs, deep confident male) or **Rachel** (ElevenLabs, natural female). Both sound near-human. Free tier: 10,000 chars/month — this whole script uses ~500.
 
 ---
 
-## Scene 1 — Logo intro (8s)
-> **Cue**: 0:00 – 0:08
+## Scene 1 — Logo intro (5s)
+> **Cue**: 0:00 – 0:05
 
 FreelanceBot. Payouts on Arc.
 
 ---
 
-## Scene 2 — Problem (20s)
-> **Cue**: 0:08 – 0:28
+## Scene 2 — Problem (7s)
+> **Cue**: 0:05 – 0:12
 
-A three-hundred-dollar job. Two weeks later, only two-twenty arrives. Eighty dollars lost to fees. Fourteen days of waiting.
-
----
-
-## Scene 3 — Solution (18s)
-> **Cue**: 0:28 – 0:46
-
-FreelanceBot fixes it. USDC on Arc. Verified by an AI agent. Released in under one second.
+Three hundred dollar job. Two-twenty arrives. Eighty dollars lost.
 
 ---
 
-## Scene 4 — Client tutorial (40s)
-> **Cue**: 0:46 – 1:26
+## Scene 3 — Solution (6s)
+> **Cue**: 0:12 – 0:18
 
-As a client — six steps. Sign in. Post a job. Pick your freelancer from the applicants. Fund the escrow with one MetaMask signature. Watch the AI agent verify the deliverable. Approve and release. Sub-second settlement on Arc.
-
----
-
-## Scene 5 — Freelancer tutorial (40s)
-> **Cue**: 1:26 – 2:06
-
-As a freelancer — six steps. Browse the marketplace. Filter by your skill. Apply with a quick pitch. Deliver your work. The agent verifies it live. Get paid two-hundred-ninety-seven USDC in point-eight seconds. No SWIFT. No two-week hold.
+USDC on Arc. Verified. Released in under one second.
 
 ---
 
-## Scene 6 — Under the hood (12s)
-> **Cue**: 2:06 – 2:18
+## Scene 4 — Client tutorial (30s)
+> **Cue**: 0:18 – 0:48
 
-Smart contract source-verified on Arc. AI agent hardened against the OWASP LLM Top Ten. Open source under MIT. Fork it. Deploy it. Own it.
+As a client: sign in, post a job, pick your applicant, fund the escrow with one signature, the agent verifies, then release. Sub-second on Arc.
 
 ---
 
-## Scene 7 — Closing (12s)
-> **Cue**: 2:18 – 2:30
+## Scene 5 — Freelancer tutorial (30s)
+> **Cue**: 0:48 – 1:18
 
-FreelanceBot. Autonomous payouts on Arc. Try the live demo now.
+As a freelancer: browse the marketplace, filter by your skill, apply, deliver, and get paid. Two-hundred-ninety-seven USDC in zero-point-eight seconds.
+
+---
+
+## Scene 6 — Under the hood (5s)
+> **Cue**: 1:18 – 1:23
+
+Source verified on Arc. Open source under MIT.
+
+---
+
+## Scene 7 — Closing (6s)
+> **Cue**: 1:23 – 1:29
+
+FreelanceBot. Try the live demo now.
 
 ---
 
 # Extension Setup (Chrome)
 
-## Option 1 — ElevenLabs Reader (BEST quality, recommended)
+## Option 1 — ElevenLabs Reader (BEST quality)
 
 1. Install: https://chromewebstore.google.com/detail/elevenlabs-reader/eddgfjnfemdbcnmimifpblegkfoaddom
 2. Sign in with any email → free tier
-3. In extension settings: pick voice **Adam** or **Rachel**
-4. Open `demo-reel.html?tts=off` in Chrome (the `?tts=off` disables browser TTS so it doesn't double up)
-5. Copy each scene text above → paste into extension → generate → download MP3
-6. Repeat for all 7 scenes → get 7 MP3 files
+3. Pick voice **Adam** or **Rachel** in settings
+4. Open `demo-reel.html?tts=off` (the `?tts=off` disables browser TTS so it doesn't double up)
+5. Copy each scene text above → paste → generate → download MP3
 
-## Option 2 — Speechify (fastest setup, decent quality)
+## Option 2 — Speechify
 
 1. Install: https://chromewebstore.google.com/detail/speechify-audio-reader/ljflmlehinmoeknoonhibbcfdbkynden
-2. Sign in
-3. Open `demo-reel.html?tts=off`
-4. Highlight text on page → click Speechify icon → it reads with natural voice
-5. Or paste each scene text → generate audio file
+2. Open `demo-reel.html?tts=off`
+3. Highlight text → click extension icon → reads
 
-## Option 3 — NaturalReader (free, no signup)
+## Option 3 — NaturalReader (no signup)
 
 1. Install: https://chromewebstore.google.com/detail/naturalreader-text-to-spe/momlpjpjcfmoemhephnjaakgdcaoklof
 2. Open `demo-reel.html?tts=off`
-3. Highlight text → click icon → reads
+3. Highlight → click icon → reads
 
 ---
 
 # Recording Workflow
 
-## Simplest — one take with pre-generated voice
-1. Pre-generate all 7 MP3s using ElevenLabs (Option 1 above)
-2. Combine MP3s in Audacity (free) into single `voiceover.mp3` in scene order
+**Simplest — combine into single voiceover.mp3**:
+1. Pre-generate all 7 MP3s using ElevenLabs
+2. Combine in Audacity (free) in scene order → single `voiceover.mp3`
 3. Open `demo-reel.html?tts=off` in Chrome → F11 fullscreen
-4. Start QuickTime screen recording (macOS)
-5. Start playing `voiceover.mp3` in a background tab or QuickTime audio player
-6. Immediately click "Start" on the reel
-7. Stop recording when reel finishes
-8. Result: MP4 with cinematic reel + human-quality AI voice
+4. Start QuickTime screen recording
+5. Play `voiceover.mp3` in another tab + click Start on reel simultaneously
+6. Stop when reel finishes → export
 
-## Cleanest — separate audio track, sync in editor
-1. Screen record reel silent (no audio)
-2. Open in DaVinci Resolve Free (or CapCut) → import both video + voiceover MP3
+**Cleanest — separate track, sync in editor**:
+1. Screen record reel silent
+2. Import video + `voiceover.mp3` into CapCut (free) or DaVinci Resolve
 3. Sync MP3 to scene transitions
-4. Export MP4 1080p
-
-## Extension-live — least reliable
-1. Open `demo-reel.html?tts=off` in Chrome
-2. In another tab: paste all scene text into ElevenLabs Reader
-3. Start QuickTime with "audio: computer input" so it captures both
-4. Play extension audio + click Start on reel simultaneously
-5. Sync is manual so timing may drift — trim in editor after
+4. Export MP4 1080p → upload YouTube unlisted → paste link in Ignyte submission
 
 ---
 
-# Character Counts (for free-tier budgeting)
+# Character Counts
 
-| Scene | Chars | Notes |
-|---|---|---|
-| 1 | 30 | 3 words |
-| 2 | 133 | punchy |
-| 3 | 91 | short |
-| 4 | 274 | most words |
-| 5 | 258 | most words |
-| 6 | 133 | credentials |
-| 7 | 66 | close |
-| **Total** | **985** | fits in any free tier |
+| Scene | Chars |
+|---|---|
+| 1 | 30 |
+| 2 | 51 |
+| 3 | 47 |
+| 4 | 155 |
+| 5 | 155 |
+| 6 | 40 |
+| 7 | 30 |
+| **Total** | **508** |
 
-ElevenLabs free = 10,000 chars/month. This reel uses <10% of monthly quota.
+Fits in any free tier (ElevenLabs free = 10,000 chars/month).

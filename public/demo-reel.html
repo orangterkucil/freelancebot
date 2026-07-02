@@ -566,26 +566,7 @@
     to { opacity: 1; transform: translateY(0) rotateX(0); }
   }
 
-  .browser-bar {
-    background: #f1f5f9;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 12px 20px;
-    display: flex; align-items: center; gap: 12px;
-    flex-shrink: 0;
-  }
-  .browser-bar .dots { display: flex; gap: 6px; }
-  .browser-bar .dots span { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; }
-  .browser-bar .dots span:nth-child(1) { background: #ef4444; }
-  .browser-bar .dots span:nth-child(2) { background: #f59e0b; }
-  .browser-bar .dots span:nth-child(3) { background: #22c55e; }
-  .browser-bar .url {
-    flex: 1;
-    background: white; border: 1px solid #e2e8f0;
-    padding: 6px 16px; border-radius: 8px;
-    font-family: var(--font-mono); font-size: 12px;
-    color: #64748b;
-    max-width: 800px;
-  }
+  .browser-bar { display: none; }
 
   .browser-body {
     flex: 1; position: relative;
@@ -1520,7 +1501,7 @@
   <button id="btn-toggle">⏸ Pause</button>
   <button id="btn-restart">↺ Restart</button>
   <button id="btn-hide">Hide UI (H)</button>
-  <span class="time" id="time">0:00 / 2:07</span>
+  <span class="time" id="time">0:00 / 1:29</span>
   <div class="bar"><i id="progress"></i></div>
 </div>
 
@@ -1530,31 +1511,31 @@
   // Scene definitions
   // ============================================================
   const SCENES = [
-    { id: 1, dur: 7,  tts: "FreelanceBot. Payouts on Arc.", label: "OPENING" },
-    { id: 2, dur: 12, tts: "A 300 dollar job. Two weeks later, only 220 arrives. Eighty dollars gone.", label: "PROBLEM" },
-    { id: 3, dur: 10, tts: "FreelanceBot fixes it. USDC on Arc. Verified. Released in under one second.", label: "SOLUTION" },
-    { id: 4, dur: 40, tts: "Client side: post a job. Pick applicants. Fund escrow in one signature. Agent verifies. Release.", label: "CLIENT TUTORIAL" },
-    { id: 5, dur: 40, tts: "Freelancer side: browse jobs. Apply. Deliver. Get paid on Arc, zero point eight seconds.", label: "FREELANCER TUTORIAL" },
-    { id: 6, dur: 8,  tts: "Source verified. OWASP hardened. Open source, MIT.", label: "TECH" },
-    { id: 7, dur: 10, tts: "FreelanceBot. Try the live demo now.", label: "CLOSE" },
+    { id: 1, dur: 5,  tts: "FreelanceBot. Payouts on Arc.", label: "OPENING" },
+    { id: 2, dur: 7,  tts: "300 dollar job. 220 arrives. 80 dollars lost.", label: "PROBLEM" },
+    { id: 3, dur: 6,  tts: "USDC on Arc. Verified. Released in under one second.", label: "SOLUTION" },
+    { id: 4, dur: 30, tts: "Client: post a job. Pick applicant. Fund escrow. Agent verifies. Release.", label: "CLIENT" },
+    { id: 5, dur: 30, tts: "Freelancer: browse. Apply. Deliver. Get paid instantly.", label: "FREELANCER" },
+    { id: 6, dur: 5,  tts: "Source verified. Open source, MIT.", label: "TECH" },
+    { id: 7, dur: 6,  tts: "FreelanceBot. Try it live.", label: "CLOSE" },
   ];
 
   // Frame timing per tutorial scene (offsets within scene)
   const CLIENT_STEPS = [
-    { offset: 0,  step: 0, narr: "Sign in.", url: "freelancebot-alpha.vercel.app/client" },
-    { offset: 7,  step: 1, narr: "Post a job — brief, budget, deadline.", url: "freelancebot-alpha.vercel.app/client/new-order" },
-    { offset: 14, step: 2, narr: "Pick from applicants (trust score inline).", url: "freelancebot-alpha.vercel.app/orders/7" },
-    { offset: 21, step: 3, narr: "Fund escrow — one MetaMask signature.", url: "freelancebot-alpha.vercel.app/orders/7/fund" },
-    { offset: 28, step: 4, narr: "AI agent verifies deliverable.", url: "freelancebot-alpha.vercel.app/orders/7" },
-    { offset: 34, step: 5, narr: "Release. Sub-second on Arc.", url: "freelancebot-alpha.vercel.app/orders/7#released" },
+    { offset: 0,  step: 0, narr: "Sign in." },
+    { offset: 5,  step: 1, narr: "Post a job — brief, budget, deadline." },
+    { offset: 10, step: 2, narr: "Pick from applicants (trust score inline)." },
+    { offset: 15, step: 3, narr: "Fund escrow — one MetaMask signature." },
+    { offset: 20, step: 4, narr: "AI agent verifies deliverable." },
+    { offset: 25, step: 5, narr: "Release. Sub-second on Arc." },
   ];
   const FREELANCER_STEPS = [
-    { offset: 0,  step: 0, narr: "Browse the marketplace.", url: "freelancebot-alpha.vercel.app/jobs" },
-    { offset: 7,  step: 1, narr: "Filter by your skill.", url: "freelancebot-alpha.vercel.app/jobs?field=development" },
-    { offset: 14, step: 2, narr: "Apply — quick pitch, optional counter-bid.", url: "freelancebot-alpha.vercel.app/jobs/7" },
-    { offset: 21, step: 3, narr: "Submit deliverable URL.", url: "freelancebot-alpha.vercel.app/orders/7" },
-    { offset: 28, step: 4, narr: "Agent verifies — you watch it live.", url: "freelancebot-alpha.vercel.app/orders/7" },
-    { offset: 34, step: 5, narr: "$297 USDC in your wallet. 0.8 seconds.", url: "freelancebot-alpha.vercel.app/orders/7#paid" },
+    { offset: 0,  step: 0, narr: "Browse the marketplace." },
+    { offset: 5,  step: 1, narr: "Filter by your skill." },
+    { offset: 10, step: 2, narr: "Apply — quick pitch." },
+    { offset: 15, step: 3, narr: "Submit deliverable URL." },
+    { offset: 20, step: 4, narr: "Agent verifies — you watch it live." },
+    { offset: 25, step: 5, narr: "$297 USDC in your wallet. 0.8 seconds." },
   ];
 
   const totalDuration = SCENES.reduce((s, x) => s + x.dur, 0);
@@ -1710,7 +1691,6 @@
     clearTutorialTimers();
     const body = document.getElementById('body-' + sceneId);
     const strip = document.getElementById('strip-' + sceneId);
-    const url = document.getElementById('url-' + sceneId);
     const nar = document.getElementById('nar-' + sceneId);
     const cur = document.getElementById('cur-' + sceneId);
 
@@ -1724,8 +1704,6 @@
         strip.querySelectorAll('.step').forEach(x => {
           x.classList.toggle('active', Number(x.dataset.i) === s.step);
         });
-        // url
-        url.textContent = 'https://' + s.url;
         // narrator
         nar.classList.remove('show');
         setTimeout(() => {
