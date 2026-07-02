@@ -12,6 +12,33 @@ _Anything not yet shipped goes here. Empty between releases._
 
 ---
 
+## [v0.11.3] — 2026-07-02
+
+Cinematic auto-playing demo reel at `/demo-reel.html` — 2:30 runtime, browser TTS voiceover, no MP4 required at the source.
+
+### Added
+- **`public/demo-reel.html`** — single-file cinematic demo reel, ~3000 lines. Seven scenes: logo intro (8s) → problem counter (20s) → solution flow (18s) → client tutorial 6-step (40s) → freelancer tutorial 6-step (40s) → tech credentials (12s) → closing CTAs (12s). Total 2:30. Auto-plays through with:
+  - Web Speech API TTS narration synced per scene
+  - Web Audio API SFX (whoosh, ding, cash tick)
+  - Canvas particle background with connecting lines
+  - SVG grain + scanline overlay for cinematic feel
+  - Animated cursor with click ripples inside tutorial mockups
+  - Narrator bubble that updates per step
+  - Progressive step counter chips
+  - Kinetic typography with blur→sharp entrances
+  - Controls: pause, restart, hide-UI, progress bar
+  - Keyboard shortcuts: space, r, h, f (fullscreen)
+- **Recording workflow** — user opens `demo-reel.html` in Chrome → F11 fullscreen → click canvas once to unlock audio → hit Play → QuickTime (Mac) or OBS (cross-platform) records the playback → export MP4 → upload YouTube unlisted → paste link in Ignyte submission.
+- Voice-quality upgrade path: extract TTS strings, run through ElevenLabs/Play.ht for studio voice, dub over the muted recording in DaVinci Resolve.
+
+### Why
+Manual screen recording with voiceover is a full-day production job for a solo hackathon submitter. This reel is a one-hour route to a professional-looking submission video with zero voice acting required. If browser TTS quality is insufficient, the same reel doubles as a visual bed for AI-voice dubbing.
+
+### Companion skill
+The pattern is also shipped as an installable skill (`demo-reel-builder.skill`) so future Claude sessions can produce the same kind of reel for any project by reading its README + package.json and customizing scenes.
+
+---
+
 ## [v0.11.2] — 2026-07-02
 
 Real demo asset in the README — no more TODO placeholders.

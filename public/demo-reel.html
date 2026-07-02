@@ -1,0 +1,1817 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FreelanceBot — Cinematic Demo Reel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Condiment&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #020617;
+    --bg-1: #0b1220;
+    --bg-2: #111827;
+    --ink: #f8fafc;
+    --dim: #94a3b8;
+    --dimmer: #64748b;
+    --cyan: #22d3ee;
+    --blue: #3b82f6;
+    --indigo: #6366f1;
+    --violet: #a855f7;
+    --pink: #ec4899;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --font-display: 'Anton', 'Arial Black', sans-serif;
+    --font-script: 'Condiment', cursive;
+    --font-mono: 'JetBrains Mono', 'Menlo', monospace;
+    --font-sans: 'Inter', -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    background: #000;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    cursor: none;
+  }
+
+  #stage {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 20%, rgba(59,130,246,0.15), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(168,85,247,0.12), transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% 50%, #0f172a 0%, var(--bg-0) 100%);
+    overflow: hidden;
+  }
+
+  /* subtle noise/grain overlay */
+  #grain {
+    position: absolute; inset: 0; pointer-events: none;
+    opacity: 0.4; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/></svg>");
+  }
+
+  #particles { position: absolute; inset: 0; opacity: 0.55; pointer-events: none; }
+
+  /* subtle scanning line for cinematic feel */
+  #scanline {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, transparent 0%, transparent 49%, rgba(255,255,255,0.02) 50%, transparent 51%);
+    background-size: 100% 3px;
+    opacity: 0.5;
+  }
+
+  .scene {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 700ms ease;
+    padding: 3vh 5vw;
+    pointer-events: none;
+  }
+  .scene.active { opacity: 1; pointer-events: auto; }
+
+  /* red REC dot */
+  #rec-dot {
+    position: fixed; top: 20px; right: 20px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px;
+    background: rgba(15,23,42,0.6);
+    border: 1px solid rgba(239,68,68,0.4);
+    border-radius: 999px;
+    z-index: 999;
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.15em; color: var(--red);
+    transition: opacity 400ms;
+  }
+  #rec-dot .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 12px var(--red);
+    animation: recBlink 1.4s ease infinite;
+  }
+  @keyframes recBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* ============================================================
+     SCENE 1 — Logo intro (cinematic reveal)
+     ============================================================ */
+  #scene-1 .logo-wrap {
+    position: relative; width: 260px; height: 260px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #scene-1 .halo {
+    position: absolute; inset: -80px;
+    background: radial-gradient(circle, rgba(34,211,238,0.35), transparent 60%);
+    opacity: 0;
+    animation: haloIn 1.5s ease 0.5s forwards, haloPulse 3s ease 2s infinite;
+    filter: blur(20px);
+  }
+  #scene-1 .logo-mark {
+    width: 200px; height: 200px;
+    border-radius: 48px;
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 45%, var(--indigo) 85%, var(--violet) 100%);
+    box-shadow:
+      0 40px 100px -20px rgba(34,211,238,0.6),
+      0 0 0 1px rgba(255,255,255,0.12),
+      inset 0 2px 20px rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 148px; color: white;
+    line-height: 1;
+    transform: scale(0) rotate(-180deg);
+    animation: logoIn 1.4s cubic-bezier(.34,1.56,.64,1) 0.3s forwards;
+    position: relative;
+    text-shadow: 0 4px 30px rgba(255,255,255,0.3);
+  }
+  #scene-1 .logo-mark::after {
+    content: ""; position: absolute; top: 22px; right: 22px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 24px rgba(255,255,255,1);
+    opacity: 0;
+    animation: pulseDotIn 0.4s ease 1.6s forwards, dotPulse 1.8s ease 2s infinite;
+  }
+  #scene-1 .logo-particles {
+    position: absolute; inset: 0; pointer-events: none;
+  }
+  #scene-1 .logo-particles span {
+    position: absolute; left: 50%; top: 50%;
+    width: 8px; height: 8px; border-radius: 50%;
+    opacity: 0;
+    animation: burst 1.8s cubic-bezier(.2,.9,.3,1) 1.3s forwards;
+  }
+  #scene-1 .wordmark {
+    margin-top: 44px;
+    font-family: var(--font-display);
+    font-size: 120px;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: slideUpIn 0.9s cubic-bezier(.2,.9,.3,1) 2s forwards;
+    text-shadow: 0 4px 40px rgba(255,255,255,0.15);
+  }
+  #scene-1 .tagline {
+    margin-top: 12px;
+    font-family: var(--font-script);
+    font-size: 68px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    opacity: 0;
+    animation: fadeIn 0.9s ease 2.7s forwards;
+  }
+  #scene-1 .sub {
+    margin-top: 32px;
+    font-family: var(--font-mono);
+    font-size: 20px;
+    color: var(--dim);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeIn 0.7s ease 3.3s forwards;
+    display: flex; gap: 32px; align-items: center;
+  }
+  #scene-1 .sub .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--cyan); }
+
+  @keyframes logoIn {
+    0% { transform: scale(0) rotate(-180deg); }
+    60% { transform: scale(1.15) rotate(15deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  @keyframes haloIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes haloPulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.7; } }
+  @keyframes pulseDotIn { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+  @keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,255,255,0.9); }
+    50% { box-shadow: 0 0 30px rgba(255,255,255,1), 0 0 50px rgba(34,211,238,0.7); }
+  }
+  @keyframes slideUpIn {
+    from { opacity: 0; transform: translateY(50px); filter: blur(8px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes burst {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.3); }
+  }
+
+  /* ============================================================
+     SCENE 2 — Problem (money loss)
+     ============================================================ */
+  #scene-2 { justify-content: flex-start; padding-top: 8vh; }
+  #scene-2 .kicker {
+    font-family: var(--font-mono);
+    font-size: 15px; letter-spacing: 0.3em;
+    color: var(--red); text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid rgba(239,68,68,0.4);
+    border-radius: 999px;
+    background: rgba(239,68,68,0.08);
+    margin-bottom: 24px;
+    opacity: 0; animation: fadeIn 0.6s ease 0.2s forwards;
+  }
+  #scene-2 h1 {
+    font-family: var(--font-display);
+    font-size: 96px; line-height: 1.02;
+    text-align: center; max-width: 1300px;
+    margin-bottom: 60px;
+    opacity: 0; animation: slideUpIn 0.9s ease 0.4s forwards;
+  }
+  #scene-2 h1 em {
+    color: var(--red); font-style: normal;
+    text-shadow: 0 0 40px rgba(239,68,68,0.4);
+  }
+  #scene-2 .split {
+    display: flex; align-items: center; gap: 40px;
+    width: 100%; max-width: 1500px;
+  }
+  #scene-2 .avatar {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    flex-shrink: 0;
+    opacity: 0; animation: fadeIn 0.6s ease 0.6s forwards;
+  }
+  #scene-2 .avatar .face {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--indigo));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px;
+    box-shadow: 0 20px 50px -10px rgba(59,130,246,0.5), inset 0 2px 10px rgba(255,255,255,0.15);
+  }
+  #scene-2 .avatar .who { font-family: var(--font-sans); font-size: 22px; font-weight: 700; }
+  #scene-2 .avatar .label {
+    font-family: var(--font-mono); font-size: 13px;
+    letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase;
+  }
+  #scene-2 .middle {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 24px;
+  }
+  #scene-2 .counter-box {
+    padding: 28px 56px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(15,23,42,0.4));
+    border: 1px solid rgba(239,68,68,0.3);
+    backdrop-filter: blur(12px);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    min-width: 320px;
+    box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5), 0 0 40px -10px rgba(239,68,68,0.2);
+    opacity: 0; animation: fadeIn 0.6s ease 1s forwards;
+  }
+  #scene-2 .counter-label {
+    font-family: var(--font-mono); font-size: 12px; color: var(--dim);
+    letter-spacing: 0.3em; text-transform: uppercase;
+  }
+  #scene-2 .counter-value {
+    font-family: var(--font-display); font-size: 84px;
+    background: linear-gradient(135deg, var(--red), var(--amber));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    transition: all 250ms cubic-bezier(.34,1.56,.64,1);
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(239,68,68,0.3);
+  }
+  #scene-2 .counter-value.pulse { transform: scale(1.2); }
+  #scene-2 .deductions {
+    display: flex; flex-direction: column; gap: 8px;
+    font-family: var(--font-mono); font-size: 18px;
+    color: var(--red);
+  }
+  #scene-2 .deductions div {
+    display: flex; align-items: center; gap: 12px;
+    opacity: 0; transform: translateX(-30px);
+    padding: 4px 12px;
+    border-left: 3px solid var(--red);
+    animation: slideRightIn 0.5s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  #scene-2 .deductions div:nth-child(1) { animation-delay: 1.7s; }
+  #scene-2 .deductions div:nth-child(2) { animation-delay: 2.3s; }
+  #scene-2 .deductions div:nth-child(3) { animation-delay: 2.9s; }
+  #scene-2 .deductions div:nth-child(4) { animation-delay: 3.5s; }
+  #scene-2 .clock {
+    margin-top: 20px;
+    font-family: var(--font-display);
+    font-size: 40px;
+    color: var(--amber);
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeIn 0.6s ease 4.1s forwards;
+    text-shadow: 0 0 30px rgba(245,158,11,0.4);
+  }
+  #scene-2 .verdict {
+    margin-top: 32px;
+    font-family: var(--font-display);
+    font-size: 72px;
+    color: var(--red);
+    text-shadow: 0 0 50px rgba(239,68,68,0.6);
+    opacity: 0;
+    animation: slideUpIn 0.9s ease 4.8s forwards, verdictPulse 1.4s ease 5.7s infinite;
+    letter-spacing: 0.02em;
+  }
+
+  @keyframes slideRightIn {
+    from { opacity: 0; transform: translateX(-30px); filter: blur(4px); }
+    to { opacity: 1; transform: translateX(0); filter: blur(0); }
+  }
+  @keyframes verdictPulse {
+    0%, 100% { text-shadow: 0 0 50px rgba(239,68,68,0.6); }
+    50% { text-shadow: 0 0 80px rgba(239,68,68,1); }
+  }
+
+  /* ============================================================
+     SCENE 3 — Solution
+     ============================================================ */
+  #scene-3 { justify-content: flex-start; padding-top: 8vh; }
+  #scene-3 .kicker {
+    font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.3em;
+    color: var(--green); text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid rgba(34,197,94,0.4);
+    border-radius: 999px;
+    background: rgba(34,197,94,0.08);
+    margin-bottom: 24px;
+    opacity: 0; animation: fadeIn 0.6s ease 0.2s forwards;
+  }
+  #scene-3 h1 {
+    font-family: var(--font-display);
+    font-size: 96px; line-height: 1.02;
+    text-align: center; max-width: 1300px;
+    margin-bottom: 56px;
+    opacity: 0; animation: slideUpIn 0.9s ease 0.4s forwards;
+  }
+  #scene-3 h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--cyan), var(--blue), var(--indigo));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 40px rgba(59,130,246,0.4);
+  }
+  #scene-3 .flow {
+    display: flex; align-items: center; gap: 32px;
+    width: 100%; max-width: 1500px;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+  #scene-3 .node {
+    position: relative;
+    width: 220px; height: 220px;
+    border-radius: 32px;
+    background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(15,23,42,0.5));
+    border: 1px solid rgba(148,163,184,0.25);
+    backdrop-filter: blur(10px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px;
+    opacity: 0; transform: scale(0.7);
+    box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5);
+  }
+  #scene-3 .node.n1 { animation: nodeIn 0.7s cubic-bezier(.34,1.56,.64,1) 0.8s forwards; }
+  #scene-3 .node.n2 {
+    background: linear-gradient(135deg, rgba(34,211,238,0.15), rgba(99,102,241,0.15));
+    border-color: var(--cyan);
+    box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5), 0 0 80px -15px rgba(34,211,238,0.5);
+    animation: nodeIn 0.7s cubic-bezier(.34,1.56,.64,1) 1.3s forwards, glow 2.5s ease 2.5s infinite;
+  }
+  #scene-3 .node.n3 { animation: nodeIn 0.7s cubic-bezier(.34,1.56,.64,1) 1.8s forwards; }
+  #scene-3 .node .icon { font-size: 60px; }
+  #scene-3 .node .name {
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: 0.25em; text-transform: uppercase; color: var(--dim);
+  }
+  #scene-3 .node .val { font-family: var(--font-sans); font-size: 20px; font-weight: 700; }
+  #scene-3 .connector {
+    flex: 1; height: 4px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    position: relative;
+    max-width: 130px;
+    opacity: 0;
+    animation: fadeIn 0.4s ease 2.2s forwards;
+  }
+  #scene-3 .connector::before {
+    content: ""; position: absolute;
+    top: -8px; left: 0;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 20px var(--cyan);
+    animation: travel 1.6s linear 2.6s infinite;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+  #scene-3 .steps {
+    display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+    font-family: var(--font-mono); font-size: 14px;
+    color: var(--dim);
+    opacity: 0;
+    animation: fadeIn 0.6s ease 3.2s forwards;
+    margin-bottom: 24px;
+  }
+  #scene-3 .steps span {
+    padding: 10px 20px;
+    background: rgba(15,23,42,0.6);
+    border: 1px solid rgba(148,163,184,0.2);
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+  }
+  #scene-3 .steps span.done { color: var(--green); border-color: rgba(34,197,94,0.5); background: rgba(34,197,94,0.06); }
+  #scene-3 .verdict {
+    display: flex; align-items: baseline; gap: 24px;
+    opacity: 0;
+    animation: slideUpIn 0.9s ease 4s forwards;
+  }
+  #scene-3 .verdict .num {
+    font-family: var(--font-display);
+    font-size: 128px;
+    background: linear-gradient(135deg, var(--green), var(--cyan));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 40px rgba(34,197,94,0.3);
+    line-height: 1;
+  }
+  #scene-3 .verdict .unit { font-family: var(--font-mono); font-size: 32px; color: var(--dim); }
+  #scene-3 .timer {
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--green);
+    letter-spacing: 0.15em;
+    opacity: 0;
+    animation: fadeIn 0.6s ease 4.7s forwards;
+    text-shadow: 0 0 30px rgba(34,197,94,0.4);
+  }
+
+  @keyframes nodeIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5), 0 0 80px -15px rgba(34,211,238,0.5); }
+    50% { box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5), 0 0 100px -10px rgba(34,211,238,0.8); }
+  }
+  @keyframes travel {
+    0% { left: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+
+  /* ============================================================
+     SCENES 4 & 5 — Tutorial (client + freelancer)
+     ============================================================ */
+  .tutorial { justify-content: flex-start; padding-top: 4vh; }
+  .tutorial .kicker {
+    font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+    opacity: 0; animation: fadeIn 0.5s ease 0.1s forwards;
+  }
+  .tutorial h1 {
+    font-family: var(--font-display);
+    font-size: 80px; line-height: 1.02;
+    text-align: center;
+    margin-bottom: 28px;
+    opacity: 0; animation: slideUpIn 0.8s ease 0.3s forwards;
+  }
+  .tutorial h1 em { font-style: normal; }
+  #scene-4 .kicker { color: var(--cyan); border: 1px solid rgba(34,211,238,0.4); background: rgba(34,211,238,0.08); }
+  #scene-5 .kicker { color: var(--violet); border: 1px solid rgba(168,85,247,0.4); background: rgba(168,85,247,0.08); }
+  #scene-4 h1 em { background: linear-gradient(135deg, var(--cyan), var(--blue)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #scene-5 h1 em { background: linear-gradient(135deg, var(--violet), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .steps-strip {
+    display: flex; gap: 14px; margin-bottom: 24px;
+    opacity: 0; animation: fadeIn 0.6s ease 0.5s forwards;
+  }
+  .steps-strip .step {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.6);
+    border: 1px solid rgba(148,163,184,0.2);
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--dim); letter-spacing: 0.15em; text-transform: uppercase;
+    transition: all 300ms;
+  }
+  .steps-strip .step.active {
+    background: rgba(34,211,238,0.15); border-color: var(--cyan); color: var(--cyan);
+    box-shadow: 0 0 20px -5px rgba(34,211,238,0.4);
+  }
+  #scene-5 .steps-strip .step.active {
+    background: rgba(168,85,247,0.15); border-color: var(--violet); color: var(--violet);
+    box-shadow: 0 0 20px -5px rgba(168,85,247,0.4);
+  }
+
+  .stage-box {
+    width: 92%; max-width: 1500px;
+    aspect-ratio: 16/8;
+    background: #f8fafc;
+    color: #0f172a;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow:
+      0 60px 120px -30px rgba(0,0,0,0.7),
+      0 0 0 1px rgba(148,163,184,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    display: flex; flex-direction: column;
+    opacity: 0; transform: translateY(40px) rotateX(3deg);
+    animation: stageIn 0.9s cubic-bezier(.2,.9,.3,1) 0.7s forwards;
+    position: relative;
+    transform-origin: center bottom;
+  }
+  @keyframes stageIn {
+    from { opacity: 0; transform: translateY(40px) rotateX(3deg); }
+    to { opacity: 1; transform: translateY(0) rotateX(0); }
+  }
+
+  .browser-bar {
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .browser-bar .dots { display: flex; gap: 6px; }
+  .browser-bar .dots span { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; }
+  .browser-bar .dots span:nth-child(1) { background: #ef4444; }
+  .browser-bar .dots span:nth-child(2) { background: #f59e0b; }
+  .browser-bar .dots span:nth-child(3) { background: #22c55e; }
+  .browser-bar .url {
+    flex: 1;
+    background: white; border: 1px solid #e2e8f0;
+    padding: 6px 16px; border-radius: 8px;
+    font-family: var(--font-mono); font-size: 12px;
+    color: #64748b;
+    max-width: 800px;
+  }
+
+  .browser-body {
+    flex: 1; position: relative;
+    background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+    overflow: hidden;
+  }
+  .browser-body > .fr {
+    position: absolute; inset: 0;
+    padding: 24px 40px;
+    display: flex; flex-direction: column;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 500ms ease, transform 500ms ease;
+    pointer-events: none;
+  }
+  .browser-body > .fr.active { opacity: 1; transform: translateY(0); }
+
+  /* narrator caption bubble */
+  .narrator {
+    position: absolute; bottom: 24px; left: 24px;
+    max-width: 460px;
+    padding: 16px 20px;
+    background: rgba(15,23,42,0.92);
+    color: var(--ink);
+    border-radius: 16px;
+    border: 1px solid rgba(148,163,184,0.3);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.4);
+    font-family: var(--font-sans); font-size: 15px; line-height: 1.5;
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 400ms ease, transform 400ms ease;
+    z-index: 5;
+  }
+  .narrator.show { opacity: 1; transform: translateY(0); }
+  .narrator .step-num {
+    display: inline-block; padding: 3px 10px; border-radius: 6px;
+    background: var(--cyan); color: #0f172a;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  #scene-5 .narrator .step-num { background: var(--violet); color: white; }
+  .narrator .txt { color: var(--ink); }
+
+  /* animated cursor */
+  .cursor {
+    position: absolute;
+    width: 28px; height: 28px;
+    pointer-events: none;
+    transition: transform 900ms cubic-bezier(.4,0,.2,1), opacity 300ms;
+    z-index: 10;
+    opacity: 0;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.35));
+  }
+  .cursor.show { opacity: 1; }
+  .cursor svg { width: 100%; height: 100%; }
+  .click-ripple {
+    position: absolute; width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--cyan);
+    pointer-events: none;
+    z-index: 9;
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple 0.8s ease-out forwards;
+  }
+  @keyframes ripple {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+  }
+
+  /* frame content styles (light UI) */
+  .flogo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .flogo .mk {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue), var(--indigo));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 24px; color: white;
+  }
+  .flogo .wm {
+    font-family: var(--font-display); font-size: 20px; color: #0f172a;
+    letter-spacing: 0.02em;
+  }
+  .breadcrumb {
+    margin-left: auto;
+    font-family: var(--font-mono); font-size: 11px;
+    color: #64748b; letter-spacing: 0.15em; text-transform: uppercase;
+  }
+
+  h2.frame-h {
+    font-family: var(--font-display);
+    font-size: 44px; color: #0f172a;
+    margin: 8px 0 12px;
+  }
+  p.frame-p {
+    font-family: var(--font-mono); font-size: 13px;
+    color: #475569;
+    max-width: 720px; line-height: 1.6;
+  }
+
+  /* form-like mockups */
+  .form-row {
+    display: flex; flex-direction: column; gap: 6px;
+    margin-top: 16px;
+    max-width: 640px;
+  }
+  .form-row label {
+    font-family: var(--font-mono); font-size: 11px; color: #64748b;
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .form-row .input {
+    padding: 12px 16px; background: white;
+    border: 1px solid #e2e8f0; border-radius: 10px;
+    font-family: var(--font-mono); font-size: 13px; color: #0f172a;
+    min-width: 320px;
+  }
+  .form-row .input.focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+  }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    background: white; border: 1px solid #e2e8f0;
+    font-family: var(--font-mono); font-size: 12px;
+    color: #475569;
+    transition: all 200ms;
+  }
+  .chip.active {
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    color: white; border-color: transparent;
+    box-shadow: 0 6px 16px -6px rgba(59,130,246,0.6);
+  }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 20px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .btn.primary {
+    background: linear-gradient(135deg, var(--cyan), var(--blue), var(--indigo));
+    color: white;
+    box-shadow: 0 10px 30px -8px rgba(59,130,246,0.6);
+  }
+  .btn.ghost { background: white; border: 1px solid #e2e8f0; color: #0f172a; }
+  .btn.success { background: linear-gradient(135deg, #16a34a, #22c55e); color: white; box-shadow: 0 10px 24px -8px rgba(34,197,94,0.5); }
+
+  .job-card {
+    padding: 20px 24px;
+    background: white; border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    max-width: 620px;
+    box-shadow: 0 14px 28px -12px rgba(0,0,0,0.08);
+  }
+  .job-card .tag {
+    display: inline-block; padding: 4px 12px; border-radius: 999px;
+    background: #f1f5f9;
+    font-family: var(--font-mono); font-size: 11px; color: #64748b;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .job-card .title { font-family: var(--font-display); font-size: 30px; color: #0f172a; margin: 10px 0 6px; }
+  .job-card .brief { font-family: var(--font-mono); font-size: 12px; color: #475569; margin-bottom: 14px; }
+  .job-card .foot {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-top: 12px; border-top: 1px dashed #e2e8f0;
+  }
+  .job-card .amt { font-family: var(--font-display); font-size: 30px; color: var(--blue); }
+  .job-card .due { font-family: var(--font-mono); font-size: 11px; color: #94a3b8; letter-spacing: 0.05em; }
+
+  .app-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px;
+    background: white; border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    max-width: 620px;
+    margin-top: 10px;
+  }
+  .app-item .who { font-family: var(--font-mono); font-size: 13px; color: #0f172a; }
+  .app-item .pitch { font-size: 12px; color: #64748b; margin-top: 3px; }
+  .app-item .actions { margin-left: auto; display: flex; gap: 8px; }
+  .app-item .btn-sm { padding: 7px 14px; font-size: 11px; border-radius: 8px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+  .btn-accept { background: linear-gradient(135deg, var(--cyan), var(--blue)); color: white; }
+  .btn-reject { background: #f1f5f9; color: #64748b; }
+
+  .metamask-modal {
+    background: white; border-radius: 20px;
+    padding: 24px 28px;
+    max-width: 460px;
+    box-shadow: 0 40px 80px -20px rgba(0,0,0,0.25);
+    border: 1px solid #e2e8f0;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .metamask-modal .header {
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;
+    font-family: var(--font-mono); font-size: 12px; color: #64748b;
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .metamask-modal .fox {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: linear-gradient(135deg, #f59e0b, #dc2626);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .metamask-modal .body { display: flex; flex-direction: column; gap: 10px; }
+  .metamask-modal .field {
+    display: flex; justify-content: space-between;
+    padding: 10px 12px; background: #f8fafc; border-radius: 8px;
+    font-family: var(--font-mono); font-size: 12px;
+  }
+  .metamask-modal .field span { color: #64748b; }
+  .metamask-modal .field strong { color: #0f172a; font-weight: 700; }
+  .metamask-modal .btns { display: flex; gap: 8px; margin-top: 6px; }
+  .metamask-modal .btns .btn { flex: 1; justify-content: center; font-size: 11px; padding: 10px 12px; }
+
+  .verdict-card {
+    background: white; border-radius: 20px;
+    padding: 24px 28px; max-width: 640px;
+    border: 2px solid #22c55e;
+    box-shadow: 0 24px 48px -14px rgba(34,197,94,0.28), 0 0 0 4px rgba(34,197,94,0.06);
+  }
+  .verdict-card .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 999px;
+    background: #dcfce7; color: #15803d;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .verdict-card h3 { font-family: var(--font-display); font-size: 28px; color: #0f172a; margin: 12px 0 6px; }
+  .verdict-card .checks { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; font-family: var(--font-mono); font-size: 13px; color: #15803d; }
+  .verdict-card .check { display: flex; align-items: center; gap: 10px; }
+  .verdict-card .check .tick {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #22c55e; color: white; font-weight: bold; font-size: 12px;
+  }
+
+  .release-card {
+    background: white; border-radius: 20px;
+    padding: 32px 40px; max-width: 680px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 40px 80px -20px rgba(0,0,0,0.2);
+  }
+  .release-card .tx { font-family: var(--font-mono); font-size: 11px; color: #94a3b8; margin-bottom: 12px; letter-spacing: 0.05em; }
+  .release-card .amt {
+    font-family: var(--font-display); font-size: 112px;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    line-height: 1;
+  }
+  .release-card .to { font-family: var(--font-mono); font-size: 13px; color: #475569; margin-top: 6px; }
+  .release-card .time {
+    margin-top: 18px;
+    padding: 12px 16px; background: #f0fdf4;
+    border-radius: 10px; border-left: 3px solid #22c55e;
+    font-family: var(--font-mono); font-size: 12px; color: #15803d;
+  }
+
+  /* ============================================================
+     SCENE 6 — Under the hood
+     ============================================================ */
+  #scene-6 { justify-content: flex-start; padding-top: 10vh; }
+  #scene-6 .kicker {
+    font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.3em;
+    color: var(--cyan); text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid rgba(34,211,238,0.4);
+    border-radius: 999px;
+    background: rgba(34,211,238,0.08);
+    margin-bottom: 24px;
+    opacity: 0; animation: fadeIn 0.6s ease 0.2s forwards;
+  }
+  #scene-6 h1 {
+    font-family: var(--font-display);
+    font-size: 96px; line-height: 1.02;
+    text-align: center;
+    margin-bottom: 48px;
+    opacity: 0; animation: slideUpIn 0.9s ease 0.4s forwards;
+  }
+  #scene-6 .diagram {
+    width: 100%; max-width: 1300px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
+    margin-bottom: 48px;
+  }
+  #scene-6 .box {
+    padding: 36px 28px;
+    background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(15,23,42,0.5));
+    border: 1px solid rgba(148,163,184,0.25);
+    border-radius: 24px;
+    backdrop-filter: blur(10px);
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    opacity: 0; transform: translateY(30px);
+    animation: slideUpIn 0.8s cubic-bezier(.2,.9,.3,1) forwards;
+    box-shadow: 0 20px 50px -10px rgba(0,0,0,0.4);
+  }
+  #scene-6 .box:nth-child(1) { animation-delay: 0.7s; }
+  #scene-6 .box:nth-child(2) { animation-delay: 1s; }
+  #scene-6 .box:nth-child(3) { animation-delay: 1.3s; }
+  #scene-6 .box .num {
+    font-family: var(--font-display); font-size: 80px;
+    background: linear-gradient(135deg, var(--cyan), var(--indigo));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    line-height: 1;
+  }
+  #scene-6 .box .cap {
+    font-family: var(--font-mono); font-size: 13px;
+    letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase;
+    text-align: center;
+  }
+  #scene-6 .box .desc {
+    font-family: var(--font-sans); font-size: 15px;
+    color: var(--ink); opacity: 0.9;
+    text-align: center; max-width: 300px;
+    line-height: 1.6;
+  }
+  #scene-6 .badges {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    opacity: 0;
+    animation: fadeIn 0.7s ease 2s forwards;
+  }
+  #scene-6 .badges span {
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-family: var(--font-mono); font-size: 13px;
+    background: rgba(15,23,42,0.7);
+    border: 1px solid rgba(148,163,184,0.3);
+    backdrop-filter: blur(8px);
+  }
+  #scene-6 .badges .verified { color: var(--green); border-color: rgba(34,197,94,0.5); }
+  #scene-6 .badges .hardened { color: var(--violet); border-color: rgba(168,85,247,0.5); }
+  #scene-6 .badges .open { color: var(--cyan); border-color: rgba(34,211,238,0.5); }
+
+  /* ============================================================
+     SCENE 7 — Closing
+     ============================================================ */
+  #scene-7 .final-logo {
+    width: 150px; height: 150px;
+    border-radius: 36px;
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 50%, var(--indigo) 100%);
+    box-shadow: 0 40px 80px -20px rgba(34,211,238,0.7);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 108px; color: white;
+    line-height: 1;
+    opacity: 0;
+    animation: slideUpIn 0.9s ease 0.1s forwards, dotPulse 2s ease 1s infinite;
+  }
+  #scene-7 h1 {
+    margin-top: 24px;
+    font-family: var(--font-display); font-size: 108px;
+    opacity: 0; animation: slideUpIn 0.9s ease 0.4s forwards;
+    background: linear-gradient(135deg, #fff, #cbd5e1);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  #scene-7 .script {
+    font-family: var(--font-script); font-size: 68px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    margin-top: 8px;
+    opacity: 0; animation: fadeIn 0.9s ease 0.9s forwards;
+  }
+  #scene-7 .stats {
+    margin-top: 44px;
+    display: flex; gap: 60px;
+    opacity: 0; animation: fadeIn 0.9s ease 1.4s forwards;
+  }
+  #scene-7 .stats .item { text-align: center; }
+  #scene-7 .stats .item .num {
+    font-family: var(--font-display); font-size: 60px;
+    background: linear-gradient(135deg, var(--cyan), var(--indigo));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  #scene-7 .stats .item .lbl {
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--dim); letter-spacing: 0.2em; text-transform: uppercase;
+    margin-top: 4px;
+  }
+  #scene-7 .ctas {
+    margin-top: 52px;
+    display: flex; gap: 20px;
+    opacity: 0; animation: fadeIn 0.9s ease 1.8s forwards;
+  }
+  #scene-7 .cta {
+    padding: 16px 32px; border-radius: 14px;
+    font-family: var(--font-mono); font-size: 14px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  #scene-7 .cta.primary {
+    background: linear-gradient(135deg, var(--cyan), var(--blue), var(--indigo));
+    color: white;
+    box-shadow: 0 12px 32px -8px rgba(59,130,246,0.6);
+  }
+  #scene-7 .cta.secondary {
+    background: rgba(15,23,42,0.6);
+    border: 1px solid rgba(148,163,184,0.3);
+    color: var(--ink);
+  }
+  #scene-7 .footer {
+    margin-top: 52px;
+    font-family: var(--font-mono); font-size: 13px;
+    color: var(--dim); letter-spacing: 0.15em;
+    text-align: center;
+    opacity: 0; animation: fadeIn 0.9s ease 2.4s forwards;
+  }
+  #scene-7 .footer span { color: var(--cyan); }
+
+  /* ============================================================
+     Controls
+     ============================================================ */
+  #controls {
+    position: fixed; bottom: 20px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 10px; align-items: center;
+    padding: 10px 16px;
+    background: rgba(15,23,42,0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(148,163,184,0.3);
+    border-radius: 999px;
+    font-family: var(--font-mono); font-size: 12px;
+    z-index: 1000;
+    transition: opacity 400ms;
+  }
+  #controls.hidden { opacity: 0; pointer-events: none; }
+  #controls button {
+    background: transparent; border: none; color: var(--ink);
+    cursor: pointer; font-family: inherit; font-size: 12px;
+    padding: 5px 12px; border-radius: 8px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  #controls button:hover { background: rgba(255,255,255,0.1); }
+  #controls .time { color: var(--dim); padding: 0 10px; }
+  #controls .bar {
+    width: 240px; height: 4px;
+    background: rgba(255,255,255,0.1); border-radius: 2px;
+    overflow: hidden;
+  }
+  #controls .bar > i {
+    display: block; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--cyan), var(--indigo));
+    transition: width 200ms linear;
+  }
+
+  #scene-label {
+    position: fixed; top: 20px; left: 20px;
+    padding: 8px 14px;
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.2em; color: var(--dim);
+    background: rgba(15,23,42,0.7);
+    border: 1px solid rgba(148,163,184,0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 8px; z-index: 999;
+    transition: opacity 400ms;
+  }
+  #scene-label.hidden { opacity: 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="particles"></canvas>
+  <div id="grain"></div>
+  <div id="scanline"></div>
+
+  <!-- ============================================================
+       Scene 1 — Logo intro
+       ============================================================ -->
+  <div class="scene" id="scene-1">
+    <div class="logo-wrap">
+      <div class="halo"></div>
+      <div class="logo-particles" id="logo-particles"></div>
+      <div class="logo-mark">F</div>
+    </div>
+    <div class="wordmark">FREELANCEBOT</div>
+    <div class="tagline">payouts on arc</div>
+    <div class="sub">
+      <span>USDC ESCROW</span><span class="dot"></span>
+      <span>AI AGENT</span><span class="dot"></span>
+      <span>SUB-SECOND</span>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       Scene 2 — Problem
+       ============================================================ -->
+  <div class="scene" id="scene-2">
+    <div class="kicker">The problem</div>
+    <h1>A $300 job. <em>$220 arrives.</em><br/>Two weeks later.</h1>
+    <div class="split">
+      <div class="avatar">
+        <div class="face">🇺🇸</div>
+        <div class="who">Client, NYC</div>
+        <div class="label">sends $300</div>
+      </div>
+      <div class="middle">
+        <div class="counter-box">
+          <div class="counter-label">Net to freelancer</div>
+          <div class="counter-value" id="counter-2">$300</div>
+        </div>
+        <div class="deductions">
+          <div>− $25 &nbsp;·&nbsp; SWIFT wire fee</div>
+          <div>− $18 &nbsp;·&nbsp; FX spread (3–5%)</div>
+          <div>− $30 &nbsp;·&nbsp; Upwork commission</div>
+          <div>− $7 &nbsp;·&nbsp; withdrawal fee</div>
+        </div>
+        <div class="clock">⏱ 14 DAYS WAITING</div>
+      </div>
+      <div class="avatar">
+        <div class="face">🇮🇩</div>
+        <div class="who">Designer, Jakarta</div>
+        <div class="label">receives $220</div>
+      </div>
+    </div>
+    <div class="verdict">$80 LOST. 14 DAYS GONE.</div>
+  </div>
+
+  <!-- ============================================================
+       Scene 3 — Solution
+       ============================================================ -->
+  <div class="scene" id="scene-3">
+    <div class="kicker">The fix</div>
+    <h1>USDC on Arc. <em>AI agent in the middle.</em></h1>
+    <div class="flow">
+      <div class="node n1">
+        <div class="icon">🇺🇸</div>
+        <div class="name">Client</div>
+        <div class="val">$300 USDC</div>
+      </div>
+      <div class="connector"></div>
+      <div class="node n2">
+        <div class="icon">🤖</div>
+        <div class="name">FreelanceBot</div>
+        <div class="val">Escrow + verify</div>
+      </div>
+      <div class="connector"></div>
+      <div class="node n3">
+        <div class="icon">🇮🇩</div>
+        <div class="name">Freelancer</div>
+        <div class="val">$297 USDC</div>
+      </div>
+    </div>
+    <div class="steps">
+      <span class="done">✓ Escrow funded</span>
+      <span class="done">✓ Agent verified</span>
+      <span class="done">✓ Released on Arc</span>
+    </div>
+    <div class="verdict">
+      <div class="num">$297</div>
+      <div class="unit">to freelancer · 0.8 seconds</div>
+    </div>
+    <div class="timer">+22% MORE INCOME · 400× FASTER</div>
+  </div>
+
+  <!-- ============================================================
+       Scene 4 — Tutorial: As a Client
+       ============================================================ -->
+  <div class="scene tutorial" id="scene-4">
+    <div class="kicker">Tutorial · Part 1</div>
+    <h1>As a <em>Client</em> — post + release in 6 steps</h1>
+    <div class="steps-strip" id="strip-4">
+      <div class="step" data-i="0">1 · Sign in</div>
+      <div class="step" data-i="1">2 · Post job</div>
+      <div class="step" data-i="2">3 · Review apps</div>
+      <div class="step" data-i="3">4 · Fund escrow</div>
+      <div class="step" data-i="4">5 · Agent verdict</div>
+      <div class="step" data-i="5">6 · Release</div>
+    </div>
+    <div class="stage-box">
+      <div class="browser-bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="url" id="url-4">https://freelancebot-alpha.vercel.app/client</div>
+      </div>
+      <div class="browser-body" id="body-4">
+        <!-- Frame 4.1: Sign in -->
+        <div class="fr" data-i="0">
+          <div class="flogo"><div class="mk">F</div><div class="wm">FREELANCEBOT</div><div class="breadcrumb">Client / Sign in</div></div>
+          <h2 class="frame-h">Sign in as client</h2>
+          <p class="frame-p">Demo mode uses email only. In v1.2 we replace this with magic-link + embedded wallet via Circle Wallets. No passwords.</p>
+          <div class="form-row">
+            <label>Your email</label>
+            <div class="input focus">nyc-client@example.com</div>
+          </div>
+          <div style="margin-top: 20px;"><span class="btn primary">Continue →</span></div>
+        </div>
+        <!-- Frame 4.2: Post job -->
+        <div class="fr" data-i="1">
+          <div class="flogo"><div class="mk">F</div><div class="wm">FREELANCEBOT</div><div class="breadcrumb">Client / New order</div></div>
+          <h2 class="frame-h">Post a new job</h2>
+          <div class="chips">
+            <div class="chip">🎨 Design</div>
+            <div class="chip active">⚙ Development</div>
+            <div class="chip">✍ Writing</div>
+            <div class="chip">🎬 Video</div>
+            <div class="chip">📣 Marketing</div>
+          </div>
+          <div class="form-row" style="max-width: 720px;">
+            <label>Title</label>
+            <div class="input focus">Build a landing page in Next.js</div>
+          </div>
+          <div class="form-row">
+            <label>Brief</label>
+            <div class="input">Tailwind, minimal, mobile-first. Ship by Friday. Include hero + 3 sections.</div>
+          </div>
+          <div style="display: flex; gap: 16px; margin-top: 12px;">
+            <div class="form-row" style="max-width: 200px;">
+              <label>Budget (USDC)</label>
+              <div class="input">300</div>
+            </div>
+            <div class="form-row" style="max-width: 200px;">
+              <label>Deadline</label>
+              <div class="input">2026-07-08</div>
+            </div>
+          </div>
+          <div style="margin-top: 20px;"><span class="btn primary">Post to marketplace</span></div>
+        </div>
+        <!-- Frame 4.3: Review applications -->
+        <div class="fr" data-i="2">
+          <div class="flogo"><div class="mk">F</div><div class="wm">FREELANCEBOT</div><div class="breadcrumb">Client / Order #7 / Applicants</div></div>
+          <h2 class="frame-h">3 freelancers applied</h2>
+          <p class="frame-p">Pick one. Their trust score comes from ratings on prior released orders.</p>
+          <div class="app-item">
+            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);flex-shrink:0;"></div>
+            <div>
+              <div class="who">designer@jakarta.com <span style="padding:2px 8px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;margin-left:8px;">★ 4.9 · 12 jobs</span></div>
+              <div class="pitch">"I've built 20+ landing pages in Next.js. Portfolio: landings.dev"</div>
+            </div>
+            <div class="actions">
+              <span class="btn-sm btn-accept">Accept</span>
+              <span class="btn-sm btn-reject">Reject</span>
+            </div>
+          </div>
+          <div class="app-item">
+            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#22d3ee,#3b82f6);flex-shrink:0;"></div>
+            <div>
+              <div class="who">bali@dev.io <span style="padding:2px 8px;border-radius:999px;background:#f1f5f9;color:#64748b;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;margin-left:8px;">new</span></div>
+              <div class="pitch">"Junior dev, $250 counter-bid. Fast delivery."</div>
+            </div>
+            <div class="actions">
+              <span class="btn-sm btn-accept">Accept</span>
+              <span class="btn-sm btn-reject">Reject</span>
+            </div>
+          </div>
+        </div>
+        <!-- Frame 4.4: Fund escrow (MetaMask) -->
+        <div class="fr" data-i="3">
+          <div class="flogo"><div class="mk">F</div><div class="wm">FREELANCEBOT</div><div class="breadcrumb">Client / Order #7 / Fund</div></div>
+          <h2 class="frame-h">Fund the escrow</h2>
+          <p class="frame-p">Contract pulls USDC from your wallet on Arc Testnet. Approve the transaction in MetaMask.</p>
+          <div class="metamask-modal" style="margin-top: 20px;">
+            <div class="header">
+              <div class="fox">🦊</div>
+              <div>MetaMask · Arc Testnet · Sign transaction</div>
+            </div>
+            <div class="body">
+              <div class="field"><span>Contract</span><strong>FreelanceEscrow · 0xA8CA…3ae4</strong></div>
+              <div class="field"><span>Function</span><strong>createAndFund(freelancer, 300, brief)</strong></div>
+              <div class="field"><span>Amount</span><strong>300.00 USDC</strong></div>
+              <div class="field"><span>Gas (USDC)</span><strong>≈ $0.008</strong></div>
+            </div>
+            <div class="btns">
+              <span class="btn ghost">Cancel</span>
+              <span class="btn primary">Sign & fund →</span>
+            </div>
+          </div>
+        </div>
+        <!-- Frame 4.5: Agent verdict -->
+        <div class="fr" data-i="4">
+          <div class="flogo"><div class="mk">F</div><div class="wm">FREELANCEBOT</div><div class="breadcrumb">Client / Order #7 / Verdict</div></div>
+          <h2 class="frame-h">Deliverable submitted · agent verdict</h2>
+          <p class="frame-p">Freelancer submitted the URL. The agent ran URL reachability, deadline, and brief alignment. Server-derived verdict — not the LLM's claim.</p>
+          <div class="verdict-card" style="margin-top: 16px;">
+            <div class="pill">✓ Ready to release</div>
+            <h3>All checks passed</h3>
+            <div class="checks">
+              <div class="check"><span class="tick">✓</span> URL reachable · https://landing.dev</div>
+              <div class="check"><span class="tick">✓</span> Deadline met · 2 days early</div>
+              <div class="check"><span class="tick">✓</span> Brief alignment · matches</div>
+              <div class="check"><span class="tick">✓</span> Confidence · high</div>
+            </div>
+            <div style="margin-top: 18px; display: flex; gap: 10px;">
+              <span class="btn success">Approve &amp; release →</span>
+              <span class="btn ghost">Hold for review</span>
+            </div>
+          </div>
+        </div>
+        <!-- Frame 4.6: Released -->
+        <div class="fr" data-i="5">
+          <div class="flogo"><div class="mk">F</div><div class="wm">FREELANCEBOT</div><div class="breadcrumb">Client / Order #7 / Released ✓</div></div>
+          <h2 class="frame-h">Released. On-chain confirmed.</h2>
+          <div class="release-card" style="margin-top: 12px;">
+            <div class="tx">tx 0x9f8c…1a4d · Arc Testnet · block #4,281,551 · confirmed</div>
+            <div class="amt">$297</div>
+            <div class="to">USDC to designer@jakarta.com · minus 1% platform fee</div>
+            <div class="time">⚡ Settlement: 0.8 seconds · gas: $0.008 · finality: 1 block</div>
+          </div>
+        </div>
+        <!-- narrator + cursor -->
+        <div class="narrator" id="nar-4">
+          <div class="step-num">Step 1 of 6</div>
+          <div class="txt">Enter your email to sign in as client.</div>
+        </div>
+        <div class="cursor" id="cur-4">
+          <svg viewBox="0 0 24 24"><path fill="#0f172a" stroke="white" stroke-width="1.5" stroke-linejoin="round" d="M3,2 L21,11 L12,13 L10,22 Z"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       Scene 5 — Tutorial: As a Freelancer
+       ============================================================ -->
+  <div class="scene tutorial" id="scene-5">
+    <div class="kicker">Tutorial · Part 2</div>
+    <h1>As a <em>Freelancer</em> — apply + get paid in 6 steps</h1>
+    <div class="steps-strip" id="strip-5">
+      <div class="step" data-i="0">1 · Browse</div>
+      <div class="step" data-i="1">2 · Filter</div>
+      <div class="step" data-i="2">3 · Apply</div>
+      <div class="step" data-i="3">4 · Deliver</div>
+      <div class="step" data-i="4">5 · Verify</div>
+      <div class="step" data-i="5">6 · Get paid</div>
+    </div>
+    <div class="stage-box">
+      <div class="browser-bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="url" id="url-5">https://freelancebot-alpha.vercel.app/jobs</div>
+      </div>
+      <div class="browser-body" id="body-5">
+        <!-- 5.1 Browse -->
+        <div class="fr" data-i="0">
+          <div class="flogo"><div class="mk">F</div><div class="wm">MARKETPLACE</div><div class="breadcrumb">Freelancer / Browse</div></div>
+          <h2 class="frame-h">Marketplace</h2>
+          <p class="frame-p">Every public job posted by any client, ready for one-click apply.</p>
+          <div class="chips">
+            <div class="chip active">all</div>
+            <div class="chip">🎨 design</div>
+            <div class="chip">⚙ development</div>
+            <div class="chip">✍ writing</div>
+            <div class="chip">🎬 video</div>
+            <div class="chip">📣 marketing</div>
+          </div>
+          <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px;">
+            <div class="job-card" style="flex: 1; min-width: 320px;">
+              <div class="tag">Development</div>
+              <div class="title">Build a landing page in Next.js</div>
+              <div class="brief">Tailwind, mobile-first. Ship by Friday.</div>
+              <div class="foot"><div class="amt">$300 USDC</div><div class="due">Due 7/8/2026</div></div>
+            </div>
+            <div class="job-card" style="flex: 1; min-width: 320px;">
+              <div class="tag">Design</div>
+              <div class="title">Brand identity + 3 logo variants</div>
+              <div class="brief">Modern, minimal. SVG deliverables.</div>
+              <div class="foot"><div class="amt">$200 USDC</div><div class="due">Due 7/12/2026</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- 5.2 Filter -->
+        <div class="fr" data-i="1">
+          <div class="flogo"><div class="mk">F</div><div class="wm">MARKETPLACE</div><div class="breadcrumb">Freelancer / Filter: Development</div></div>
+          <h2 class="frame-h">Filter by your skill</h2>
+          <p class="frame-p">One click filters by category — Design, Development, Writing, Video, Marketing, Research, Other.</p>
+          <div class="chips">
+            <div class="chip">all</div>
+            <div class="chip">🎨 design</div>
+            <div class="chip active">⚙ development</div>
+            <div class="chip">✍ writing</div>
+            <div class="chip">🎬 video</div>
+            <div class="chip">📣 marketing</div>
+          </div>
+          <div class="job-card" style="margin-top: 8px;">
+            <div class="tag">Development</div>
+            <div class="title">Build a landing page in Next.js</div>
+            <div class="brief">Tailwind, mobile-first. Ship by Friday. Include hero + 3 sections.</div>
+            <div class="foot"><div class="amt">$300 USDC</div><div class="due">Due 7/8/2026</div></div>
+          </div>
+          <div style="margin-top: 12px; font-family: var(--font-mono); font-size: 12px; color: #64748b;">1 job found · sorted by newest</div>
+        </div>
+        <!-- 5.3 Apply -->
+        <div class="fr" data-i="2">
+          <div class="flogo"><div class="mk">F</div><div class="wm">MARKETPLACE</div><div class="breadcrumb">Freelancer / Job #7 / Apply</div></div>
+          <h2 class="frame-h">Apply to this job</h2>
+          <p class="frame-p">Pitch why you're a good fit. Optional counter-bid — leave blank to accept the posted amount.</p>
+          <div class="form-row">
+            <label>Your email</label>
+            <div class="input">designer@jakarta.com</div>
+          </div>
+          <div class="form-row">
+            <label>Pitch</label>
+            <div class="input focus" style="min-height: 60px;">I've built 20+ landing pages in Next.js. Portfolio: landings.dev. I can ship this by Thursday.</div>
+          </div>
+          <div class="form-row" style="max-width: 240px;">
+            <label>Counter-bid (optional)</label>
+            <div class="input">— leave blank —</div>
+          </div>
+          <div style="margin-top: 20px;"><span class="btn primary">Send application →</span></div>
+        </div>
+        <!-- 5.4 Deliver -->
+        <div class="fr" data-i="3">
+          <div class="flogo"><div class="mk">F</div><div class="wm">FREELANCEBOT</div><div class="breadcrumb">Freelancer / Order #7 / Deliver</div></div>
+          <h2 class="frame-h">Accepted. Now deliver.</h2>
+          <p class="frame-p">Client accepted your application. Escrow is funded and locked. Do the work, then submit the deliverable URL.</p>
+          <div style="padding: 14px 18px; background: #dcfce7; border-radius: 12px; margin-top: 12px; max-width: 620px; font-family: var(--font-mono); font-size: 13px; color: #15803d;">
+            🔒 $300 USDC locked in escrow · your address will receive $297 on release
+          </div>
+          <div class="form-row" style="margin-top: 20px;">
+            <label>Deliverable URL</label>
+            <div class="input focus">https://landing.dev</div>
+          </div>
+          <div class="form-row">
+            <label>Notes to agent (optional)</label>
+            <div class="input">All 3 sections rendered. Mobile-tested on iOS + Android.</div>
+          </div>
+          <div style="margin-top: 20px;"><span class="btn primary">Submit deliverable →</span></div>
+        </div>
+        <!-- 5.5 Verify -->
+        <div class="fr" data-i="4">
+          <div class="flogo"><div class="mk">F</div><div class="wm">FREELANCEBOT</div><div class="breadcrumb">Freelancer / Order #7 / Verifying...</div></div>
+          <h2 class="frame-h">AI agent is verifying...</h2>
+          <p class="frame-p">Groq Llama 3.3 70B runs three checks. Verdict is server-derived from typed fields — the LLM's own `verified` claim is not trusted.</p>
+          <div class="verdict-card" style="margin-top: 12px;">
+            <div class="pill">🤖 Running checks · 0.4s</div>
+            <h3>Verdict</h3>
+            <div class="checks">
+              <div class="check"><span class="tick">✓</span> URL reachable · HTTPS 200 · title match</div>
+              <div class="check"><span class="tick">✓</span> Deadline · met (2 days early)</div>
+              <div class="check"><span class="tick">✓</span> Brief alignment · matches (LLM: high)</div>
+              <div class="check"><span class="tick">✓</span> Confidence downgraded from high → high (kept)</div>
+            </div>
+            <div style="margin-top: 14px; padding: 12px; background: #f0fdf4; border-radius: 8px; font-family: var(--font-mono); font-size: 12px; color: #15803d;">
+              → Recommendation to client: <strong>Release payment</strong>
+            </div>
+          </div>
+        </div>
+        <!-- 5.6 Get paid -->
+        <div class="fr" data-i="5">
+          <div class="flogo"><div class="mk">F</div><div class="wm">FREELANCEBOT</div><div class="breadcrumb">Freelancer / Order #7 / Paid ✓</div></div>
+          <h2 class="frame-h">You got paid.</h2>
+          <div class="release-card" style="margin-top: 12px;">
+            <div class="tx">tx 0x9f8c…1a4d · Arc Testnet · block #4,281,551 · confirmed</div>
+            <div class="amt">+$297</div>
+            <div class="to">USDC in your wallet · sub-second finality</div>
+            <div class="time">⚡ 0.8 seconds from client click to funds landed · minus 1% platform fee</div>
+            <div style="margin-top: 14px; font-family: var(--font-mono); font-size: 12px; color: #64748b;">Compare: SWIFT + Upwork would have taken 14 days and left $220.</div>
+          </div>
+        </div>
+        <div class="narrator" id="nar-5">
+          <div class="step-num">Step 1 of 6</div>
+          <div class="txt">Open the marketplace to see every open job.</div>
+        </div>
+        <div class="cursor" id="cur-5">
+          <svg viewBox="0 0 24 24"><path fill="#0f172a" stroke="white" stroke-width="1.5" stroke-linejoin="round" d="M3,2 L21,11 L12,13 L10,22 Z"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       Scene 6 — Under the hood
+       ============================================================ -->
+  <div class="scene" id="scene-6">
+    <div class="kicker">Under the hood</div>
+    <h1>Verified. Hardened.<br/>Open source.</h1>
+    <div class="diagram">
+      <div class="box">
+        <div class="num">18</div>
+        <div class="cap">Contract test cases</div>
+        <div class="desc">Solidity 0.8.24 · OpenZeppelin 5 · SafeERC20 · custom errors · Ownable</div>
+      </div>
+      <div class="box">
+        <div class="num">OWASP</div>
+        <div class="cap">LLM Top 10 hardened</div>
+        <div class="desc">Prompt injection blocked · SSRF guarded · server-derived verdicts · no excessive agency</div>
+      </div>
+      <div class="box">
+        <div class="num">MIT</div>
+        <div class="cap">Fork · deploy · own it</div>
+        <div class="desc">Not a startup · not a token · not a walled garden</div>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="verified">✓ 0xA8CA…3ae4 verified on arcscan</span>
+      <span class="hardened">🛡 Prompt injection defense</span>
+      <span class="open">⚡ Live: freelancebot-alpha.vercel.app</span>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       Scene 7 — Closing
+       ============================================================ -->
+  <div class="scene" id="scene-7">
+    <div class="final-logo">F</div>
+    <h1>FREELANCEBOT</h1>
+    <div class="script">payouts on arc</div>
+    <div class="stats">
+      <div class="item"><div class="num">0.8s</div><div class="lbl">Settlement</div></div>
+      <div class="item"><div class="num">1%</div><div class="lbl">Platform fee</div></div>
+      <div class="item"><div class="num">75M+</div><div class="lbl">APAC freelancers</div></div>
+      <div class="item"><div class="num">MIT</div><div class="lbl">License</div></div>
+    </div>
+    <div class="ctas">
+      <div class="cta primary">Try the demo →</div>
+      <div class="cta secondary">Fork the repo</div>
+    </div>
+    <div class="footer">
+      <span>freelancebot-alpha.vercel.app</span> &nbsp;·&nbsp;
+      <span>github.com/orangterkucil/freelancebot</span> &nbsp;·&nbsp;
+      built by tarjo · Indonesia · Track 4: Agentic Economy
+    </div>
+  </div>
+</div>
+
+<div id="rec-dot"><div class="dot"></div>REC · DEMO REEL</div>
+<div id="scene-label">SCENE 1 / 7</div>
+<div id="controls">
+  <button id="btn-toggle">⏸ Pause</button>
+  <button id="btn-restart">↺ Restart</button>
+  <button id="btn-hide">Hide UI (H)</button>
+  <span class="time" id="time">0:00 / 2:30</span>
+  <div class="bar"><i id="progress"></i></div>
+</div>
+
+<script>
+(() => {
+  // ============================================================
+  // Scene definitions
+  // ============================================================
+  const SCENES = [
+    { id: 1, dur: 8,  tts: "FreelanceBot. Payouts on Arc.", label: "OPENING" },
+    { id: 2, dur: 20, tts: "A 300 dollar job. Two weeks later, only 220 arrives. Eighty dollars gone.", label: "PROBLEM" },
+    { id: 3, dur: 18, tts: "FreelanceBot fixes it. USDC on Arc. Verified. Released in under one second.", label: "SOLUTION" },
+    { id: 4, dur: 40, tts: "Client side: post a job. Pick applicants. Fund escrow in one signature. Agent verifies. Release.", label: "CLIENT TUTORIAL" },
+    { id: 5, dur: 40, tts: "Freelancer side: browse jobs. Apply. Deliver. Get paid on Arc, zero point eight seconds.", label: "FREELANCER TUTORIAL" },
+    { id: 6, dur: 12, tts: "Source verified. OWASP hardened. Open source, MIT.", label: "TECH" },
+    { id: 7, dur: 12, tts: "FreelanceBot. Try the live demo now.", label: "CLOSE" },
+  ];
+
+  // Frame timing per tutorial scene (offsets within scene)
+  const CLIENT_STEPS = [
+    { offset: 0,  step: 0, narr: "Sign in.", url: "freelancebot-alpha.vercel.app/client" },
+    { offset: 7,  step: 1, narr: "Post a job — brief, budget, deadline.", url: "freelancebot-alpha.vercel.app/client/new-order" },
+    { offset: 14, step: 2, narr: "Pick from applicants (trust score inline).", url: "freelancebot-alpha.vercel.app/orders/7" },
+    { offset: 21, step: 3, narr: "Fund escrow — one MetaMask signature.", url: "freelancebot-alpha.vercel.app/orders/7/fund" },
+    { offset: 28, step: 4, narr: "AI agent verifies deliverable.", url: "freelancebot-alpha.vercel.app/orders/7" },
+    { offset: 34, step: 5, narr: "Release. Sub-second on Arc.", url: "freelancebot-alpha.vercel.app/orders/7#released" },
+  ];
+  const FREELANCER_STEPS = [
+    { offset: 0,  step: 0, narr: "Browse the marketplace.", url: "freelancebot-alpha.vercel.app/jobs" },
+    { offset: 7,  step: 1, narr: "Filter by your skill.", url: "freelancebot-alpha.vercel.app/jobs?field=development" },
+    { offset: 14, step: 2, narr: "Apply — quick pitch, optional counter-bid.", url: "freelancebot-alpha.vercel.app/jobs/7" },
+    { offset: 21, step: 3, narr: "Submit deliverable URL.", url: "freelancebot-alpha.vercel.app/orders/7" },
+    { offset: 28, step: 4, narr: "Agent verifies — you watch it live.", url: "freelancebot-alpha.vercel.app/orders/7" },
+    { offset: 34, step: 5, narr: "$297 USDC in your wallet. 0.8 seconds.", url: "freelancebot-alpha.vercel.app/orders/7#paid" },
+  ];
+
+  const totalDuration = SCENES.reduce((s, x) => s + x.dur, 0);
+
+  // ============================================================
+  // Logo particles
+  // ============================================================
+  const lp = document.getElementById('logo-particles');
+  const colors = ['#22d3ee', '#3b82f6', '#a855f7', '#ec4899'];
+  for (let i = 0; i < 32; i++) {
+    const s = document.createElement('span');
+    const ang = (i / 32) * Math.PI * 2;
+    const dist = 180 + Math.random() * 80;
+    s.style.setProperty('--dx', Math.cos(ang) * dist + 'px');
+    s.style.setProperty('--dy', Math.sin(ang) * dist + 'px');
+    s.style.background = colors[i % colors.length];
+    s.style.boxShadow = `0 0 16px ${colors[i % colors.length]}`;
+    s.style.animationDelay = (1.3 + Math.random() * 0.3) + 's';
+    lp.appendChild(s);
+  }
+
+  // ============================================================
+  // Canvas particles
+  // ============================================================
+  const cv = document.getElementById('particles');
+  const ctx = cv.getContext('2d');
+  function resize() { cv.width = window.innerWidth; cv.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+
+  const parts = [];
+  for (let i = 0; i < 80; i++) {
+    parts.push({
+      x: Math.random() * cv.width,
+      y: Math.random() * cv.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.6 + 0.4,
+      a: Math.random() * 0.5 + 0.2,
+      hue: [190, 220, 265][Math.floor(Math.random() * 3)],
+    });
+  }
+  function drawParticles() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    for (const p of parts) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = cv.width; if (p.x > cv.width) p.x = 0;
+      if (p.y < 0) p.y = cv.height; if (p.y > cv.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${p.hue}, 90%, 65%, ${p.a})`;
+      ctx.fill();
+    }
+    for (let i = 0; i < parts.length; i++) {
+      for (let j = i + 1; j < parts.length; j++) {
+        const dx = parts[i].x - parts[j].x, dy = parts[i].y - parts[j].y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < 14000) {
+          ctx.beginPath();
+          ctx.moveTo(parts[i].x, parts[i].y);
+          ctx.lineTo(parts[j].x, parts[j].y);
+          ctx.strokeStyle = `hsla(210, 80%, 60%, ${(1 - d2 / 14000) * 0.18})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+
+  // ============================================================
+  // Web Audio SFX
+  // ============================================================
+  let audioCtx;
+  function initAudio() { if (audioCtx) return; try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+  function beep(freq = 880, dur = 0.1, type = 'sine', gain = 0.05) {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.value = gain;
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  }
+  function whoosh() { beep(200, 0.35, 'sawtooth', 0.025); beep(310, 0.25, 'sine', 0.02); }
+  function ding() { beep(880, 0.15, 'sine', 0.045); setTimeout(() => beep(1320, 0.18, 'sine', 0.035), 80); }
+  function cash() { beep(660, 0.08, 'triangle', 0.04); setTimeout(() => beep(990, 0.15, 'triangle', 0.04), 60); }
+  function tick() { beep(1200, 0.05, 'square', 0.02); }
+
+  // ============================================================
+  // TTS
+  // ============================================================
+  let voice = null, voicesReady = false;
+  function pickVoice() {
+    const vs = speechSynthesis.getVoices();
+    if (!vs.length) return null;
+    voicesReady = true;
+    const preferred = [
+      /Samantha/, /Google US English/, /Alex/, /Victoria/, /Karen/,
+      /Daniel/, /Microsoft Aria/, /Microsoft Guy/, /Ava/,
+    ];
+    for (const pat of preferred) {
+      const v = vs.find(x => pat.test(x.name));
+      if (v) return v;
+    }
+    return vs.find(v => v.lang.startsWith('en')) || vs[0];
+  }
+  speechSynthesis.onvoiceschanged = () => { voice = pickVoice(); };
+  voice = pickVoice();
+  function say(text) {
+    try { speechSynthesis.cancel(); } catch (e) {}
+    const u = new SpeechSynthesisUtterance(text);
+    if (voice) u.voice = voice;
+    u.rate = 0.98; u.pitch = 1.0; u.volume = 0.9;
+    speechSynthesis.speak(u);
+  }
+
+  // ============================================================
+  // Scene 2 counter
+  // ============================================================
+  function animateCounter() {
+    const el = document.getElementById('counter-2');
+    if (!el) return;
+    const steps = [
+      { at: 1.8, label: '$275' },
+      { at: 2.4, label: '$257' },
+      { at: 3.0, label: '$227' },
+      { at: 3.6, label: '$220' },
+    ];
+    for (const s of steps) {
+      setTimeout(() => {
+        el.textContent = s.label;
+        el.classList.add('pulse');
+        cash();
+        setTimeout(() => el.classList.remove('pulse'), 250);
+      }, s.at * 1000);
+    }
+  }
+
+  // ============================================================
+  // Tutorial scene orchestration
+  // ============================================================
+  const tutorialTimers = [];
+  function clearTutorialTimers() { tutorialTimers.forEach(t => clearTimeout(t)); tutorialTimers.length = 0; }
+
+  function runTutorial(sceneId, steps) {
+    clearTutorialTimers();
+    const body = document.getElementById('body-' + sceneId);
+    const strip = document.getElementById('strip-' + sceneId);
+    const url = document.getElementById('url-' + sceneId);
+    const nar = document.getElementById('nar-' + sceneId);
+    const cur = document.getElementById('cur-' + sceneId);
+
+    for (const s of steps) {
+      tutorialTimers.push(setTimeout(() => {
+        // toggle frames
+        body.querySelectorAll('.fr').forEach(f => {
+          f.classList.toggle('active', Number(f.dataset.i) === s.step);
+        });
+        // toggle steps strip
+        strip.querySelectorAll('.step').forEach(x => {
+          x.classList.toggle('active', Number(x.dataset.i) === s.step);
+        });
+        // url
+        url.textContent = 'https://' + s.url;
+        // narrator
+        nar.classList.remove('show');
+        setTimeout(() => {
+          nar.querySelector('.step-num').textContent = 'Step ' + (s.step + 1) + ' of 6';
+          nar.querySelector('.txt').textContent = s.narr;
+          nar.classList.add('show');
+        }, 200);
+        // cursor animation — pseudo-random target inside body
+        cur.classList.add('show');
+        const bx = body.getBoundingClientRect();
+        // sample a position based on step index
+        const positions = [
+          { x: 0.35, y: 0.55 }, { x: 0.5, y: 0.55 }, { x: 0.55, y: 0.6 },
+          { x: 0.45, y: 0.55 }, { x: 0.45, y: 0.5 }, { x: 0.4, y: 0.5 },
+        ];
+        const pos = positions[s.step % positions.length];
+        cur.style.transform = `translate(${bx.width * pos.x}px, ${bx.height * pos.y}px)`;
+        // click ripple
+        setTimeout(() => {
+          tick();
+          const r = document.createElement('div');
+          r.className = 'click-ripple';
+          r.style.left = (bx.width * pos.x + 6) + 'px';
+          r.style.top = (bx.height * pos.y + 6) + 'px';
+          if (sceneId === 5) r.style.borderColor = 'var(--violet)';
+          body.appendChild(r);
+          setTimeout(() => r.remove(), 900);
+        }, 900);
+        whoosh();
+      }, s.offset * 1000));
+    }
+  }
+
+  // ============================================================
+  // Player
+  // ============================================================
+  let currentIdx = 0;
+  let elapsed = 0, sceneElapsed = 0;
+  let playing = true;
+  let last = performance.now();
+  let uiHidden = false;
+
+  const sceneEls = SCENES.map(s => document.getElementById('scene-' + s.id));
+  const label = document.getElementById('scene-label');
+  const controls = document.getElementById('controls');
+  const timeEl = document.getElementById('time');
+  const progressEl = document.getElementById('progress');
+  const btnToggle = document.getElementById('btn-toggle');
+  const btnRestart = document.getElementById('btn-restart');
+  const btnHide = document.getElementById('btn-hide');
+
+  function fmt(s) {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m + ':' + String(sec).padStart(2, '0');
+  }
+
+  function activateScene(idx) {
+    // reset by cloning to restart CSS animations
+    sceneEls.forEach((el, k) => {
+      if (k !== idx) el.classList.remove('active');
+    });
+    const el = sceneEls[idx];
+    const clone = el.cloneNode(true);
+    el.parentNode.replaceChild(clone, el);
+    sceneEls[idx] = clone;
+    clone.classList.add('active');
+
+    label.textContent = 'SCENE ' + (idx + 1) + ' / ' + SCENES.length + ' · ' + SCENES[idx].label;
+
+    // scene-specific triggers
+    const sid = SCENES[idx].id;
+    if (sid === 1) { setTimeout(whoosh, 200); setTimeout(ding, 1400); }
+    if (sid === 2) { animateCounter(); }
+    if (sid === 3) { setTimeout(cash, 700); setTimeout(ding, 4200); }
+    if (sid === 4) { runTutorial(4, CLIENT_STEPS); }
+    if (sid === 5) { runTutorial(5, FREELANCER_STEPS); }
+    if (sid === 6) { setTimeout(ding, 800); }
+    if (sid === 7) { setTimeout(ding, 400); }
+
+    // TTS
+    if (voicesReady || speechSynthesis.getVoices().length) {
+      voice = pickVoice();
+      say(SCENES[idx].tts);
+    } else {
+      setTimeout(() => { voice = pickVoice(); say(SCENES[idx].tts); }, 300);
+    }
+  }
+
+  function tickPlayer(now) {
+    const dt = (now - last) / 1000; last = now;
+    if (playing) {
+      elapsed += dt;
+      sceneElapsed += dt;
+      if (elapsed > totalDuration) elapsed = totalDuration;
+      if (sceneElapsed >= SCENES[currentIdx].dur) {
+        sceneElapsed = 0;
+        if (currentIdx < SCENES.length - 1) {
+          currentIdx++;
+          activateScene(currentIdx);
+        } else {
+          playing = false;
+          btnToggle.textContent = '↺ Replay';
+          try { speechSynthesis.cancel(); } catch (e) {}
+        }
+      }
+      timeEl.textContent = fmt(elapsed) + ' / ' + fmt(totalDuration);
+      progressEl.style.width = (elapsed / totalDuration * 100) + '%';
+    }
+    requestAnimationFrame(tickPlayer);
+  }
+
+  function restart() {
+    currentIdx = 0; elapsed = 0; sceneElapsed = 0; playing = true;
+    btnToggle.textContent = '⏸ Pause';
+    try { speechSynthesis.cancel(); } catch (e) {}
+    clearTutorialTimers();
+    activateScene(0);
+  }
+
+  btnToggle.addEventListener('click', () => {
+    if (!playing && elapsed >= totalDuration) { restart(); return; }
+    playing = !playing;
+    btnToggle.textContent = playing ? '⏸ Pause' : '▶ Play';
+    if (!playing) { try { speechSynthesis.pause(); } catch (e) {} }
+    else { try { speechSynthesis.resume(); } catch (e) {} }
+  });
+  btnRestart.addEventListener('click', restart);
+  btnHide.addEventListener('click', () => {
+    uiHidden = !uiHidden;
+    controls.classList.toggle('hidden', uiHidden);
+    label.classList.toggle('hidden', uiHidden);
+    document.getElementById('rec-dot').style.opacity = uiHidden ? '0' : '1';
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'h' || e.key === 'H') btnHide.click();
+    if (e.key === ' ') { e.preventDefault(); btnToggle.click(); }
+    if (e.key === 'r' || e.key === 'R') restart();
+    if (e.key === 'f' || e.key === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+  });
+  document.body.addEventListener('click', initAudio, { once: true });
+  document.body.addEventListener('keydown', initAudio, { once: true });
+
+  activateScene(0);
+  requestAnimationFrame(tickPlayer);
+
+  setTimeout(() => {
+    console.log('%cFreelanceBot Demo Reel · v2', 'font-size:20px;color:#22d3ee;font-weight:bold;');
+    console.log('Keys: [space] pause · [r] restart · [h] hide UI · [f] fullscreen');
+    console.log('Total runtime: ' + fmt(totalDuration));
+  }, 400);
+})();
+</script>
+</body>
+</html>
