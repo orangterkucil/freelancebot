@@ -56,7 +56,7 @@ export function RatingForm({
       <p className="font-mono text-[11px] uppercase tracking-widest text-amber-700">
         Rate this counterparty
       </p>
-      <p className="mt-1 font-display text-base uppercase text-slate-900">
+      <p className="mt-1 font-display text-base uppercase text-slate-900 dark:text-slate-100">
         How was working with {rateeLabel}?
       </p>
 
@@ -83,7 +83,7 @@ export function RatingForm({
             </button>
           );
         })}
-        <span className="ml-2 font-mono text-xs tabular-nums text-slate-600">
+        <span className="ml-2 font-mono text-xs tabular-nums text-slate-600 dark:text-slate-400">
           {stars > 0 ? `${stars}/5` : "—"}
         </span>
       </div>

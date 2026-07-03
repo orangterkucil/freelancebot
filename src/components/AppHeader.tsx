@@ -23,7 +23,7 @@ export function AppHeader({
             className="transition-transform group-hover:scale-105"
           />
           <div className="leading-none">
-            <span className="block font-display text-base uppercase tracking-wider text-slate-900">
+            <span className="block font-display text-base uppercase tracking-wider text-slate-900 dark:text-slate-100">
               FreelanceBot
             </span>
             <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-widest text-brand">

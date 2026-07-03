@@ -81,7 +81,7 @@ function CallbackShell({ state, msg }: { state: "working" | "ok" | "error"; msg:
           {state === "error" && (
             <a
               href="/client"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-slate-700 hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white dark:bg-slate-900 px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-slate-700 hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300"
             >
               ← Back to client sign-in
             </a>

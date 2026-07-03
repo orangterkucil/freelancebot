@@ -32,26 +32,26 @@ export default function Home() {
     document.documentElement.classList.remove("dark");
   }
   return (
-    <div className="bg-slate-50 text-slate-900 antialiased">
+    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased">
       <HeroSection />
       <AboutSection />
       <FlowSection />
       <LiveJobsPreview />
       <CtaSection />
 
-      <footer className="border-t border-slate-200 bg-white py-10 text-center">
-        <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
+      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-10 text-center">
+        <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
           MIT licensed · Open source · v0.13.0 ·{" "}
           <a
             href="https://github.com/orangterkucil/freelancebot"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-600 hover:text-brand"
+            className="text-slate-600 dark:text-slate-400 hover:text-brand"
           >
             GitHub
           </a>{" "}
           ·{" "}
-          <Link href="/docs" className="text-slate-600 hover:text-brand">
+          <Link href="/docs" className="text-slate-600 dark:text-slate-400 hover:text-brand">
             Docs
           </Link>
         </p>
@@ -79,7 +79,7 @@ function HeroSection() {
               className="drop-shadow-sm transition-transform group-hover:scale-105"
             />
             <div className="flex flex-col leading-none">
-              <span className="font-display text-base uppercase tracking-wider text-slate-900">
+              <span className="font-display text-base uppercase tracking-wider text-slate-900 dark:text-slate-100">
                 FreelanceBot
               </span>
               <span className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-brand">
@@ -133,11 +133,11 @@ function HeroSection() {
         </header>
 
         <div className="relative mt-14 lg:mt-20 lg:ml-32">
-          <h1 className="font-display text-[40px] uppercase leading-[1.05] tracking-tight sm:text-6xl md:text-[75px] lg:text-[90px] lg:leading-[1] max-w-[820px] text-slate-900">
+          <h1 className="font-display text-[40px] uppercase leading-[1.05] tracking-tight sm:text-6xl md:text-[75px] lg:text-[90px] lg:leading-[1] max-w-[820px] text-slate-900 dark:text-slate-100">
             {t("hero.line1")}
             <br />
             {t("hero.line2")}&nbsp;
-            <span className="text-slate-500">(&nbsp;{t("hero.line3")}&nbsp;)</span>
+            <span className="text-slate-500 dark:text-slate-400">(&nbsp;{t("hero.line3")}&nbsp;)</span>
             &nbsp;{t("hero.line4")}
           </h1>
 
@@ -180,7 +180,7 @@ function HeroSection() {
             ].map((s) => (
               <div key={s.l} className="border-l border-slate-200 dark:border-slate-800 pl-3">
                 <p className="font-display text-2xl text-brand sm:text-3xl">{s.v}</p>
-                <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-slate-500">
+                <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   {s.l}
                 </p>
               </div>
@@ -252,7 +252,7 @@ function AboutSection() {
           ].map((s) => (
             <div key={s.k} className="liquid-glass rounded-2xl p-5">
               <p className="font-display text-3xl text-slate-900 dark:text-slate-100 sm:text-4xl">{s.v}</p>
-              <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-slate-500">
+              <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {s.l}
               </p>
             </div>
@@ -334,13 +334,13 @@ function FlowSection() {
               className="liquid-glass group block rounded-[32px] p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
             >
               <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-[24px] bg-gradient-to-br from-sky-50 via-white to-slate-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-slate-950">
-                <div className="absolute inset-8 rounded-full border border-slate-200" />
-                <div className="absolute inset-16 rounded-full border border-slate-200" />
+                <div className="absolute inset-8 rounded-full border border-slate-200 dark:border-slate-800" />
+                <div className="absolute inset-16 rounded-full border border-slate-200 dark:border-slate-800" />
                 <div
                   className="absolute h-2 w-2 animate-flow rounded-full bg-brand shadow-[0_0_16px_rgba(14,165,233,0.5)]"
                   style={{ top: `${20 + idx * 20}%`, left: `${30 + idx * 15}%` }}
                 />
-                <span className="absolute left-5 top-4 font-display text-[11px] uppercase tracking-widest text-slate-400">
+                <span className="absolute left-5 top-4 font-display text-[11px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
                   Step {String(idx + 1).padStart(2, "0")}
                 </span>
                 <s.Icon className="h-20 w-20 text-slate-500 dark:text-slate-400 transition-transform group-hover:scale-110" strokeWidth={1.2} />
@@ -348,10 +348,10 @@ function FlowSection() {
 
               <div className="mt-4 flex items-center justify-between gap-3 rounded-[20px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-4">
                 <div className="min-w-0">
-                  <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
+                  <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     {s.kpiLabel}
                   </p>
-                  <p className="font-display text-base uppercase text-slate-900">{s.kpi}</p>
+                  <p className="font-display text-base uppercase text-slate-900 dark:text-slate-100">{s.kpi}</p>
                 </div>
                 <div className="grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-brand to-brand-dark shadow-md shadow-brand/40 transition-transform group-hover:scale-110">
                   <ChevronRight className="h-5 w-5 text-white" strokeWidth={3} />
@@ -359,8 +359,8 @@ function FlowSection() {
               </div>
 
               <div className="mt-4 px-1">
-                <p className="font-display text-2xl uppercase text-slate-900">{s.title}</p>
-                <p className="mt-2 font-mono text-[11px] uppercase leading-relaxed text-slate-500">
+                <p className="font-display text-2xl uppercase text-slate-900 dark:text-slate-100">{s.title}</p>
+                <p className="mt-2 font-mono text-[11px] uppercase leading-relaxed text-slate-500 dark:text-slate-400">
                   {s.desc}
                 </p>
               </div>

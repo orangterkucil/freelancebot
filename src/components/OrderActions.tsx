@@ -132,7 +132,7 @@ export function OrderActions({
     <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
         <Coins className="h-4 w-4 text-brand" />
-        <p className="font-display text-sm uppercase tracking-wider text-slate-900">Actions</p>
+        <p className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">Actions</p>
       </div>
 
       {role === "client" && order.status === "draft" && (
@@ -151,7 +151,7 @@ export function OrderActions({
       {role === "freelancer" && order.status === "funded" && (
         <div className="space-y-3">
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">
+            <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">
               Deliverable URL
             </span>
             <input
@@ -161,7 +161,7 @@ export function OrderActions({
               placeholder="https://figma.com/file/..."
               className="mt-1.5 w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand"
             />
-            <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">
+            <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400 dark:text-slate-500">
               Agent will check reachability, deadline, and brief alignment.
             </span>
           </label>
@@ -213,16 +213,16 @@ export function OrderActions({
 
       {verdict && (
         <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Agent verdict</p>
+          <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">Agent verdict</p>
           <p className="mt-1 font-display text-sm uppercase">
             <span className={verdict.verified ? "text-emerald-700" : "text-amber-700"}>
               {verdict.verified ? "Ready to release" : "Hold for review"}
             </span>
-            <span className="ml-2 font-mono text-[10px] text-slate-400">
+            <span className="ml-2 font-mono text-[10px] text-slate-400 dark:text-slate-500">
               ({verdict.confidence} confidence)
             </span>
           </p>
-          <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-700">
+          <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
             {verdict.reasoning}
           </p>
         </div>
@@ -250,7 +250,7 @@ export function OrderActions({
               </p>
               {isRefundable ? (
                 <>
-                  <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-700">
+                  <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
                     Deadline + {GRACE_DAYS}-day grace period has passed. Either party
                     may trigger a refund. Funds return to the client on-chain.
                   </p>
@@ -264,7 +264,7 @@ export function OrderActions({
                   </button>
                 </>
               ) : (
-                <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600">
+                <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
                   If the deliverable isn&apos;t submitted, refund unlocks
                   {daysUntilRefundable != null ? ` in ${daysUntilRefundable} day${daysUntilRefundable === 1 ? "" : "s"}` : " after the grace period"} .
                   Either party can then call refund on the contract to return funds to the client.
@@ -282,10 +282,10 @@ export function OrderActions({
       )}
 
       <details className="border-t border-slate-100 dark:border-slate-800 pt-3">
-        <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-slate-500">
+        <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
           {hasOnchain ? "Contract details" : "On-chain not configured"}
         </summary>
-        <div className="mt-2 space-y-2 font-mono text-[10px] leading-relaxed text-slate-500">
+        <div className="mt-2 space-y-2 font-mono text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
           {hasOnchain ? (
             <>
               <p>

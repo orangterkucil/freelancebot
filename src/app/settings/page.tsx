@@ -147,7 +147,7 @@ export default function SettingsPage() {
                   </option>
                 ))}
               </select>
-              <p className="mt-2 font-mono text-[10px] tracking-wide text-slate-400">
+              <p className="mt-2 font-mono text-[10px] tracking-wide text-slate-400 dark:text-slate-500">
                 6 languages covered · covers &gt;3.5B speakers worldwide.
               </p>
             </Section>
@@ -155,7 +155,7 @@ export default function SettingsPage() {
             {/* Notifications */}
             <Section icon={Bell} title="Email notifications" description="Get an email when something important happens. Wired in the next milestone — for now the toggles remember your choice.">
               <label className="block">
-                <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">Notification email</span>
+                <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">Notification email</span>
                 <input
                   type="email"
                   value={notifEmail}
@@ -173,14 +173,14 @@ export default function SettingsPage() {
 
             {/* Privacy / Security */}
             <Section icon={ShieldCheck} title="Privacy & security">
-              <ul className="space-y-2 font-mono text-[11px] leading-relaxed text-slate-600">
+              <ul className="space-y-2 font-mono text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
                 <li>· We never ask for API keys, private keys, or wallet seed phrases here.</li>
                 <li>· Settings on this page live in your browser only.</li>
                 <li>· Order data lives in Supabase. Chat messages are visible only to the two parties.</li>
                 <li>· Attachments are visible per the order&apos;s public/private flag.</li>
                 <li>· On-chain transactions are signed by your wallet — we never see your key.</li>
               </ul>
-              <p className="mt-3 font-mono text-[11px] text-slate-700">
+              <p className="mt-3 font-mono text-[11px] text-slate-700 dark:text-slate-300">
                 If anything ever asks you to paste a private key or seed phrase into the FreelanceBot interface — that is not us. Report it.
               </p>
             </Section>
@@ -197,7 +197,7 @@ export default function SettingsPage() {
             </button>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900">Signed-in sessions</h3>
+              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">Signed-in sessions</h3>
               <div className="mt-3 space-y-2">
                 <SessionRow role="Client"     email={clientEmail}      onSignOut={() => signOut("fb_client_email")} />
                 <SessionRow role="Freelancer" email={freelancerEmail}  onSignOut={() => signOut("fb_freelancer_email")} />
@@ -205,7 +205,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900">About</h3>
+              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">About</h3>
               <dl className="mt-3 space-y-2 font-mono text-[11px]">
                 <Row label="Version">v0.11.0</Row>
                 <Row label="Network">Arc Testnet</Row>
@@ -216,7 +216,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900">Links</h3>
+              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">Links</h3>
               <ul className="mt-3 space-y-2 font-mono text-[11px]">
                 <li><a href="https://github.com/orangterkucil/freelancebot" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-brand hover:underline">GitHub repository <ExternalLink className="h-3 w-3" /></a></li>
                 <li><a href="https://github.com/orangterkucil/freelancebot/blob/main/PRD.md" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-brand hover:underline">Product Requirements (PRD) <ExternalLink className="h-3 w-3" /></a></li>
@@ -247,10 +247,10 @@ function Section({
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-center gap-2">
         <Icon className="h-4 w-4 text-brand" />
-        <h2 className="font-display text-base uppercase text-slate-900">{title}</h2>
+        <h2 className="font-display text-base uppercase text-slate-900 dark:text-slate-100">{title}</h2>
       </div>
       {description && (
-        <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-500">{description}</p>
+        <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">{description}</p>
       )}
       <div className="mt-5 space-y-4">{children}</div>
     </div>
@@ -268,7 +268,7 @@ function SocialInput({
 }) {
   return (
     <label className="block">
-      <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-600">
+      <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">
         <Icon className="h-3 w-3" />
         {label}
       </span>
@@ -321,10 +321,10 @@ function Toggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-start justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 transition-colors hover:bg-slate-50">
+    <label className="flex cursor-pointer items-start justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 transition-colors hover:bg-slate-50 dark:bg-slate-950">
       <span className="min-w-0">
-        <span className="block font-display text-xs uppercase tracking-wider text-slate-900">{label}</span>
-        {sub && <span className="mt-0.5 block font-mono text-[10px] tracking-wide text-slate-500">{sub}</span>}
+        <span className="block font-display text-xs uppercase tracking-wider text-slate-900 dark:text-slate-100">{label}</span>
+        {sub && <span className="mt-0.5 block font-mono text-[10px] tracking-wide text-slate-500 dark:text-slate-400">{sub}</span>}
       </span>
       <span className="relative inline-block h-5 w-9 shrink-0">
         <input
@@ -344,9 +344,9 @@ function SessionRow({ role, email, onSignOut }: { role: string; email: string; o
   return (
     <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2.5">
       <div className="min-w-0">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{role}</span>
-        <p className="truncate font-mono text-xs text-slate-900">
-          {email ? email : <span className="italic text-slate-400">Not signed in</span>}
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{role}</span>
+        <p className="truncate font-mono text-xs text-slate-900 dark:text-slate-100">
+          {email ? email : <span className="italic text-slate-400 dark:text-slate-500">Not signed in</span>}
         </p>
       </div>
       {email && (
@@ -366,8 +366,8 @@ function SessionRow({ role, email, onSignOut }: { role: string; email: string; o
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <dt className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</dt>
-      <dd className="font-mono text-xs text-slate-900">{children}</dd>
+      <dt className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</dt>
+      <dd className="font-mono text-xs text-slate-900 dark:text-slate-100">{children}</dd>
     </div>
   );
 }

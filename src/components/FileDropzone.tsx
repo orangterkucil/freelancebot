@@ -125,12 +125,12 @@ export function FileDropzone({
           {busy ? (
             <Loader2 className="h-5 w-5 animate-spin text-brand" />
           ) : (
-            <Upload className="h-5 w-5 text-slate-500" />
+            <Upload className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           )}
-          <p className="font-mono text-[11px] uppercase tracking-wider text-slate-700">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-slate-700 dark:text-slate-300">
             {busy ? "Uploading…" : "Drop files or click to upload"}
           </p>
-          <p className="font-mono text-[10px] tracking-wide text-slate-400">
+          <p className="font-mono text-[10px] tracking-wide text-slate-400 dark:text-slate-500">
             Up to {MAX_FILES} files · {MAX_SIZE_MB} MB each · images, PDF, doc, csv, zip
           </p>
         </div>
@@ -155,7 +155,7 @@ export function FileDropzone({
               >
                 <FileTypeIcon contentType={a.content_type} />
                 <span className="truncate font-mono text-xs">{a.filename}</span>
-                <span className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-slate-400">
+                <span className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
                   {formatBytes(a.size_bytes)}
                 </span>
               </a>
@@ -178,10 +178,10 @@ export function FileDropzone({
 }
 
 function FileTypeIcon({ contentType }: { contentType: string }) {
-  if (contentType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-slate-400" />;
-  if (contentType.includes("pdf"))      return <FileText className="h-4 w-4 text-slate-400" />;
-  if (contentType.includes("text"))     return <FileText className="h-4 w-4 text-slate-400" />;
-  return <FileIcon className="h-4 w-4 text-slate-400" />;
+  if (contentType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
+  if (contentType.includes("pdf"))      return <FileText className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
+  if (contentType.includes("text"))     return <FileText className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
+  return <FileIcon className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
 }
 
 function formatBytes(n: number): string {

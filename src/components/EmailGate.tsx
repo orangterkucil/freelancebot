@@ -139,7 +139,7 @@ export function EmailGate({
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       disabled={state === "sending"}
-                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-mono text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand disabled:opacity-60 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500"
+                      className="w-full rounded-xl border border-slate-300 bg-white dark:bg-slate-900 px-4 py-3 font-mono text-sm text-slate-900 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand disabled:opacity-60 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:text-slate-400"
                     />
                     <button
                       type="submit"

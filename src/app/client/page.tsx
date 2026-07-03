@@ -82,7 +82,7 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
       title="Client dashboard"
       subtitle={
         <>
-          Signed in as <span className="text-slate-700">{email}</span>
+          Signed in as <span className="text-slate-700 dark:text-slate-300">{email}</span>
           {" · "}
           <button onClick={signOut} className="text-brand hover:underline">switch</button>
         </>
@@ -123,7 +123,7 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
           {orders.length > 0 && (
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                 <input
                   type="text"
                   value={search}
@@ -160,7 +160,7 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
 
         {loading && (
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-            <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
+            <p className="font-mono text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Loading…</p>
           </div>
         )}
 
@@ -174,7 +174,7 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
 
         {!loading && !error && orders.length > 0 && filtered.length === 0 && (
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center">
-            <p className="font-mono text-xs uppercase tracking-wider text-slate-500">
+            <p className="font-mono text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
               No orders match this filter.
             </p>
             <button
@@ -204,7 +204,7 @@ function NetworkStrip() {
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
         </span>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-300">Arc Testnet · connected</span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400 dark:text-slate-300">Arc Testnet · connected</span>
       </div>
       <div className="hidden h-4 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
       <div className="flex items-center gap-2">
@@ -213,7 +213,7 @@ function NetworkStrip() {
           href={`https://testnet.arcscan.app/address/${CONTRACT_ADDRESS}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-slate-600 hover:text-brand dark:text-slate-300 dark:hover:text-brand"
+          className="group inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:text-brand dark:text-slate-300 dark:hover:text-brand"
         >
           Contract <span className="text-slate-900 group-hover:text-brand dark:text-slate-100 dark:group-hover:text-brand">{CONTRACT_SHORT}</span>
           <ArrowUpRight className="h-3 w-3" />
@@ -222,12 +222,12 @@ function NetworkStrip() {
       <div className="hidden h-4 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
       <div className="flex items-center gap-2">
         <Zap className="h-3.5 w-3.5 text-amber-500" />
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-300">AI agent · Groq Llama 3.3 70B · online</span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400 dark:text-slate-300">AI agent · Groq Llama 3.3 70B · online</span>
       </div>
       <div className="hidden h-4 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
       <div className="flex items-center gap-2">
         <Activity className="h-3.5 w-3.5 text-brand" />
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-300">Settlement · &lt;1s</span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400 dark:text-slate-300">Settlement · &lt;1s</span>
       </div>
       <span className="ml-auto rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-900/30 dark:text-emerald-300">
         All systems operational
@@ -280,7 +280,7 @@ function Stat({
 function EmptyState({ onCreate }: { onCreate: () => void }) {
   return (
     <div className="relative rounded-3xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-10 text-center shadow-sm dark:border-sky-800/50 dark:from-sky-950/30 dark:via-slate-900 dark:to-indigo-950/30">
-      <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md ring-1 ring-sky-200 dark:bg-slate-800 dark:ring-sky-800/50">
+      <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200 dark:bg-slate-800 dark:ring-sky-800/50">
         <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
       </div>
       <h3 className="mt-5 font-display text-xl uppercase text-slate-900 dark:text-slate-100">No orders yet</h3>

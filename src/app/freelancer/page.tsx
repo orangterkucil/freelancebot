@@ -76,7 +76,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
       title="Freelancer dashboard"
       subtitle={
         <>
-          Signed in as <span className="text-slate-700">{email}</span>
+          Signed in as <span className="text-slate-700 dark:text-slate-300">{email}</span>
           {" · "}
           <button onClick={signOut} className="text-brand hover:underline">switch</button>
         </>
@@ -94,7 +94,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-3 rounded-2xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-5 shadow-sm dark:border-sky-800/50 dark:from-sky-950/30 dark:via-slate-900 dark:to-indigo-950/30">
           <div className="flex items-start gap-3">
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-sky-200 dark:ring-sky-800/50">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-900 dark:bg-slate-800 shadow-sm ring-1 ring-sky-200 dark:ring-sky-800/50">
               <Sparkles className="h-5 w-5 text-brand" />
             </div>
             <div>
@@ -119,7 +119,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
 
         <div className="flex flex-col gap-3 rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-pink-50 p-5 shadow-sm dark:border-violet-800/50 dark:from-violet-950/30 dark:via-slate-900 dark:to-pink-950/30">
           <div className="flex items-start gap-3">
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-violet-200 dark:ring-violet-800/50">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-900 dark:bg-slate-800 shadow-sm ring-1 ring-violet-200 dark:ring-violet-800/50">
               <Megaphone className="h-5 w-5 text-violet-600 dark:text-violet-400" />
             </div>
             <div>
@@ -136,7 +136,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
           </div>
           <button
             onClick={() => setShowPostService((s) => !s)}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-300 bg-white dark:bg-slate-800 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-violet-700 dark:text-violet-300 shadow-sm transition-colors hover:border-violet-500 dark:border-violet-800/50 self-start"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-300 bg-white dark:bg-slate-900 dark:bg-slate-800 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-violet-700 dark:text-violet-300 shadow-sm transition-colors hover:border-violet-500 dark:border-violet-800/50 self-start"
           >
             <Plus className="h-4 w-4" />
             {showPostService ? "Close" : "Post a service"}
@@ -156,12 +156,12 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
 
       <section className="mt-10">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="font-display text-xl uppercase text-slate-900">My orders</h2>
+          <h2 className="font-display text-xl uppercase text-slate-900 dark:text-slate-100">My orders</h2>
 
           {orders.length > 0 && (
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                 <input
                   type="text"
                   value={search}
@@ -192,7 +192,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
 
         {loading && (
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-            <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
+            <p className="font-mono text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Loading…</p>
           </div>
         )}
 
@@ -207,10 +207,10 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
             <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
               <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
             </div>
-            <h3 className="mt-5 font-display text-xl uppercase text-slate-900">
+            <h3 className="mt-5 font-display text-xl uppercase text-slate-900 dark:text-slate-100">
               No incoming orders yet
             </h3>
-            <p className="mx-auto mt-2 max-w-sm font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600">
+            <p className="mx-auto mt-2 max-w-sm font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600 dark:text-slate-400">
               Browse the public marketplace and apply to open jobs.
             </p>
             <Link
@@ -224,7 +224,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
 
         {!loading && !error && orders.length > 0 && filtered.length === 0 && (
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center">
-            <p className="font-mono text-xs uppercase tracking-wider text-slate-500">
+            <p className="font-mono text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
               No orders match this filter.
             </p>
             <button
@@ -265,10 +265,10 @@ function Stat({
   };
   return (
     <div className={`relative rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm ${accentMap[accent]}`}>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
+      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</p>
       <p className="mt-1 font-display text-2xl">
         {value}
-        {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">{sub}</span>}
+        {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">{sub}</span>}
       </p>
     </div>
   );

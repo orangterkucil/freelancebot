@@ -50,13 +50,13 @@ export function UserBadge({
       {summary && summary.count > 0 ? (
         <span className="inline-flex items-center gap-1">
           <RatingStars value={summary.average} size={12} />
-          <span className="font-mono text-[10px] tabular-nums text-slate-500">
+          <span className="font-mono text-[10px] tabular-nums text-slate-500 dark:text-slate-400">
             {summary.average.toFixed(1)}
-            <span className="ml-0.5 text-slate-400">({summary.count})</span>
+            <span className="ml-0.5 text-slate-400 dark:text-slate-500">({summary.count})</span>
           </span>
         </span>
       ) : (
-        <span className="rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-500">
+        <span className="rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
           new
         </span>
       )}

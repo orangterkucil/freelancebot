@@ -74,7 +74,7 @@ export default function OrderDetailPage() {
     return (
       <AppShell title="Loading…" subtitle="Fetching order">
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
+          <p className="font-mono text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Loading…</p>
         </div>
       </AppShell>
     );
@@ -102,14 +102,14 @@ export default function OrderDetailPage() {
         <Field label="Freelancer"><UserBadge email={order.freelancer_email} raw /></Field>
         <Field label="Amount">
           <span className="font-display text-base text-brand">${order.amount_usdc.toLocaleString()}</span>
-          <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">USDC</span>
+          <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">USDC</span>
         </Field>
         <Field label="Deadline">{order.deadline ? new Date(order.deadline).toLocaleDateString() : "—"}</Field>
       </dl>
 
       {order.attachments && order.attachments.length > 0 && (
         <div className="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
             Attachments ({order.attachments.length})
           </p>
           <AttachmentsList
@@ -155,7 +155,7 @@ export default function OrderDetailPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 shadow-sm">
-      <dt className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</dt>
+      <dt className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</dt>
       <dd className="mt-1 font-mono text-xs text-slate-900 dark:text-slate-100 truncate">{children}</dd>
     </div>
   );

@@ -87,7 +87,7 @@ export default function JobsPage() {
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
             value={search}
@@ -98,14 +98,14 @@ export default function JobsPage() {
         </div>
         <div className="flex items-center gap-2">
           <BudgetInput value={minBudget} onChange={setMinBudget} placeholder="Min" />
-          <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">to</span>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">to</span>
           <BudgetInput value={maxBudget} onChange={setMaxBudget} placeholder="Max" />
-          <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">USDC</span>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">USDC</span>
         </div>
       </div>
 
       <div className="mt-6 flex items-center justify-between">
-        <p className="font-mono text-[11px] uppercase tracking-widest text-slate-500">
+        <p className="font-mono text-[11px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
           <Filter className="mr-1.5 inline h-3 w-3" />
           {loading ? "Loading…" : `${jobs.length} ${jobs.length === 1 ? "job" : "jobs"} found`}
         </p>
@@ -161,7 +161,7 @@ function JobCard({ job }: { job: Order }) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-600">
+          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-600 dark:text-slate-400">
             <span>{FIELD_EMOJI[job.field]}</span> {FIELD_LABELS[job.field]}
           </span>
           {job.attachments && job.attachments.length > 0 && (
@@ -174,10 +174,10 @@ function JobCard({ job }: { job: Order }) {
         <ArrowUpRight className="h-4 w-4 text-slate-400 dark:text-slate-500 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand" />
       </div>
 
-      <h3 className="mt-3 line-clamp-2 font-display text-lg uppercase leading-tight text-slate-900">
+      <h3 className="mt-3 line-clamp-2 font-display text-lg uppercase leading-tight text-slate-900 dark:text-slate-100">
         {job.title ?? job.brief.slice(0, 60)}
       </h3>
-      <p className="mt-2 line-clamp-3 font-mono text-[11px] leading-relaxed text-slate-600">
+      <p className="mt-2 line-clamp-3 font-mono text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
         {job.brief}
       </p>
 
@@ -186,9 +186,9 @@ function JobCard({ job }: { job: Order }) {
           <span className="font-display text-xl text-brand">
             ${job.amount_usdc.toLocaleString()}
           </span>
-          <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">USDC</span>
+          <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">USDC</span>
         </div>
-        <span className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">
+        <span className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
           <Clock className="h-3 w-3" />
           {job.deadline ? new Date(job.deadline).toLocaleDateString() : "Open"}
         </span>
@@ -203,8 +203,8 @@ function EmptyState() {
       <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
         <Briefcase className="h-7 w-7 text-brand" strokeWidth={1.5} />
       </div>
-      <h3 className="mt-5 font-display text-xl uppercase text-slate-900">No jobs match</h3>
-      <p className="mx-auto mt-2 max-w-md font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600">
+      <h3 className="mt-5 font-display text-xl uppercase text-slate-900 dark:text-slate-100">No jobs match</h3>
+      <p className="mx-auto mt-2 max-w-md font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600 dark:text-slate-400">
         Try widening your filters, or check back later — new jobs post all the time.
         If you have a project to commission, post one yourself.
       </p>

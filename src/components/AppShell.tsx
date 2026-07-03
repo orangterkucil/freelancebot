@@ -122,7 +122,7 @@ export function AppShell({
                     </span>
                   </span>
                   {item.badge && (
-                    <span className="rounded-full border border-slate-200 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                    <span className="rounded-full border border-slate-200 dark:border-slate-800 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
                       {item.badge}
                     </span>
                   )}

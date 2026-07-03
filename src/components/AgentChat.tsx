@@ -59,18 +59,18 @@ export function AgentChat({
       <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-5 py-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-brand" />
-          <p className="font-display text-sm uppercase tracking-wider text-slate-900">
+          <p className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">
             Agent chat
           </p>
         </div>
-        <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
-          You are <span className="text-slate-700">{role}</span> · agent reads thread + order context
+        <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
+          You are <span className="text-slate-700 dark:text-slate-300">{role}</span> · agent reads thread + order context
         </p>
       </div>
 
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
         {messages.length === 0 && (
-          <p className="font-mono text-xs uppercase tracking-wider text-slate-400">
+          <p className="font-mono text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">
             No messages yet. Say hi to the agent.
           </p>
         )}
@@ -124,7 +124,7 @@ function Bubble({ message, viewer }: { message: Message; viewer: "client" | "fre
 
   return (
     <div className={`flex flex-col ${align}`}>
-      <span className="mb-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-400">
+      <span className="mb-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
         {label}
       </span>
       <div className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2 font-mono text-xs leading-relaxed ${bubble}`}>

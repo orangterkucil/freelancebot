@@ -56,7 +56,7 @@ export function ApplicationsList({
   if (loading) {
     return (
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
-        <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading applications…</p>
+        <p className="font-mono text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Loading applications…</p>
       </div>
     );
   }
@@ -65,10 +65,10 @@ export function ApplicationsList({
     return (
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex items-center gap-2">
-          <Inbox className="h-4 w-4 text-slate-400" />
-          <p className="font-display text-sm uppercase tracking-wider text-slate-900">No applications yet</p>
+          <Inbox className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+          <p className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">No applications yet</p>
         </div>
-        <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-500">
+        <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
           Your job is live in the marketplace. Freelancers will apply here — you&apos;ll see them in this panel.
         </p>
       </div>
@@ -80,9 +80,9 @@ export function ApplicationsList({
       <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
         <div className="flex items-center gap-2">
           <Inbox className="h-4 w-4 text-brand" />
-          <p className="font-display text-sm uppercase tracking-wider text-slate-900">Applications</p>
+          <p className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">Applications</p>
         </div>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
           {apps.length} applicant{apps.length === 1 ? "" : "s"}
         </span>
       </div>
@@ -138,7 +138,7 @@ function ApplicationCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="font-mono text-xs text-slate-900 dark:text-slate-100 truncate">{app.freelancer_email}</p>
-          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-slate-400">
+          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
             {new Date(app.created_at).toLocaleString()}
           </p>
         </div>
@@ -146,15 +146,15 @@ function ApplicationCard({
       </div>
 
       {app.pitch && (
-        <p className="mt-2 whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-slate-700">
+        <p className="mt-2 whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
           {app.pitch}
         </p>
       )}
 
       {app.bid_amount_usdc !== null && app.bid_amount_usdc !== undefined && (
-        <div className="mt-2 inline-flex items-center gap-1 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-600">
+        <div className="mt-2 inline-flex items-center gap-1 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">
           <Coins className="h-3 w-3 text-brand" />
-          Counter-bid: <span className="text-slate-900">${app.bid_amount_usdc} USDC</span>
+          Counter-bid: <span className="text-slate-900 dark:text-slate-100">${app.bid_amount_usdc} USDC</span>
         </div>
       )}
 

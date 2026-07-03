@@ -102,7 +102,7 @@ export function CreateOrderForm({
         </span>
       </div>
 
-      <h2 className="font-display text-2xl uppercase text-slate-900">Post a job</h2>
+      <h2 className="font-display text-2xl uppercase text-slate-900 dark:text-slate-100">Post a job</h2>
 
       <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-1">
         <button
@@ -128,7 +128,7 @@ export function CreateOrderForm({
           Direct (private)
         </button>
       </div>
-      <p className="font-mono text-[10px] leading-relaxed text-slate-500">
+      <p className="font-mono text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
         {mode === "public"
           ? "Listed on /jobs for any freelancer to apply. You pick one applicant, then escrow flow starts."
           : "Sent directly to a freelancer you already know. Not listed publicly."}
@@ -212,7 +212,7 @@ export function CreateOrderForm({
                 placeholder="300"
                 className={inputClass + " pr-16"}
               />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-slate-400">USDC</span>
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">USDC</span>
             </div>
           </FormField>
           <FormField label="Deadline" hint="Refund opens 7 days after">
@@ -234,7 +234,7 @@ export function CreateOrderForm({
           >
             <span className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-brand" />
-              <span className="font-display text-sm uppercase tracking-wider text-slate-900">
+              <span className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">
                 Your credibility (optional)
               </span>
             </span>
@@ -242,7 +242,7 @@ export function CreateOrderForm({
               {showLinks ? "Hide" : "Add"}
             </span>
           </button>
-          <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-500">
+          <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
             Shill your X, GitHub, website. Freelancers see them and decide whether to apply.
           </p>
 
@@ -252,7 +252,7 @@ export function CreateOrderForm({
               <SocialField Icon={Github}  label="GitHub"      value={github}   onChange={setGithub}   placeholder="yourhandle" />
               <SocialField Icon={Globe}   label="Website"     value={website}  onChange={setWebsite}  placeholder="https://yourdomain.com" />
               <SocialField Icon={Linkedin} label="LinkedIn"   value={linkedin} onChange={setLinkedin} placeholder="https://linkedin.com/in/you" />
-              <p className="font-mono text-[10px] text-slate-500">
+              <p className="font-mono text-[10px] text-slate-500 dark:text-slate-400">
                 Tip: set defaults in <a href="/settings" className="text-brand hover:underline">Settings</a> so they auto-fill next time.
               </p>
             </div>
@@ -274,7 +274,7 @@ export function CreateOrderForm({
         {busy ? "Creating…" : mode === "public" ? "Post to marketplace" : "Send direct order"}
       </button>
 
-      <p className="border-t border-slate-200 dark:border-slate-800 pt-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+      <p className="border-t border-slate-200 dark:border-slate-800 pt-3 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
         Step 1 of 3 · {mode === "public" ? "Wait for applications, then pick" : "Next: fund the escrow"}
       </p>
     </form>
@@ -287,9 +287,9 @@ const inputClass =
 function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">{label}</span>
+      <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">{label}</span>
       <div className="mt-1.5">{children}</div>
-      {hint && <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">{hint}</span>}
+      {hint && <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400 dark:text-slate-500">{hint}</span>}
     </label>
   );
 }
@@ -309,7 +309,7 @@ function SocialField({
 }) {
   return (
     <label className="block">
-      <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-600">
+      <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">
         <Icon className="h-3 w-3" />
         {label}
       </span>

@@ -45,7 +45,7 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
       title="My applications"
       subtitle={
         <>
-          Signed in as <span className="text-slate-700">{email}</span>
+          Signed in as <span className="text-slate-700 dark:text-slate-300">{email}</span>
           {" · "}
           <button onClick={signOut} className="text-brand hover:underline">switch</button>
         </>
@@ -69,7 +69,7 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
 
       {loading && (
         <div className="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
+          <p className="font-mono text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Loading…</p>
         </div>
       )}
 
@@ -84,8 +84,8 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
           <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
             <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
           </div>
-          <h3 className="mt-5 font-display text-xl uppercase text-slate-900">No applications yet</h3>
-          <p className="mx-auto mt-2 max-w-md font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600">
+          <h3 className="mt-5 font-display text-xl uppercase text-slate-900 dark:text-slate-100">No applications yet</h3>
+          <p className="mx-auto mt-2 max-w-md font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600 dark:text-slate-400">
             Browse the public marketplace and apply to open jobs.
           </p>
           <Link
@@ -126,7 +126,7 @@ function Stat({
   };
   return (
     <div className={`relative rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm ${accentMap[accent]}`}>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
+      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</p>
       <p className="mt-1 font-display text-2xl">{value}</p>
     </div>
   );
@@ -148,20 +148,20 @@ function ApplicationRow({ app }: { app: Application }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Job #{app.order_id}</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">Job #{app.order_id}</span>
             <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest ring-1 ${statusStyle}`}>
               {app.status}
             </span>
           </div>
           {app.pitch && (
-            <p className="mt-2 line-clamp-2 font-mono text-[11px] leading-relaxed text-slate-700">{app.pitch}</p>
+            <p className="mt-2 line-clamp-2 font-mono text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">{app.pitch}</p>
           )}
           {app.bid_amount_usdc !== null && app.bid_amount_usdc !== undefined && (
-            <p className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500">
-              Counter-bid: <span className="text-slate-900">${app.bid_amount_usdc}</span>
+            <p className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
+              Counter-bid: <span className="text-slate-900 dark:text-slate-100">${app.bid_amount_usdc}</span>
             </p>
           )}
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
             Applied {new Date(app.created_at).toLocaleString()}
           </p>
         </div>

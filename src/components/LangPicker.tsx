@@ -59,7 +59,7 @@ export function LangPicker({ compact = false }: { compact?: boolean }) {
                 <span className="text-base">{l.flag}</span>
                 <span className="flex-1">
                   <span className="block font-semibold">{l.native}</span>
-                  <span className="block text-[10px] uppercase tracking-widest text-slate-400">{l.label}</span>
+                  <span className="block text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">{l.label}</span>
                 </span>
                 {isActive && <Check className="h-3.5 w-3.5" />}
               </button>
