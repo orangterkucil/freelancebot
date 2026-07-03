@@ -242,8 +242,8 @@ export function CreateOrderForm({
 
           {showLinks && (
             <div className="mt-4 space-y-3">
-              <SocialField Icon={Twitter} label="X / Twitter" value={xHandle}  onChange={setXHandle}  placeholder="geografinist" />
-              <SocialField Icon={Github}  label="GitHub"      value={github}   onChange={setGithub}   placeholder="orangterkucil" />
+              <SocialField Icon={Twitter} label="X / Twitter" value={xHandle}  onChange={setXHandle}  placeholder="yourhandle" />
+              <SocialField Icon={Github}  label="GitHub"      value={github}   onChange={setGithub}   placeholder="yourhandle" />
               <SocialField Icon={Globe}   label="Website"     value={website}  onChange={setWebsite}  placeholder="https://yourdomain.com" />
               <SocialField Icon={Linkedin} label="LinkedIn"   value={linkedin} onChange={setLinkedin} placeholder="https://linkedin.com/in/you" />
               <p className="font-mono text-[10px] text-slate-500">

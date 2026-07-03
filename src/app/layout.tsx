@@ -51,9 +51,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Boot script: reads fb_theme from localStorage BEFORE first paint and applies
+  // the `dark` class to <html> so users never see a flash of the wrong theme.
+  const themeBoot = `
+    (function() {
+      try {
+        var t = localStorage.getItem('fb_theme') || 'light';
+        var useDark = t === 'dark' ||
+          (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (useDark) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  `;
   return (
     <html lang="en" className={`${anton.variable} ${condiment.variable} ${jbMono.variable}`}>
-      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-signal selection:text-white">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
+      </head>
+      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-signal selection:text-white dark:bg-slate-950 dark:text-slate-100">
         {children}
       </body>
     </html>

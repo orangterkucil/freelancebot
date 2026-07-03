@@ -65,6 +65,18 @@ export default function SettingsPage() {
     } catch {}
   }, []);
 
+  // Apply theme immediately when user picks it (before Save) so preview works
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const html = document.documentElement;
+    const useDark =
+      theme === "dark" ||
+      (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    html.classList.toggle("dark", useDark);
+    // persist immediately so it survives navigation without hitting Save
+    try { window.localStorage.setItem("fb_theme", theme); } catch {}
+  }, [theme]);
+
   const save = (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -103,18 +115,18 @@ export default function SettingsPage() {
           <div className="space-y-6">
             {/* Profile defaults */}
             <Section icon={ShieldCheck} title="Profile defaults" description="Shown on every order you post. Local to your browser — never sent to any server unless you attach them.">
-              <SocialInput Icon={Twitter}  label="X / Twitter" value={xHandle}  onChange={setXHandle}  placeholder="geografinist" />
-              <SocialInput Icon={Github}   label="GitHub"      value={github}   onChange={setGithub}   placeholder="orangterkucil" />
+              <SocialInput Icon={Twitter}  label="X / Twitter" value={xHandle}  onChange={setXHandle}  placeholder="yourhandle" />
+              <SocialInput Icon={Github}   label="GitHub"      value={github}   onChange={setGithub}   placeholder="yourhandle" />
               <SocialInput Icon={Globe}    label="Website"     value={website}  onChange={setWebsite}  placeholder="https://yourdomain.com" />
               <SocialInput Icon={Linkedin} label="LinkedIn"    value={linkedin} onChange={setLinkedin} placeholder="https://linkedin.com/in/you" />
             </Section>
 
             {/* Theme */}
-            <Section icon={Sun} title="Theme" description="Site stays light for v0.11.0. Dark mode arrives in v0.12.0 with fully synced styling — no clashes.">
-              <div className="grid grid-cols-3 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
+            <Section icon={Sun} title="Theme" description="Applies instantly across the whole app. Stored in your browser only.">
+              <div className="grid grid-cols-3 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-slate-800 dark:bg-slate-900">
                 <ThemePill Icon={Sun}     label="Light"  active={theme === "light"}  onClick={() => setTheme("light")} />
-                <ThemePill Icon={Moon}    label="Dark"   active={theme === "dark"}   onClick={() => setTheme("dark")}  disabled hint="v0.12.0" />
-                <ThemePill Icon={Monitor} label="System" active={theme === "system"} onClick={() => setTheme("system")} disabled hint="v0.12.0" />
+                <ThemePill Icon={Moon}    label="Dark"   active={theme === "dark"}   onClick={() => setTheme("dark")} />
+                <ThemePill Icon={Monitor} label="System" active={theme === "system"} onClick={() => setTheme("system")} />
               </div>
             </Section>
 
