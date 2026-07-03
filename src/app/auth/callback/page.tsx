@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase";
@@ -13,8 +13,18 @@ import { AppHeader } from "@/components/AppHeader";
  * The URL contains hash tokens (#access_token=...&refresh_token=...). The
  * Supabase JS SDK auto-detects and stores the session — we just need to
  * wait for it to complete, then bounce the user to their intended page.
+ *
+ * Wrapped in Suspense because useSearchParams() requires it for static export.
  */
 export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<CallbackShell state="working" msg="Verifying…" />}>
+      <CallbackInner />
+    </Suspense>
+  );
+}
+
+function CallbackInner() {
   const router = useRouter();
   const params = useSearchParams();
   const [state, setState] = useState<"working" | "ok" | "error">("working");
@@ -46,6 +56,10 @@ export default function AuthCallbackPage() {
     })();
   }, [router, params]);
 
+  return <CallbackShell state={state} msg={msg} />;
+}
+
+function CallbackShell({ state, msg }: { state: "working" | "ok" | "error"; msg: string }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <AppHeader showWallet={false} />
