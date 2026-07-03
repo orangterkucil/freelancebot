@@ -61,7 +61,7 @@ export function AppShell({
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen((s) => !s)}
-              className="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 lg:hidden"
+              className="grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 lg:hidden"
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
