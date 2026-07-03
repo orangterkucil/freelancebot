@@ -129,8 +129,8 @@ export function OrderActions({
   };
 
   return (
-    <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+    <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+      <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
         <Coins className="h-4 w-4 text-brand" />
         <p className="font-display text-sm uppercase tracking-wider text-slate-900">Actions</p>
       </div>
@@ -159,7 +159,7 @@ export function OrderActions({
               value={deliverable}
               onChange={(e) => setDeliverable(e.target.value)}
               placeholder="https://figma.com/file/..."
-              className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
+              className="mt-1.5 w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand"
             />
             <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">
               Agent will check reachability, deadline, and brief alignment.
@@ -212,7 +212,7 @@ export function OrderActions({
       )}
 
       {verdict && (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
           <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Agent verdict</p>
           <p className="mt-1 font-display text-sm uppercase">
             <span className={verdict.verified ? "text-emerald-700" : "text-amber-700"}>
@@ -257,7 +257,7 @@ export function OrderActions({
                   <button
                     disabled={busy}
                     onClick={() => run(hasOnchain ? refundOnChain : refundSimulated)}
-                    className="mt-3 inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white px-3 py-2 font-display text-xs uppercase tracking-wider text-amber-800 shadow-sm transition-colors hover:bg-amber-50 disabled:opacity-50"
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white dark:bg-slate-900 px-3 py-2 font-display text-xs uppercase tracking-wider text-amber-800 shadow-sm transition-colors hover:bg-amber-50 disabled:opacity-50"
                   >
                     <RotateCcw className="h-3 w-3" />
                     {busy ? "Sending…" : hasOnchain ? "Request refund on Arc" : "Request refund (simulated)"}
@@ -281,7 +281,7 @@ export function OrderActions({
         </div>
       )}
 
-      <details className="border-t border-slate-100 pt-3">
+      <details className="border-t border-slate-100 dark:border-slate-800 pt-3">
         <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-slate-500">
           {hasOnchain ? "Contract details" : "On-chain not configured"}
         </summary>

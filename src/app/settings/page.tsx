@@ -139,7 +139,7 @@ export default function SettingsPage() {
                   setLocale(next);
                   applyLocale(next);
                 }}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-xs text-slate-900 outline-none focus:border-brand"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 font-mono text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand"
               >
                 {LOCALES.map((l) => (
                   <option key={l.code} value={l.code}>
@@ -161,7 +161,7 @@ export default function SettingsPage() {
                   value={notifEmail}
                   onChange={(e) => setNotifEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:border-brand"
+                  className="mt-1.5 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none focus:border-brand"
                 />
               </label>
               <div className="mt-4 space-y-2">
@@ -277,7 +277,7 @@ function SocialInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
+        className="mt-1.5 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand"
       />
     </label>
   );
@@ -301,8 +301,8 @@ function ThemePill({
       className={
         "flex flex-col items-center gap-1 rounded-lg px-3 py-2 transition-colors " +
         (active ? "bg-brand text-white shadow-sm"
-          : disabled ? "text-slate-400 cursor-not-allowed"
-          : "text-slate-700 hover:bg-slate-100")
+          : disabled ? "text-slate-400 dark:text-slate-500 cursor-not-allowed"
+          : "text-slate-700 dark:text-slate-300 hover:bg-slate-100")
       }
     >
       <Icon className="h-4 w-4" />
@@ -321,7 +321,7 @@ function Toggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 transition-colors hover:bg-slate-50">
+    <label className="flex cursor-pointer items-start justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 transition-colors hover:bg-slate-50">
       <span className="min-w-0">
         <span className="block font-display text-xs uppercase tracking-wider text-slate-900">{label}</span>
         {sub && <span className="mt-0.5 block font-mono text-[10px] tracking-wide text-slate-500">{sub}</span>}
@@ -334,7 +334,7 @@ function Toggle({
           className="peer absolute inset-0 opacity-0"
         />
         <span className="absolute inset-0 rounded-full bg-slate-300 transition-colors peer-checked:bg-brand" />
-        <span className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
+        <span className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white dark:bg-slate-900 shadow transition-transform peer-checked:translate-x-4" />
       </span>
     </label>
   );
@@ -342,7 +342,7 @@ function Toggle({
 
 function SessionRow({ role, email, onSignOut }: { role: string; email: string; onSignOut: () => void }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2.5">
       <div className="min-w-0">
         <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{role}</span>
         <p className="truncate font-mono text-xs text-slate-900">
@@ -353,7 +353,7 @@ function SessionRow({ role, email, onSignOut }: { role: string; email: string; o
         <button
           type="button"
           onClick={onSignOut}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-display text-[11px] uppercase tracking-wider text-slate-700 hover:border-rose-400 hover:text-rose-700"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 font-display text-[11px] uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:border-rose-400 hover:text-rose-700"
         >
           <LogOut className="h-3 w-3" />
           Sign out

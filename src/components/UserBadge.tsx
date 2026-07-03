@@ -45,7 +45,7 @@ export function UserBadge({
   return (
     <span className={"inline-flex items-center gap-2 " + className}>
       {!hideLabel && (
-        <span className="font-mono text-xs text-slate-700 truncate">{label}</span>
+        <span className="font-mono text-xs text-slate-700 dark:text-slate-300 truncate">{label}</span>
       )}
       {summary && summary.count > 0 ? (
         <span className="inline-flex items-center gap-1">
@@ -56,7 +56,7 @@ export function UserBadge({
           </span>
         </span>
       ) : (
-        <span className="rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-500">
+        <span className="rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-500">
           new
         </span>
       )}

@@ -93,7 +93,7 @@ export function RatingForm({
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         placeholder="Optional comment (visible publicly on their profile)"
-        className="mt-4 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
+        className="mt-4 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand"
       />
 
       {error && (

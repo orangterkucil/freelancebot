@@ -90,7 +90,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
 
       <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white shadow-sm ring-1 ring-sky-200">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-sky-200">
             <Sparkles className="h-5 w-5 text-brand" />
           </div>
           <div>
@@ -126,10 +126,10 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search brief, client, ID..."
-                  className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand sm:w-72"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 py-2 pl-9 pr-3 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand sm:w-72"
                 />
               </div>
-              <div className="flex gap-1 overflow-x-auto rounded-lg border border-slate-200 bg-white p-1">
+              <div className="flex gap-1 overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
                 {STATUS_FILTERS.map((f) => (
                   <button
                     key={f.value}
@@ -138,7 +138,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
                       "shrink-0 rounded-md px-3 py-1 font-mono text-[10px] uppercase tracking-wider transition-colors " +
                       (statusFilter === f.value
                         ? "bg-brand text-white shadow-sm"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100")
+                        : "text-slate-600 hover:text-slate-900 dark:text-slate-100 hover:bg-slate-100")
                     }
                   >
                     {f.label}
@@ -150,7 +150,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
         </div>
 
         {loading && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
             <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
           </div>
         )}
@@ -163,7 +163,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
 
         {!loading && !error && orders.length === 0 && (
           <div className="rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm">
-            <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md ring-1 ring-sky-200">
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
               <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
             </div>
             <h3 className="mt-5 font-display text-xl uppercase text-slate-900">
@@ -182,7 +182,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
         )}
 
         {!loading && !error && orders.length > 0 && filtered.length === 0 && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center">
             <p className="font-mono text-xs uppercase tracking-wider text-slate-500">
               No orders match this filter.
             </p>

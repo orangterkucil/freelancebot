@@ -34,7 +34,7 @@ export function LiveJobsPreview() {
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
               Live · marketplace
             </span>
-            <h2 className="mt-3 font-display text-[32px] uppercase leading-tight tracking-tight text-slate-900 sm:text-5xl">
+            <h2 className="mt-3 font-display text-[32px] uppercase leading-tight tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
               Open jobs right now
             </h2>
             <p className="mt-2 max-w-md font-mono text-xs uppercase tracking-wide text-slate-600">
@@ -43,7 +43,7 @@ export function LiveJobsPreview() {
           </div>
           <Link
             href="/jobs"
-            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 font-display text-sm uppercase tracking-wider text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:text-brand hover:shadow-md"
+            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-3 font-display text-sm uppercase tracking-wider text-slate-700 dark:text-slate-300 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:text-brand hover:shadow-md"
           >
             See all jobs
             <ArrowRight className="h-4 w-4" />
@@ -53,12 +53,12 @@ export function LiveJobsPreview() {
         {loading ? (
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-44 rounded-2xl border border-slate-200 bg-white" />
+              <div key={i} className="h-44 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white" />
             ))}
           </div>
         ) : jobs.length === 0 ? (
           <div className="mt-10 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 to-indigo-50 p-8 text-center">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-white shadow-md ring-1 ring-sky-200">
+            <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
               <Sparkles className="h-5 w-5 text-brand" strokeWidth={1.5} />
             </div>
             <p className="mt-4 font-display text-lg uppercase text-slate-900">
@@ -80,9 +80,9 @@ export function LiveJobsPreview() {
               <Link
                 key={j.id}
                 href={`/jobs/${j.id}`}
-                className="group relative block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
+                className="group relative block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
               >
-                <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-600">
+                <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-600">
                   <span>{FIELD_EMOJI[j.field] ?? "📦"}</span> {j.field}
                 </span>
 
@@ -93,7 +93,7 @@ export function LiveJobsPreview() {
                   {j.brief}
                 </p>
 
-                <div className="mt-4 flex items-end justify-between border-t border-slate-100 pt-3">
+                <div className="mt-4 flex items-end justify-between border-t border-slate-100 dark:border-slate-800 pt-3">
                   <span className="font-display text-lg text-brand">
                     ${j.amount_usdc.toLocaleString()}
                     <span className="ml-1 font-mono text-[9px] uppercase tracking-widest text-slate-400">USDC</span>

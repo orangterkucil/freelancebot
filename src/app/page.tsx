@@ -26,26 +26,26 @@ import { useT } from "@/lib/i18n";
  */
 export default function Home() {
   return (
-    <div className="bg-slate-50 text-slate-900 antialiased">
+    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased">
       <HeroSection />
       <AboutSection />
       <FlowSection />
       <LiveJobsPreview />
       <CtaSection />
 
-      <footer className="border-t border-slate-200 bg-white py-10 text-center">
+      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-10 text-center">
         <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
           MIT licensed · Open source · v0.11.0 ·{" "}
           <a
             href="https://github.com/orangterkucil/freelancebot"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-600 hover:text-brand"
+            className="text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-brand"
           >
             GitHub
           </a>{" "}
           ·{" "}
-          <Link href="/docs" className="text-slate-600 hover:text-brand">
+          <Link href="/docs" className="text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-brand">
             Docs
           </Link>
         </p>
@@ -83,7 +83,7 @@ function HeroSection() {
           </Link>
 
           <div className="hidden items-center gap-2 lg:flex">
-            <nav className="rounded-full border border-slate-200 bg-white/90 px-6 py-2.5 shadow-sm backdrop-blur">
+            <nav className="rounded-full border border-slate-200 dark:border-slate-800 bg-white/90 px-6 py-2.5 shadow-sm backdrop-blur">
               <ul className="flex items-center gap-6">
                 {[
                   { href: "#flow",   label: t("nav.howItWorks") },
@@ -95,7 +95,7 @@ function HeroSection() {
                   <li key={l.label}>
                     <a
                       href={l.href}
-                      className="font-display text-[12px] uppercase tracking-wider text-slate-700 transition-colors hover:text-brand"
+                      className="font-display text-[12px] uppercase tracking-wider text-slate-700 dark:text-slate-300 transition-colors hover:text-brand"
                     >
                       {l.label}
                     </a>
@@ -117,7 +117,7 @@ function HeroSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:border-brand hover:text-brand"
+                  className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 dark:border-slate-800 bg-white/90 text-slate-600 dark:text-slate-400 dark:text-slate-500 shadow-sm backdrop-blur transition-colors hover:border-brand hover:text-brand"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -142,7 +142,7 @@ function HeroSection() {
             {t("hero.script")}
           </span>
 
-          <p className="mt-8 max-w-xl font-mono text-sm leading-relaxed text-slate-600 sm:text-base">
+          <p className="mt-8 max-w-xl font-mono text-sm leading-relaxed text-slate-600 dark:text-slate-400 dark:text-slate-500 sm:text-base">
             {t("hero.subtitle1")}
             <br className="hidden sm:block" />
             {t("hero.subtitle2")}
@@ -158,7 +158,7 @@ function HeroSection() {
             </Link>
             <Link
               href="/docs"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 shadow-sm transition-colors hover:border-brand hover:text-brand"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 dark:text-slate-300 shadow-sm transition-colors hover:border-brand hover:text-brand"
             >
               <Sparkles className="h-4 w-4" />
               {t("hero.cta.docs")}
@@ -172,7 +172,7 @@ function HeroSection() {
               { v: "75M+",  l: t("stats.asiaFreelancers") },
               { v: "$0",    l: t("stats.vcRaised") },
             ].map((s) => (
-              <div key={s.l} className="border-l border-slate-200 pl-3">
+              <div key={s.l} className="border-l border-slate-200 dark:border-slate-800 pl-3">
                 <p className="font-display text-2xl text-brand sm:text-3xl">{s.v}</p>
                 <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-slate-500">
                   {s.l}
@@ -193,7 +193,7 @@ function HeroSection() {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 bg-white shadow-sm"
+              className="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm"
             >
               <Icon className="h-5 w-5" />
             </a>
@@ -209,7 +209,7 @@ function HeroSection() {
  * ===================================================================== */
 function AboutSection() {
   return (
-    <section id="about" className="relative overflow-hidden bg-white py-20 sm:py-28 lg:py-32">
+    <section id="about" className="relative overflow-hidden bg-white dark:bg-slate-900 py-20 sm:py-28 lg:py-32">
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/70" />
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[900px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/50" />
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[1200px] w-[1200px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/30" />
@@ -218,7 +218,7 @@ function AboutSection() {
       <div className="relative mx-auto max-w-landing px-6 lg:px-12">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="relative">
-            <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 sm:text-5xl lg:text-[60px]">
+            <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-[60px]">
               Hello.
               <br />
               I&apos;m FreelanceBot.
@@ -231,7 +231,7 @@ function AboutSection() {
             </span>
           </div>
 
-          <p className="max-w-md font-mono text-sm leading-relaxed text-slate-600 sm:text-base lg:max-w-[280px]">
+          <p className="max-w-md font-mono text-sm leading-relaxed text-slate-600 dark:text-slate-400 dark:text-slate-500 sm:text-base lg:max-w-[280px]">
             Built for the 75 million freelancers in Asia-Pacific who lose 18% of every gig
             to PayPal, SWIFT, and Upwork.
           </p>
@@ -245,7 +245,7 @@ function AboutSection() {
             { v: "MIT",     l: "Forever open source",        k: "license" },
           ].map((s) => (
             <div key={s.k} className="liquid-glass rounded-2xl p-5">
-              <p className="font-display text-3xl text-slate-900 sm:text-4xl">{s.v}</p>
+              <p className="font-display text-3xl text-slate-900 dark:text-slate-100 sm:text-4xl">{s.v}</p>
               <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-slate-500">
                 {s.l}
               </p>
@@ -289,10 +289,10 @@ function FlowSection() {
   ];
 
   return (
-    <section id="flow" className="relative bg-slate-50 py-20 sm:py-28 lg:py-32">
+    <section id="flow" className="relative bg-slate-50 dark:bg-slate-950 py-20 sm:py-28 lg:py-32">
       <div className="mx-auto max-w-landing px-6 lg:px-12">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-          <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 sm:text-5xl lg:text-[60px]">
+          <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-[60px]">
             How it
             <br className="lg:hidden" />
             <span className="ml-12 sm:ml-24 lg:ml-32">
@@ -303,18 +303,18 @@ function FlowSection() {
 
           <Link href="/client" className="group block">
             <div className="flex items-end gap-3">
-              <span className="font-display text-3xl uppercase tracking-wider text-slate-900 sm:text-5xl lg:text-[60px]">
+              <span className="font-display text-3xl uppercase tracking-wider text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-[60px]">
                 Run
               </span>
               <div className="flex flex-col">
-                <span className="font-display text-xl uppercase tracking-wider text-slate-700 sm:text-2xl lg:text-3xl">
+                <span className="font-display text-xl uppercase tracking-wider text-slate-700 dark:text-slate-300 sm:text-2xl lg:text-3xl">
                   the
                 </span>
-                <span className="font-display text-xl uppercase tracking-wider text-slate-700 sm:text-2xl lg:text-3xl">
+                <span className="font-display text-xl uppercase tracking-wider text-slate-700 dark:text-slate-300 sm:text-2xl lg:text-3xl">
                   demo
                 </span>
               </div>
-              <ArrowRight className="ml-1 mb-1 h-6 w-6 text-slate-900 transition-transform group-hover:translate-x-1 sm:h-8 sm:w-8" />
+              <ArrowRight className="ml-1 mb-1 h-6 w-6 text-slate-900 dark:text-slate-100 transition-transform group-hover:translate-x-1 sm:h-8 sm:w-8" />
             </div>
             <div className="mt-3 h-1.5 w-full bg-brand sm:h-2 lg:h-2.5" />
           </Link>
@@ -337,10 +337,10 @@ function FlowSection() {
                 <span className="absolute left-5 top-4 font-display text-[11px] uppercase tracking-widest text-slate-400">
                   Step {String(idx + 1).padStart(2, "0")}
                 </span>
-                <s.Icon className="h-20 w-20 text-slate-500 transition-transform group-hover:scale-110" strokeWidth={1.2} />
+                <s.Icon className="h-20 w-20 text-slate-500 dark:text-slate-400 dark:text-slate-500 transition-transform group-hover:scale-110" strokeWidth={1.2} />
               </div>
 
-              <div className="mt-4 flex items-center justify-between gap-3 rounded-[20px] border border-slate-200 bg-white px-5 py-4">
+              <div className="mt-4 flex items-center justify-between gap-3 rounded-[20px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-4">
                 <div className="min-w-0">
                   <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
                     {s.kpiLabel}
@@ -373,7 +373,7 @@ function CtaSection() {
   return (
     <section className="relative overflow-hidden bg-space py-24 sm:py-28 lg:py-36">
       <div className="relative mx-auto grid max-w-landing grid-cols-1 items-center gap-16 px-6 lg:grid-cols-[auto_1fr] lg:gap-24 lg:px-12">
-        <div className="mx-auto w-fit flex-shrink-0 flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm lg:mx-0">
+        <div className="mx-auto w-fit flex-shrink-0 flex flex-col rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm lg:mx-0">
           {[
             { Icon: Mail,    href: "mailto:orangterkucil@gmail.com", label: "Email" },
             { Icon: Twitter, href: "https://x.com/geografinist",      label: "Twitter" },
@@ -386,7 +386,7 @@ function CtaSection() {
               rel="noopener noreferrer"
               aria-label={label}
               className={
-                "grid h-16 w-16 place-items-center text-slate-700 transition-colors hover:bg-slate-50 hover:text-brand" +
+                "grid h-16 w-16 place-items-center text-slate-700 dark:text-slate-300 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 dark:bg-slate-950 hover:text-brand" +
                 (i < arr.length - 1 ? " border-b border-slate-200" : "")
               }
             >
@@ -403,7 +403,7 @@ function CtaSection() {
             Go beyond
           </span>
 
-          <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 sm:text-5xl lg:text-[64px]">
+          <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-[64px]">
             <span className="block">Join us.</span>
             <span className="block">Fork the repo.</span>
             <span className="block">Ship your own.</span>
@@ -420,7 +420,7 @@ function CtaSection() {
             </Link>
             <Link
               href="/docs"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 transition-colors hover:border-brand hover:text-brand"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 dark:text-slate-300 transition-colors hover:border-brand hover:text-brand"
             >
               Read the docs
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

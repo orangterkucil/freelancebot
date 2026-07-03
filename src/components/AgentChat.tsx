@@ -55,8 +55,8 @@ export function AgentChat({
   };
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
+    <div className="flex h-full flex-col rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-5 py-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-brand" />
           <p className="font-display text-sm uppercase tracking-wider text-slate-900">
@@ -85,12 +85,12 @@ export function AgentChat({
         </div>
       )}
 
-      <form onSubmit={send} className="flex gap-2 border-t border-slate-200 px-5 py-3">
+      <form onSubmit={send} className="flex gap-2 border-t border-slate-200 dark:border-slate-800 px-5 py-3">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message…"
-          className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
+          className="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand"
           disabled={busy}
         />
         <button
@@ -117,8 +117,8 @@ function Bubble({ message, viewer }: { message: Message; viewer: "client" | "fre
     : isAgent
     ? "bg-sky-50 text-sky-900 border border-sky-200"
     : isSystem
-    ? "bg-slate-100 text-slate-500 text-xs italic"
-    : "bg-slate-100 text-slate-900";
+    ? "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 dark:text-slate-500 text-xs italic"
+    : "bg-slate-100 dark:bg-slate-800 text-slate-900";
 
   const label = isAgent ? "FreelanceBot" : isSystem ? "system" : message.role;
 

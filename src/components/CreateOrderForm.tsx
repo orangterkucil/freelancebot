@@ -90,7 +90,7 @@ export function CreateOrderForm({
   };
 
   return (
-    <form onSubmit={submit} className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <form onSubmit={submit} className="space-y-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
       <div className="flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-brand" />
         <span className="font-mono text-[11px] uppercase tracking-widest text-brand">New escrow</span>
@@ -98,13 +98,13 @@ export function CreateOrderForm({
 
       <h2 className="font-display text-2xl uppercase text-slate-900">Post a job</h2>
 
-      <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-1">
         <button
           type="button"
           onClick={() => setMode("public")}
           className={
             "flex items-center justify-center gap-2 rounded-lg px-3 py-2 font-display text-xs uppercase tracking-wider transition-colors " +
-            (mode === "public" ? "bg-brand text-white shadow-sm" : "text-slate-600 hover:text-slate-900")
+            (mode === "public" ? "bg-brand text-white shadow-sm" : "text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900")
           }
         >
           <Globe className="h-3.5 w-3.5" />
@@ -115,7 +115,7 @@ export function CreateOrderForm({
           onClick={() => setMode("private")}
           className={
             "flex items-center justify-center gap-2 rounded-lg px-3 py-2 font-display text-xs uppercase tracking-wider transition-colors " +
-            (mode === "private" ? "bg-brand text-white shadow-sm" : "text-slate-600 hover:text-slate-900")
+            (mode === "private" ? "bg-brand text-white shadow-sm" : "text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900")
           }
         >
           <Lock className="h-3.5 w-3.5" />
@@ -141,7 +141,7 @@ export function CreateOrderForm({
                     "rounded-lg px-2 py-1.5 font-mono text-[10px] uppercase tracking-wider transition-colors " +
                     (field === f
                       ? "bg-brand text-white shadow-sm"
-                      : "border border-slate-200 bg-white text-slate-700 hover:border-brand hover:text-brand")
+                      : "border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-brand hover:text-brand")
                   }
                 >
                   {FIELD_LABELS[f]}
@@ -268,7 +268,7 @@ export function CreateOrderForm({
         {busy ? "Creating…" : mode === "public" ? "Post to marketplace" : "Send direct order"}
       </button>
 
-      <p className="border-t border-slate-200 pt-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+      <p className="border-t border-slate-200 dark:border-slate-800 pt-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
         Step 1 of 3 · {mode === "public" ? "Wait for applications, then pick" : "Next: fund the escrow"}
       </p>
     </form>
@@ -276,7 +276,7 @@ export function CreateOrderForm({
 }
 
 const inputClass =
-  "w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand";
+  "w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 font-mono text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand";
 
 function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
@@ -312,7 +312,7 @@ function SocialField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
+        className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand"
       />
     </label>
   );

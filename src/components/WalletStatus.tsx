@@ -45,7 +45,7 @@ export function WalletStatus() {
       <button
         onClick={onConnect}
         disabled={busy}
-        className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-brand hover:text-brand disabled:opacity-50"
+        className="rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:border-brand hover:text-brand disabled:opacity-50"
       >
         {busy ? "Connecting…" : "Connect wallet"}
       </button>

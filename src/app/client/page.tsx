@@ -129,10 +129,10 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search brief, freelancer, ID..."
-                  className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand sm:w-72"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 py-2 pl-9 pr-3 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand sm:w-72"
                 />
               </div>
-              <div className="flex gap-1 overflow-x-auto rounded-lg border border-slate-200 bg-white p-1">
+              <div className="flex gap-1 overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
                 {STATUS_FILTERS.map((f) => (
                   <button
                     key={f.value}
@@ -141,7 +141,7 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
                       "shrink-0 rounded-md px-3 py-1 font-mono text-[10px] uppercase tracking-wider transition-colors " +
                       (statusFilter === f.value
                         ? "bg-brand text-white shadow-sm"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100")
+                        : "text-slate-600 hover:text-slate-900 dark:text-slate-100 hover:bg-slate-100")
                     }
                   >
                     {f.label}
@@ -152,14 +152,14 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
           )}
 
           {orders.length > 0 && (
-            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400 sm:ml-2">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500 sm:ml-2">
               {filtered.length} of {orders.length}
             </span>
           )}
         </div>
 
         {loading && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
             <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
           </div>
         )}
@@ -173,7 +173,7 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
         {!loading && !error && orders.length === 0 && <EmptyState onCreate={() => setShowForm(true)} />}
 
         {!loading && !error && orders.length > 0 && filtered.length === 0 && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center">
             <p className="font-mono text-xs uppercase tracking-wider text-slate-500">
               No orders match this filter.
             </p>

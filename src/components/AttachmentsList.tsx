@@ -18,7 +18,7 @@ export function AttachmentsList({
 
   if (!canSee) {
     return (
-      <div className={"rounded-xl border border-slate-200 bg-slate-50 p-3 " + className}>
+      <div className={"rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 " + className}>
         <div className="flex items-center gap-2 text-slate-500">
           <Lock className="h-3.5 w-3.5" />
           <span className="font-mono text-[11px] uppercase tracking-wider">
@@ -42,7 +42,7 @@ export function AttachmentsList({
               href={a.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative block aspect-square overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
+              className="group relative block aspect-square overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -67,7 +67,7 @@ export function AttachmentsList({
                 href={a.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 transition-colors hover:border-brand hover:bg-sky-50"
+                className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 transition-colors hover:border-brand hover:bg-sky-50"
               >
                 <span className="flex min-w-0 flex-1 items-center gap-2 text-slate-700">
                   <FileTypeIcon contentType={a.content_type} />

@@ -73,7 +73,7 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <AppShell title="Loading…" subtitle="Fetching order">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
           <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
         </div>
       </AppShell>
@@ -83,7 +83,7 @@ export default function OrderDetailPage() {
   if (error || !order) {
     return (
       <AppShell title="Order not found" subtitle={error ?? "This order does not exist or you do not have access"}>
-        <Link href="/client" className="inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 font-display text-xs uppercase tracking-wider text-slate-700 hover:border-brand hover:text-brand">
+        <Link href="/client" className="inline-flex rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 font-display text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:border-brand hover:text-brand">
           ← back to dashboard
         </Link>
       </AppShell>
@@ -108,7 +108,7 @@ export default function OrderDetailPage() {
       </dl>
 
       {order.attachments && order.attachments.length > 0 && (
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
           <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
             Attachments ({order.attachments.length})
           </p>
@@ -138,7 +138,7 @@ export default function OrderDetailPage() {
           {role ? (
             <OrderActions order={order} role={role} onChanged={reloadAll} />
           ) : (
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm font-mono uppercase tracking-wider text-slate-500 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 text-sm font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500 shadow-sm">
               Sign in to act on this order.
             </div>
           )}
@@ -154,9 +154,9 @@ export default function OrderDetailPage() {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 shadow-sm">
       <dt className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</dt>
-      <dd className="mt-1 font-mono text-xs text-slate-900 truncate">{children}</dd>
+      <dd className="mt-1 font-mono text-xs text-slate-900 dark:text-slate-100 truncate">{children}</dd>
     </div>
   );
 }

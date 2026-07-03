@@ -10,7 +10,7 @@ export function OrderCard({ order, perspective }: { order: Order; perspective: "
   return (
     <Link
       href={`/orders/${order.id}`}
-      className="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
+      className="group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
@@ -33,10 +33,10 @@ export function OrderCard({ order, perspective }: { order: Order; perspective: "
         </div>
         <div className="flex flex-col items-end gap-2">
           <StatusBadge status={order.status} />
-          <ArrowUpRight className="h-4 w-4 text-slate-400 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand" />
+          <ArrowUpRight className="h-4 w-4 text-slate-400 dark:text-slate-500 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand" />
         </div>
       </div>
-      <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+      <div className="mt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3">
         <span className="font-display text-xl text-brand">
           ${order.amount_usdc.toLocaleString()}
           <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">
