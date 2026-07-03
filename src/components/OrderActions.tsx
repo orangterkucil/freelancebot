@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, ArrowRightCircle, Coins, ExternalLink } from "lucide-react";
+import { CheckCircle2, ArrowRightCircle, Coins, ExternalLink, ShieldAlert, RotateCcw } from "lucide-react";
 import type { Order } from "@/lib/orders";
 import { patchOrder, verifyDeliverable } from "@/lib/api";
 import {
@@ -94,6 +94,38 @@ export function OrderActions({
 
   const releaseSimulated = async () => {
     await patchOrder(order.id, { status: "released" });
+  };
+
+  // Dispute — refund after deadline + grace period
+  const GRACE_DAYS = 7;
+  const isRefundable = (() => {
+    if (order.status === "released" || order.status === "refunded" || order.status === "draft") return false;
+    if (!order.deadline) return false;
+    const deadlineMs = new Date(order.deadline).getTime();
+    const graceMs = GRACE_DAYS * 86400 * 1000;
+    return Date.now() > deadlineMs + graceMs;
+  })();
+  const daysUntilRefundable = (() => {
+    if (!order.deadline) return null;
+    const deadlineMs = new Date(order.deadline).getTime();
+    const graceMs = GRACE_DAYS * 86400 * 1000;
+    const remaining = deadlineMs + graceMs - Date.now();
+    if (remaining <= 0) return 0;
+    return Math.ceil(remaining / (86400 * 1000));
+  })();
+
+  const refundOnChain = async () => {
+    const { signer } = await connectWallet();
+    const escrow = getEscrowWithSigner(signer);
+    const onchainId = order.onchain_id ?? order.id;
+    const tx = await escrow.refund(onchainId);
+    const receipt = await tx.wait();
+    setLastTxHash(receipt.hash);
+    await patchOrder(order.id, { status: "refunded" });
+  };
+
+  const refundSimulated = async () => {
+    await patchOrder(order.id, { status: "refunded" });
   };
 
   return (
@@ -204,6 +236,42 @@ export function OrderActions({
       {order.status === "refunded" && (
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 font-mono text-xs uppercase tracking-wider text-rose-700">
           ↩ Refunded to client · order complete
+        </div>
+      )}
+
+      {/* Dispute resolution — appears after deadline + grace period */}
+      {order.status !== "released" && order.status !== "refunded" && order.status !== "draft" && order.deadline && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
+          <div className="flex items-start gap-2">
+            <ShieldAlert className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-amber-700" />
+            <div className="flex-1">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-amber-800">
+                Dispute / refund path
+              </p>
+              {isRefundable ? (
+                <>
+                  <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-700">
+                    Deadline + {GRACE_DAYS}-day grace period has passed. Either party
+                    may trigger a refund. Funds return to the client on-chain.
+                  </p>
+                  <button
+                    disabled={busy}
+                    onClick={() => run(hasOnchain ? refundOnChain : refundSimulated)}
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white px-3 py-2 font-display text-xs uppercase tracking-wider text-amber-800 shadow-sm transition-colors hover:bg-amber-50 disabled:opacity-50"
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                    {busy ? "Sending…" : hasOnchain ? "Request refund on Arc" : "Request refund (simulated)"}
+                  </button>
+                </>
+              ) : (
+                <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600">
+                  If the deliverable isn&apos;t submitted, refund unlocks
+                  {daysUntilRefundable != null ? ` in ${daysUntilRefundable} day${daysUntilRefundable === 1 ? "" : "s"}` : " after the grace period"} .
+                  Either party can then call refund on the contract to return funds to the client.
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

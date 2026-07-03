@@ -66,16 +66,12 @@ export default function SettingsPage() {
     } catch {}
   }, []);
 
-  // Apply theme immediately when user picks it (before Save) so preview works
+  // Dark mode is intentionally light-only in MVP 1 — see globals.css note.
+  // Force-clear any stale value so the user can't get stuck in a broken state.
   useEffect(() => {
     if (typeof document === "undefined") return;
-    const html = document.documentElement;
-    const useDark =
-      theme === "dark" ||
-      (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    html.classList.toggle("dark", useDark);
-    // persist immediately so it survives navigation without hitting Save
-    try { window.localStorage.setItem("fb_theme", theme); } catch {}
+    document.documentElement.classList.remove("dark");
+    try { window.localStorage.setItem("fb_theme", "light"); } catch {}
   }, [theme]);
 
   const save = (e: React.FormEvent) => {
@@ -123,11 +119,11 @@ export default function SettingsPage() {
             </Section>
 
             {/* Theme */}
-            <Section icon={Sun} title="Theme" description="Applies instantly across the whole app. Stored in your browser only.">
-              <div className="grid grid-cols-3 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-slate-800 dark:bg-slate-900">
+            <Section icon={Sun} title="Theme" description="MVP 1 ships light-only. Dark theme is on the MVP 2 roadmap — it needs a full design pass across every gradient card, tinted background, and colored border for visual coherence.">
+              <div className="grid grid-cols-3 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
                 <ThemePill Icon={Sun}     label="Light"  active={theme === "light"}  onClick={() => setTheme("light")} />
-                <ThemePill Icon={Moon}    label="Dark"   active={theme === "dark"}   onClick={() => setTheme("dark")} />
-                <ThemePill Icon={Monitor} label="System" active={theme === "system"} onClick={() => setTheme("system")} />
+                <ThemePill Icon={Moon}    label="Dark"   active={theme === "dark"}   onClick={() => setTheme("dark")} disabled hint="MVP 2" />
+                <ThemePill Icon={Monitor} label="System" active={theme === "system"} onClick={() => setTheme("system")} disabled hint="MVP 2" />
               </div>
             </Section>
 

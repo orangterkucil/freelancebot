@@ -15,6 +15,8 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { WalletStatus } from "./WalletStatus";
+import { LangPicker } from "./LangPicker";
+import { useT } from "@/lib/i18n";
 
 type NavItem = {
   href: string;
@@ -23,13 +25,16 @@ type NavItem = {
   badge?: string;
 };
 
-const NAV: NavItem[] = [
-  { href: "/client",     label: "Client",      Icon: Briefcase },
-  { href: "/freelancer", label: "Freelancer",  Icon: Compass },
-  { href: "/jobs",       label: "Marketplace", Icon: Wallet },
-  { href: "/freelancer/applications", label: "Applications", Icon: Activity },
-  { href: "/settings",   label: "Settings",    Icon: Settings },
-];
+function useNav(): NavItem[] {
+  const { t } = useT();
+  return [
+    { href: "/client",     label: t("nav.client"),       Icon: Briefcase },
+    { href: "/freelancer", label: t("nav.freelancer"),   Icon: Compass },
+    { href: "/jobs",       label: t("nav.marketplace"),  Icon: Wallet },
+    { href: "/freelancer/applications", label: t("nav.applications"), Icon: Activity },
+    { href: "/settings",   label: t("nav.settings"),     Icon: Settings },
+  ];
+}
 
 export function AppShell({
   title,
@@ -46,6 +51,8 @@ export function AppShell({
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const NAV = useNav();
+  const { t } = useT();
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -73,12 +80,13 @@ export function AppShell({
             </Link>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {breadcrumb && (
               <div className="hidden font-mono text-[10px] uppercase tracking-widest text-slate-500 md:block">
                 {breadcrumb}
               </div>
             )}
+            <LangPicker compact />
             <WalletStatus />
           </div>
         </div>
@@ -126,22 +134,22 @@ export function AppShell({
           {/* Resources pinned to bottom-left */}
           <div className="border-t border-slate-200 pt-4">
             <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
-              Resources
+              {t("nav.resources")}
             </p>
             <ul className="mt-2 space-y-1">
               <li>
                 <a href="https://github.com/orangterkucil/freelancebot" target="_blank" rel="noopener noreferrer" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand">
-                  GitHub ↗
+                  {t("nav.github")} ↗
                 </a>
               </li>
               <li>
                 <Link href="/docs" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand">
-                  Docs ↗
+                  {t("nav.docs")} ↗
                 </Link>
               </li>
               <li>
                 <a href={`https://testnet.arcscan.app/address/${process.env.NEXT_PUBLIC_ESCROW_ADDRESS ?? ""}`} target="_blank" rel="noopener noreferrer" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand">
-                  Contract on Arc ↗
+                  {t("nav.contract")} ↗
                 </a>
               </li>
             </ul>

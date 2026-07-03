@@ -11,61 +11,13 @@ html, body { height: 100%; }
 
 /* Slight off-white body to soften white-on-white card edges */
 body { background-color: #f7fafc; }
-html.dark body { background-color: #020617; color: #f1f5f9; }
 
-/* Dark-mode overrides for custom utility classes */
-html.dark :where(.liquid-glass) {
-  background: #0f172a;
-  border-color: rgb(30 41 59); /* slate-800 */
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 4px 10px rgba(0, 0, 0, 0.2);
-}
-html.dark .bg-space {
-  background-color: #020617;
-  background-image:
-    radial-gradient(ellipse at 15% 10%, rgba(14, 165, 233, 0.20) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 20%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 90%, rgba(244, 114, 182, 0.10) 0%, transparent 55%),
-    radial-gradient(ellipse at 30% 70%, rgba(34, 211, 238, 0.16) 0%, transparent 55%);
-}
-html.dark .bg-warm {
-  background-color: #020617;
-  background-image:
-    radial-gradient(ellipse at 20% 30%, rgba(251, 191, 36, 0.10) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 70%, rgba(244, 114, 182, 0.10) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 100%, rgba(14, 165, 233, 0.12) 0%, transparent 60%);
-}
-
-/* Global dark-mode color overrides — flips the light-theme slate classes
-   used across the app without needing dark: variants on every element.
-   Compact, MVP-grade dark mode. */
-html.dark .bg-white         { background-color: rgb(15 23 42); }    /* slate-900 */
-html.dark .bg-slate-50      { background-color: rgb(2 6 23); }      /* slate-950 */
-html.dark .bg-slate-100     { background-color: rgb(15 23 42); }
-html.dark .bg-slate-200\/60 { background-color: rgba(30, 41, 59, 0.6); }
-
-html.dark .text-slate-900   { color: rgb(241 245 249); }             /* slate-100 */
-html.dark .text-slate-800   { color: rgb(226 232 240); }
-html.dark .text-slate-700   { color: rgb(203 213 225); }
-html.dark .text-slate-600   { color: rgb(148 163 184); }
-html.dark .text-slate-500   { color: rgb(148 163 184); }
-html.dark .text-slate-400   { color: rgb(100 116 139); }
-
-html.dark .border-slate-100 { border-color: rgb(30 41 59); }
-html.dark .border-slate-200 { border-color: rgb(30 41 59); }
-html.dark .border-slate-300 { border-color: rgb(51 65 85); }
-
-html.dark .divide-slate-200 > * + * { border-color: rgb(30 41 59); }
-html.dark .ring-slate-200   { --tw-ring-color: rgb(30 41 59); }
-
-/* Placeholder text softer in dark */
-html.dark input::placeholder,
-html.dark textarea::placeholder { color: rgb(100 116 139); }
-
-/* Keep brand accents readable */
-html.dark .text-brand       { color: #38bdf8; }
-html.dark .hover\\:text-brand:hover { color: #7dd3fc; }
+/* Dark mode intentionally disabled for MVP 1. Every gradient card, tinted
+   background, and colored border across the app was hand-tuned for the light
+   palette. A proper dark theme needs a full design pass on every surface
+   (client stat cards, empty states, docs, jobs, orders, etc). Shipping partial
+   dark mode broke visual coherence — reverted. Dark theme is on the MVP 2
+   roadmap with a dedicated tokens refactor. */
 
 /* -----------------------------------------------------------------------
    Liquid glass — bright variant. Crisp white card, subtle sky-tinted ring,
