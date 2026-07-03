@@ -56,69 +56,70 @@ export default function Home() {
 function HeroSection() {
   return (
     <section className="relative overflow-hidden rounded-b-[32px] bg-space">
-      <div className="relative mx-auto max-w-landing px-6 pb-24 pt-8 lg:px-12 lg:pt-10">
-        <header className="flex items-center justify-between gap-6">
-          <Link href="/" className="flex items-center gap-3 group">
+      <div className="relative mx-auto max-w-landing px-6 pb-20 pt-4 lg:px-12 lg:pt-5">
+        <header className="flex items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-2.5 group">
             <Image
               src="/logo-mark.svg"
               alt="FreelanceBot"
-              width={44}
-              height={44}
+              width={40}
+              height={40}
               priority
               className="drop-shadow-sm transition-transform group-hover:scale-105"
             />
             <div className="flex flex-col leading-none">
-              <span className="font-display text-lg uppercase tracking-wider text-slate-900">
+              <span className="font-display text-base uppercase tracking-wider text-slate-900">
                 FreelanceBot
               </span>
-              <span className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-brand">
+              <span className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-brand">
                 payouts · on arc
               </span>
             </div>
           </Link>
 
-          <nav className="hidden rounded-[28px] border border-slate-200 bg-white px-[52px] py-[18px] shadow-sm lg:block">
-            <ul className="flex items-center gap-10">
-              {[
-                { href: "#flow",   label: "How it works" },
-                { href: "#about",  label: "About" },
-                { href: "/client", label: "Demo" },
-                { href: "/jobs",   label: "Marketplace" },
-                { href: "/docs",   label: "Docs" },
-                { href: "https://github.com/orangterkucil/freelancebot", label: "GitHub" },
-              ].map((l) => (
-                <li key={l.label}>
-                  <a
-                    href={l.href}
-                    className="font-display text-[13px] uppercase tracking-wider text-slate-700 transition-colors hover:text-brand"
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className="hidden items-center gap-2 lg:flex">
+            <nav className="rounded-full border border-slate-200 bg-white/90 px-6 py-2.5 shadow-sm backdrop-blur">
+              <ul className="flex items-center gap-6">
+                {[
+                  { href: "#flow",   label: "How it works" },
+                  { href: "#about",  label: "About" },
+                  { href: "/client", label: "Demo" },
+                  { href: "/jobs",   label: "Marketplace" },
+                  { href: "/docs",   label: "Docs" },
+                ].map((l) => (
+                  <li key={l.label}>
+                    <a
+                      href={l.href}
+                      className="font-display text-[12px] uppercase tracking-wider text-slate-700 transition-colors hover:text-brand"
+                    >
+                      {l.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
-          <div className="hidden flex-col gap-2 lg:flex">
-            {[
-              { Icon: Mail,    href: "mailto:orangterkucil@gmail.com" },
-              { Icon: Twitter, href: "https://x.com/geografinist" },
-              { Icon: Github,  href: "https://github.com/orangterkucil/freelancebot" },
-            ].map(({ Icon, href }, i) => (
-              <a
-                key={i}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors hover:border-brand hover:text-brand"
-              >
-                <Icon className="h-5 w-5" />
-              </a>
-            ))}
+            <div className="flex items-center gap-1.5">
+              {[
+                { Icon: Twitter, href: "https://x.com/geografinist", label: "X" },
+                { Icon: Github,  href: "https://github.com/orangterkucil/freelancebot", label: "GitHub" },
+              ].map(({ Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:border-brand hover:text-brand"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
           </div>
         </header>
 
-        <div className="relative mt-20 lg:mt-32 lg:ml-32">
+        <div className="relative mt-14 lg:mt-20 lg:ml-32">
           <h1 className="font-display text-[40px] uppercase leading-[1.05] tracking-tight sm:text-6xl md:text-[75px] lg:text-[90px] lg:leading-[1] max-w-[780px] text-slate-900">
             Get paid the
             <br />
