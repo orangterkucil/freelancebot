@@ -28,6 +28,7 @@ export default function Home() {
   return (
     <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased">
       <HeroSection />
+      <VideoSection />
       <AboutSection />
       <FlowSection />
       <LiveJobsPreview />
@@ -199,6 +200,52 @@ function HeroSection() {
             </a>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ===================================================================== *
+ *  SECTION 1.5 — VIDEO DEMO                                             *
+ * ===================================================================== */
+function VideoSection() {
+  return (
+    <section id="demo-video" className="relative bg-slate-50 dark:bg-slate-950 py-16 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-4xl px-6 lg:px-12">
+        <div className="mb-8 text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-brand">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-60" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand" />
+            </span>
+            30-second demo · with AI voice narration
+          </span>
+          <h2 className="mt-4 font-display text-3xl uppercase tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
+            See it in action
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl font-mono text-xs leading-relaxed text-slate-600 dark:text-slate-400 sm:text-sm">
+            Real footage of the live app on Arc Testnet — client posts a job, freelancer applies,
+            AI agent verifies, USDC releases in sub-second.
+          </p>
+        </div>
+
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-black shadow-2xl shadow-brand/10">
+          <video
+            controls
+            preload="metadata"
+            playsInline
+            poster="/logo.svg"
+            className="block h-auto w-full"
+          >
+            <source src="/demo.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+            <a href="/demo.mp4" className="text-brand underline">Download the demo instead.</a>
+          </video>
+        </div>
+
+        <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
+          Voice: ElevenLabs · Video: real Arc Testnet capture · MIT open source
+        </p>
       </div>
     </section>
   );

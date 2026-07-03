@@ -23,9 +23,29 @@
 
 ## Demo
 
+### 🎬 30-second narrated video
+
+**[▶ Watch the full demo (30 sec, AI-narrated MP4)](https://freelancebot-alpha.vercel.app/demo.mp4)**
+
+Or embedded on the landing page: [freelancebot-alpha.vercel.app/#demo-video](https://freelancebot-alpha.vercel.app/#demo-video)
+
+The video walks through the complete flow, narrated by an ElevenLabs voice (Roger) reading a 7-scene script:
+
+| Scene | Timing | Voice-over |
+|---|---|---|
+| 1 · Hook | 0:00–0:02 | "FreelanceBot. Payouts on Arc." |
+| 2 · Problem | 0:02–0:06 | "Three-hundred-dollar job. Two-twenty arrives. Eighty dollars lost." |
+| 3 · Solution | 0:06–0:10 | "USDC on Arc. Verified. Released in under one second." |
+| 4 · Client walkthrough | 0:10–0:14 | "As a client: sign in, post a job, pick your applicant, fund the escrow with one signature…" |
+| 5 · Freelancer walkthrough | 0:14–0:24 | "As a freelancer: browse the marketplace, filter by your skill, apply, deliver, get paid instantly." |
+| 6 · Tech credentials | 0:24–0:27 | "Source verified on Arc. Open source under MIT." |
+| 7 · Close | 0:27–0:30 | "FreelanceBot. Try the live demo now." |
+
+### 📼 Marketplace flow (silent GIF, 10 sec)
+
 ![FreelanceBot marketplace flow](./public/marketplace-flow.gif)
 
-_Landing → marketplace → filter by field → open a job → apply. Recorded on the live app at `freelancebot-alpha.vercel.app`._
+Faster preview: landing → marketplace → filter by field → open a job. Same URL as the video, recorded via Chrome MCP.
 
 **Prefer to click around yourself?** [Open the live demo →](https://freelancebot-alpha.vercel.app)
 
