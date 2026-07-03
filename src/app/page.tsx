@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -11,6 +13,8 @@ import {
   CircleCheckBig,
 } from "lucide-react";
 import { LiveJobsPreview } from "@/components/LiveJobsPreview";
+import { LangPicker } from "@/components/LangPicker";
+import { useT } from "@/lib/i18n";
 
 /**
  * Landing page — v0.10.0 "putih + biru" light theme.
@@ -54,6 +58,7 @@ export default function Home() {
  *  SECTION 1 — HERO                                                     *
  * ===================================================================== */
 function HeroSection() {
+  const { t } = useT();
   return (
     <section className="relative overflow-hidden rounded-b-[32px] bg-space">
       <div className="relative mx-auto max-w-landing px-6 pb-20 pt-4 lg:px-12 lg:pt-5">
@@ -81,11 +86,11 @@ function HeroSection() {
             <nav className="rounded-full border border-slate-200 bg-white/90 px-6 py-2.5 shadow-sm backdrop-blur">
               <ul className="flex items-center gap-6">
                 {[
-                  { href: "#flow",   label: "How it works" },
-                  { href: "#about",  label: "About" },
-                  { href: "/client", label: "Demo" },
-                  { href: "/jobs",   label: "Marketplace" },
-                  { href: "/docs",   label: "Docs" },
+                  { href: "#flow",   label: t("nav.howItWorks") },
+                  { href: "#about",  label: t("nav.about") },
+                  { href: "/client", label: t("nav.demo") },
+                  { href: "/jobs",   label: t("nav.marketplace") },
+                  { href: "/docs",   label: t("nav.docs") },
                 ].map((l) => (
                   <li key={l.label}>
                     <a
@@ -98,6 +103,8 @@ function HeroSection() {
                 ))}
               </ul>
             </nav>
+
+            <LangPicker />
 
             <div className="flex items-center gap-1.5">
               {[
@@ -120,25 +127,25 @@ function HeroSection() {
         </header>
 
         <div className="relative mt-14 lg:mt-20 lg:ml-32">
-          <h1 className="font-display text-[40px] uppercase leading-[1.05] tracking-tight sm:text-6xl md:text-[75px] lg:text-[90px] lg:leading-[1] max-w-[780px] text-slate-900">
-            Get paid the
+          <h1 className="font-display text-[40px] uppercase leading-[1.05] tracking-tight sm:text-6xl md:text-[75px] lg:text-[90px] lg:leading-[1] max-w-[820px] text-slate-900">
+            {t("hero.line1")}
             <br />
-            moment&nbsp;
-            <span className="text-slate-500">(&nbsp;you&nbsp;)</span>
-            &nbsp;deliver.
+            {t("hero.line2")}&nbsp;
+            <span className="text-slate-500">(&nbsp;{t("hero.line3")}&nbsp;)</span>
+            &nbsp;{t("hero.line4")}
           </h1>
 
           <span
             aria-hidden
             className="font-script absolute right-0 top-2 -rotate-1 text-2xl text-brand opacity-90 sm:text-3xl md:text-4xl lg:right-12 lg:text-5xl"
           >
-            agentic payouts
+            {t("hero.script")}
           </span>
 
           <p className="mt-8 max-w-xl font-mono text-sm leading-relaxed text-slate-600 sm:text-base">
-            USDC escrow on Arc. AI agent verifies deliverables.
+            {t("hero.subtitle1")}
             <br className="hidden sm:block" />
-            Sub-second settlement. Open source. MIT licensed.
+            {t("hero.subtitle2")}
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
@@ -146,7 +153,7 @@ function HeroSection() {
               href="/client"
               className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-brand px-6 py-4 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-brand/30 transition-transform hover:scale-[1.02]"
             >
-              Open live demo
+              {t("hero.cta.demo")}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
@@ -154,16 +161,16 @@ function HeroSection() {
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 shadow-sm transition-colors hover:border-brand hover:text-brand"
             >
               <Sparkles className="h-4 w-4" />
-              Read the docs
+              {t("hero.cta.docs")}
             </Link>
           </div>
 
           <div className="mt-16 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-              { v: "<1s",   l: "Arc finality" },
-              { v: "1%",    l: "Platform fee" },
-              { v: "75M+",  l: "Asia freelancers" },
-              { v: "$0",    l: "VC raised" },
+              { v: "<1s",   l: t("stats.arcFinality") },
+              { v: "1%",    l: t("stats.platformFee") },
+              { v: "75M+",  l: t("stats.asiaFreelancers") },
+              { v: "$0",    l: t("stats.vcRaised") },
             ].map((s) => (
               <div key={s.l} className="border-l border-slate-200 pl-3">
                 <p className="font-display text-2xl text-brand sm:text-3xl">{s.v}</p>

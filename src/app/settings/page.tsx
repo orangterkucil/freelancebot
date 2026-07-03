@@ -17,6 +17,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { LOCALES, setLocale as applyLocale, readLocale } from "@/lib/i18n";
 
 /**
  * Basic settings. NOT critical config (no API keys, no contract config, nothing
@@ -131,20 +132,24 @@ export default function SettingsPage() {
             </Section>
 
             {/* Language */}
-            <Section icon={Languages} title="Language" description="Full UI translation arrives with MVP 2 (top 5 world languages). For now, the selector remembers your choice.">
+            <Section icon={Languages} title="Language" description="Applies instantly to the whole app. Arabic renders right-to-left. Static UI covered; AI agent adapts to your typing language as before.">
               <select
                 value={locale}
-                onChange={(e) => setLocale(e.target.value)}
+                onChange={(e) => {
+                  const next = e.target.value as any;
+                  setLocale(next);
+                  applyLocale(next);
+                }}
                 className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-xs text-slate-900 outline-none focus:border-brand"
               >
-                <option value="en">English</option>
-                <option value="zh">中文 · Chinese</option>
-                <option value="es">Español · Spanish</option>
-                <option value="hi">हिन्दी · Hindi</option>
-                <option value="ar">العربية · Arabic</option>
+                {LOCALES.map((l) => (
+                  <option key={l.code} value={l.code}>
+                    {l.flag} {l.native} — {l.label}
+                  </option>
+                ))}
               </select>
               <p className="mt-2 font-mono text-[10px] tracking-wide text-slate-400">
-                The AI agent already replies in your typing language; static UI lands in MVP 2.
+                6 languages covered · covers &gt;3.5B speakers worldwide.
               </p>
             </Section>
 

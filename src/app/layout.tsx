@@ -51,8 +51,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Boot script: reads fb_theme from localStorage BEFORE first paint and applies
-  // the `dark` class to <html> so users never see a flash of the wrong theme.
+  // Boot script: reads fb_theme + fb_locale from localStorage BEFORE first
+  // paint. Applies `dark` class and `lang`/`dir` attributes so users never see
+  // a flash of the wrong theme or LTR text on Arabic first paint.
   const themeBoot = `
     (function() {
       try {
@@ -60,6 +61,10 @@ export default function RootLayout({
         var useDark = t === 'dark' ||
           (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
         if (useDark) document.documentElement.classList.add('dark');
+        var l = localStorage.getItem('fb_locale') || 'en';
+        var rtl = l === 'ar';
+        document.documentElement.lang = l;
+        document.documentElement.dir  = rtl ? 'rtl' : 'ltr';
       } catch (e) {}
     })();
   `;
