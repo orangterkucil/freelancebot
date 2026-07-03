@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Inbox, Search, Sparkles } from "lucide-react";
+import { Inbox, Search, Sparkles, Plus, Megaphone } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { EmailGate } from "@/components/EmailGate";
 import { OrderCard } from "@/components/OrderCard";
+import { CreateOrderForm } from "@/components/CreateOrderForm";
 import { listOrders } from "@/lib/api";
 import type { Order, OrderStatus } from "@/lib/orders";
 
@@ -31,6 +32,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | OrderStatus>("all");
   const [search, setSearch] = useState("");
+  const [showPostService, setShowPostService] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -88,30 +90,69 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
         <Stat label="Total earned"     value={`$${stats.earned.toLocaleString()}`} sub="USDC" accent="emerald" />
       </div>
 
-      <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-3">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-sky-200">
-            <Sparkles className="h-5 w-5 text-brand" />
+      {/* Two ways for freelancers to find work: browse jobs OR post their own service */}
+      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-3 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-5 shadow-sm dark:border-sky-800/50 dark:from-sky-950/30 dark:via-slate-900 dark:to-indigo-950/30">
+          <div className="flex items-start gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-sky-200 dark:ring-sky-800/50">
+              <Sparkles className="h-5 w-5 text-brand" />
+            </div>
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-widest text-brand">
+                Browse the marketplace
+              </p>
+              <p className="mt-1 font-display text-base uppercase text-slate-900 dark:text-slate-100">
+                Find open jobs
+              </p>
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Filter by field, budget, deadline. Apply with one click.
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="font-mono text-[11px] uppercase tracking-widest text-brand">
-              Looking for new work?
-            </p>
-            <p className="mt-1 font-display text-base uppercase text-slate-900">
-              Browse the public marketplace
-            </p>
-            <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-slate-500">
-              Filter by field, budget, deadline. Apply with one click.
-            </p>
-          </div>
+          <Link
+            href="/jobs"
+            className="btn-gradient inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs uppercase tracking-wider self-start"
+          >
+            Browse jobs →
+          </Link>
         </div>
-        <Link
-          href="/jobs"
-          className="btn-gradient inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs uppercase tracking-wider"
-        >
-          Browse jobs →
-        </Link>
+
+        <div className="flex flex-col gap-3 rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-pink-50 p-5 shadow-sm dark:border-violet-800/50 dark:from-violet-950/30 dark:via-slate-900 dark:to-pink-950/30">
+          <div className="flex items-start gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-violet-200 dark:ring-violet-800/50">
+              <Megaphone className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            </div>
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-widest text-violet-600 dark:text-violet-400">
+                Offer your services
+              </p>
+              <p className="mt-1 font-display text-base uppercase text-slate-900 dark:text-slate-100">
+                Post a service listing
+              </p>
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Clients browse services and hire you. Reverse marketplace.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowPostService((s) => !s)}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-300 bg-white dark:bg-slate-800 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-violet-700 dark:text-violet-300 shadow-sm transition-colors hover:border-violet-500 dark:border-violet-800/50 self-start"
+          >
+            <Plus className="h-4 w-4" />
+            {showPostService ? "Close" : "Post a service"}
+          </button>
+        </div>
       </div>
+
+      {showPostService && (
+        <div className="mt-6">
+          <CreateOrderForm
+            clientEmail={email}
+            posterRole="freelancer"
+            onCreated={() => { setShowPostService(false); load(); }}
+          />
+        </div>
+      )}
 
       <section className="mt-10">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

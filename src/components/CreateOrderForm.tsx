@@ -19,10 +19,13 @@ const FIELD_LABELS: Record<Field, string> = {
 export function CreateOrderForm({
   clientEmail,
   onCreated,
+  posterRole = "client",
 }: {
   clientEmail: string;
   onCreated: (id: number) => void;
+  posterRole?: "client" | "freelancer";  // v0.13.0 — freelancer can also post
 }) {
+  const isFreelancerPosting = posterRole === "freelancer";
   const [mode, setMode] = useState<"public" | "private">("public");
   const [freelancerEmail, setFreelancerEmail] = useState("");
   const [title, setTitle] = useState("");
@@ -74,6 +77,7 @@ export function CreateOrderForm({
         brief:            brief.trim(),
         amount_usdc:      Number(amount),
         deadline:         deadline ? new Date(deadline).toISOString() : null,
+        poster_role:      posterRole,
       });
       onCreated(res.order.id);
       setFreelancerEmail("");
@@ -93,7 +97,9 @@ export function CreateOrderForm({
     <form onSubmit={submit} className="space-y-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
       <div className="flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-brand" />
-        <span className="font-mono text-[11px] uppercase tracking-widest text-brand">New escrow</span>
+        <span className="font-mono text-[11px] uppercase tracking-widest text-brand">
+          {isFreelancerPosting ? "New service listing" : "New escrow"}
+        </span>
       </div>
 
       <h2 className="font-display text-2xl uppercase text-slate-900">Post a job</h2>

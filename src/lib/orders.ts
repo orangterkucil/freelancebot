@@ -46,6 +46,8 @@ export type ClientLinks = {
   other?:    string;
 };
 
+export type PosterRole = "client" | "freelancer";
+
 export type Order = {
   id: number;
   onchain_id: number | null;
@@ -62,6 +64,7 @@ export type Order = {
   agent_notes: string | null;
   attachments: Attachment[];
   client_links: ClientLinks;
+  poster_role: PosterRole;   // v0.13.0 — bilateral marketplace
   created_at: string;
 };
 
@@ -115,6 +118,7 @@ export async function createOrder(input: {
   client_links?: ClientLinks;
   amount_usdc: number;
   deadline: string | null;
+  poster_role?: PosterRole;   // v0.13.0
 }): Promise<Order> {
   const sb = supabaseAdmin();
   const { data, error } = await sb
@@ -130,6 +134,7 @@ export async function createOrder(input: {
       client_links:     input.client_links ?? {},
       amount_usdc:      input.amount_usdc,
       deadline:         input.deadline,
+      poster_role:      input.poster_role ?? "client",
       status:           "draft",
     })
     .select()
