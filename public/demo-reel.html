@@ -69,15 +69,74 @@
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     opacity: 0;
-    transform: scale(1.035);
-    filter: blur(10px);
+    transform: scale(1.015);
+    filter: blur(4px);
     transition:
-      opacity 500ms cubic-bezier(.2,.9,.3,1),
-      transform 750ms cubic-bezier(.2,.9,.3,1),
-      filter 500ms cubic-bezier(.2,.9,.3,1);
+      opacity 220ms cubic-bezier(.2,.9,.3,1),
+      transform 300ms cubic-bezier(.2,.9,.3,1),
+      filter 220ms cubic-bezier(.2,.9,.3,1);
     padding: 2vh 3vw;
     pointer-events: none;
   }
+
+  /* Animated cursor for tutorial scenes */
+  .fake-cursor {
+    position: absolute;
+    width: 22px; height: 22px;
+    pointer-events: none;
+    z-index: 30;
+    transition:
+      left 700ms cubic-bezier(.4,0,.2,1),
+      top 700ms cubic-bezier(.4,0,.2,1),
+      opacity 200ms ease;
+    opacity: 0;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+  }
+  .fake-cursor.show { opacity: 1; }
+  .fake-cursor::before {
+    content: "";
+    display: block;
+    width: 0; height: 0;
+    border-left: 12px solid transparent;
+    border-top: 18px solid #ffffff;
+    transform: rotate(-30deg) translate(2px, -4px);
+  }
+  .fake-cursor.clicking {
+    transform: scale(0.85);
+    transition: transform 120ms ease;
+  }
+  .fake-cursor.clicking::after {
+    content: "";
+    position: absolute;
+    left: 4px; top: 4px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--cyan);
+    animation: clickPing 500ms ease-out;
+  }
+  @keyframes clickPing {
+    0% { transform: scale(0.4); opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+
+  /* Typing simulation: blinking caret + progressive text */
+  .typing::after {
+    content: "|";
+    display: inline-block;
+    color: var(--cyan);
+    font-weight: normal;
+    margin-left: 1px;
+    animation: caretBlink 700ms steps(2) infinite;
+  }
+  @keyframes caretBlink { 50% { opacity: 0; } }
+  .type-anim {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom;
+    animation: typeIn 1.4s steps(30, end) 0.3s both;
+  }
+  @keyframes typeIn { from { width: 0; } to { width: 100%; } }
   .scene.active {
     opacity: 1;
     transform: scale(1);
@@ -1671,12 +1730,63 @@
   const tutorialTimers = [];
   function clearTutorialTimers() { tutorialTimers.forEach(t => clearTimeout(t)); tutorialTimers.length = 0; }
 
+  // Ensure a fake cursor exists inside the tutorial body
+  function ensureFakeCursor(sceneId) {
+    const body = document.getElementById('body-' + sceneId);
+    if (!body) return null;
+    let cursor = body.querySelector('.fake-cursor');
+    if (!cursor) {
+      cursor = document.createElement('div');
+      cursor.className = 'fake-cursor';
+      body.appendChild(cursor);
+    }
+    return cursor;
+  }
+
+  // Cursor targets by scene + step (percentage-based coords inside body-N)
+  // These map roughly to where the user would click in each step's mockup.
+  const CURSOR_TARGETS = {
+    4: [ // client scene
+      { x: 78, y: 72 },  // step 1: Continue button
+      { x: 82, y: 82 },  // step 2: Post to marketplace
+      { x: 68, y: 40 },  // step 3: Accept applicant
+      { x: 72, y: 80 },  // step 4: Sign & fund
+      { x: 62, y: 80 },  // step 5: Approve & release
+      { x: 50, y: 40 },  // step 6: released state (idle)
+    ],
+    5: [ // freelancer scene
+      { x: 25, y: 45 },  // step 1: click job card
+      { x: 30, y: 30 },  // step 2: click category
+      { x: 78, y: 78 },  // step 3: Send application
+      { x: 72, y: 78 },  // step 4: Submit deliverable
+      { x: 55, y: 55 },  // step 5: verifying
+      { x: 50, y: 45 },  // step 6: paid confirmation
+    ],
+  };
+
+  function moveCursorTo(sceneId, stepIdx) {
+    const body = document.getElementById('body-' + sceneId);
+    const cursor = ensureFakeCursor(sceneId);
+    if (!body || !cursor) return;
+    const target = (CURSOR_TARGETS[sceneId] || [])[stepIdx];
+    if (!target) { cursor.classList.remove('show'); return; }
+    cursor.classList.add('show');
+    const rect = body.getBoundingClientRect();
+    // Position with % so it stays responsive
+    cursor.style.left = target.x + '%';
+    cursor.style.top = target.y + '%';
+    // click animation slightly after cursor lands
+    setTimeout(() => {
+      cursor.classList.add('clicking');
+      setTimeout(() => cursor.classList.remove('clicking'), 380);
+    }, 750);
+  }
+
   function runTutorial(sceneId, steps) {
     clearTutorialTimers();
     const body = document.getElementById('body-' + sceneId);
     const strip = document.getElementById('strip-' + sceneId);
     const nar = document.getElementById('nar-' + sceneId);
-    const cur = document.getElementById('cur-' + sceneId);
 
     for (const s of steps) {
       tutorialTimers.push(setTimeout(() => {
@@ -1694,9 +1804,23 @@
           nar.querySelector('.step-num').textContent = 'Step ' + (s.step + 1) + ' of 6';
           nar.querySelector('.txt').textContent = s.narr;
           nar.classList.add('show');
-        }, 200);
-        // subtle sound effect only — cursor removed for cleaner presentation
-        setTimeout(() => tick(), 400);
+        }, 150);
+        // animated cursor moving to click target
+        moveCursorTo(sceneId, s.step);
+        // trigger typing animation for input fields visible in this step
+        setTimeout(() => {
+          const activeFrame = body.querySelector('.fr.active');
+          if (activeFrame) {
+            activeFrame.querySelectorAll('[data-typing]').forEach(el => {
+              el.classList.remove('type-anim');
+              // force reflow to restart animation
+              void el.offsetWidth;
+              el.classList.add('type-anim');
+            });
+          }
+        }, 220);
+        // sound effects
+        setTimeout(() => tick(), 300);
         whoosh();
       }, s.offset * 1000));
     }
