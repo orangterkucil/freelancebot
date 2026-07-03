@@ -3,21 +3,33 @@
 import { useEffect, useState } from "react";
 import { RatingStars } from "./RatingStars";
 import { getRatingSummary } from "@/lib/api";
+import { displayName } from "@/lib/privacy";
+import type { ClientLinks } from "@/lib/orders";
 
 /**
- * Inline trust badge — shows email + average stars + rating count.
- * Used next to client/freelancer email anywhere we want a quick trust glance.
+ * Inline trust badge — shows label (masked email or handle) + stars + count.
+ *
+ * By default the label is privacy-safe: X handle if the user has one,
+ * else `gh/user`, else a masked email (`a•••e@gmail.com`).
+ *
+ * Pass `raw` to render the full email (only appropriate when the viewer is
+ * a party to the order — enforced upstream via `assertActorIsParty`).
  */
 export function UserBadge({
   email,
+  links,
+  raw = false,
   className = "",
-  hideEmail = false,
+  hideLabel = false,
 }: {
   email: string;
+  links?: ClientLinks | null;
+  raw?: boolean;
   className?: string;
-  hideEmail?: boolean;
+  hideLabel?: boolean;
 }) {
   const [summary, setSummary] = useState<{ count: number; average: number } | null>(null);
+  const label = raw ? email : displayName(email, links);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,8 +44,8 @@ export function UserBadge({
 
   return (
     <span className={"inline-flex items-center gap-2 " + className}>
-      {!hideEmail && (
-        <span className="font-mono text-xs text-slate-700 truncate">{email}</span>
+      {!hideLabel && (
+        <span className="font-mono text-xs text-slate-700 truncate">{label}</span>
       )}
       {summary && summary.count > 0 ? (
         <span className="inline-flex items-center gap-1">

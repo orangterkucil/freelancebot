@@ -139,7 +139,7 @@ export default function JobDetailPage() {
           <div className="mt-4 border-t border-slate-100 pt-4">
             <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Posted by</p>
             <div className="mt-1">
-              <UserBadge email={job.client_email} />
+              <UserBadge email={job.client_email} links={job.client_links} />
             </div>
 
             {job.client_links && Object.keys(job.client_links).length > 0 && (
