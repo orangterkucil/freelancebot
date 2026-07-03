@@ -51,14 +51,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Boot script: reads fb_locale from localStorage BEFORE first paint and
-  // applies `lang`/`dir` so users never see a flash of LTR on Arabic pages.
-  // Also force-clears any stale `dark` theme (MVP 1 is light-only until we
-  // ship the design token refactor).
+  // Boot script: read fb_theme + fb_locale from localStorage BEFORE first
+  // paint. Prevents FOUC for both dark mode and Arabic RTL.
   const themeBoot = `
     (function() {
       try {
-        localStorage.setItem('fb_theme', 'light');
+        var t = localStorage.getItem('fb_theme') || 'light';
+        var useDark = t === 'dark' ||
+          (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (useDark) document.documentElement.classList.add('dark');
         var l = localStorage.getItem('fb_locale') || 'en';
         var rtl = l === 'ar';
         document.documentElement.lang = l;
@@ -71,7 +72,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
       </head>
-      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-signal selection:text-white">
+      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-signal selection:text-white dark:bg-slate-950 dark:text-slate-100">
         {children}
       </body>
     </html>

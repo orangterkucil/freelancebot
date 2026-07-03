@@ -118,7 +118,7 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
 
       <section className="mt-10">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="font-display text-xl uppercase text-slate-900">History</h2>
+          <h2 className="font-display text-xl uppercase text-slate-900 dark:text-slate-100">History</h2>
 
           {orders.length > 0 && (
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
@@ -198,38 +198,38 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
 
 function NetworkStrip() {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:gap-6">
+    <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center sm:gap-6">
       <div className="flex items-center gap-2 pl-1">
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
         </span>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600">Arc Testnet · connected</span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-300">Arc Testnet · connected</span>
       </div>
-      <div className="hidden h-4 w-px bg-slate-200 sm:block" />
+      <div className="hidden h-4 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
       <div className="flex items-center gap-2">
-        <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+        <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
         <a
           href={`https://testnet.arcscan.app/address/${CONTRACT_ADDRESS}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-slate-600 hover:text-brand"
+          className="group inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-slate-600 hover:text-brand dark:text-slate-300 dark:hover:text-brand"
         >
-          Contract <span className="text-slate-900 group-hover:text-brand">{CONTRACT_SHORT}</span>
+          Contract <span className="text-slate-900 group-hover:text-brand dark:text-slate-100 dark:group-hover:text-brand">{CONTRACT_SHORT}</span>
           <ArrowUpRight className="h-3 w-3" />
         </a>
       </div>
-      <div className="hidden h-4 w-px bg-slate-200 sm:block" />
+      <div className="hidden h-4 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
       <div className="flex items-center gap-2">
         <Zap className="h-3.5 w-3.5 text-amber-500" />
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600">AI agent · Groq Llama 3.3 70B · online</span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-300">AI agent · Groq Llama 3.3 70B · online</span>
       </div>
-      <div className="hidden h-4 w-px bg-slate-200 sm:block" />
+      <div className="hidden h-4 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
       <div className="flex items-center gap-2">
         <Activity className="h-3.5 w-3.5 text-brand" />
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600">Settlement · &lt;1s</span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-300">Settlement · &lt;1s</span>
       </div>
-      <span className="ml-auto rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-emerald-700">
+      <span className="ml-auto rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-900/30 dark:text-emerald-300">
         All systems operational
       </span>
     </div>
@@ -250,41 +250,41 @@ function Stat({
   accent?: "sky" | "amber" | "emerald" | "indigo";
 }) {
   const accentMap = {
-    sky:     { bg: "from-sky-50 to-white",     ring: "ring-sky-200",     iconBg: "bg-sky-100 text-sky-700" },
-    amber:   { bg: "from-amber-50 to-white",   ring: "ring-amber-200",   iconBg: "bg-amber-100 text-amber-700" },
-    emerald: { bg: "from-emerald-50 to-white", ring: "ring-emerald-200", iconBg: "bg-emerald-100 text-emerald-700" },
-    indigo:  { bg: "from-indigo-50 to-white",  ring: "ring-indigo-200",  iconBg: "bg-indigo-100 text-indigo-700" },
+    sky:     { bg: "from-sky-50 to-white dark:from-sky-950/40 dark:to-slate-900",         ring: "ring-sky-200 dark:ring-sky-800/60",         iconBg: "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300" },
+    amber:   { bg: "from-amber-50 to-white dark:from-amber-950/40 dark:to-slate-900",     ring: "ring-amber-200 dark:ring-amber-800/60",     iconBg: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300" },
+    emerald: { bg: "from-emerald-50 to-white dark:from-emerald-950/40 dark:to-slate-900", ring: "ring-emerald-200 dark:ring-emerald-800/60", iconBg: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300" },
+    indigo:  { bg: "from-indigo-50 to-white dark:from-indigo-950/40 dark:to-slate-900",   ring: "ring-indigo-200 dark:ring-indigo-800/60",   iconBg: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300" },
   };
   const a = accentMap[accent];
   return (
     <div className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm transition-shadow hover:shadow-md ${a.bg} ${a.ring}`}>
       <div className="flex items-start justify-between">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
+        <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</p>
         <div className={`grid h-7 w-7 place-items-center rounded-lg ${a.iconBg}`}>
           <Icon className="h-3.5 w-3.5" />
         </div>
       </div>
-      <p className="mt-2 font-display text-2xl text-slate-900 sm:text-3xl">
+      <p className="mt-2 font-display text-2xl text-slate-900 dark:text-slate-100 sm:text-3xl">
         {value}
-        {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">{sub}</span>}
+        {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">{sub}</span>}
       </p>
-      <div className="mt-2 flex items-center gap-1 font-mono text-[9px] uppercase tracking-widest text-slate-400">
+      <div className="mt-2 flex items-center gap-1 font-mono text-[9px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
         <TrendingUp className="h-2.5 w-2.5" />
         <span>All time</span>
       </div>
-      <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/40 opacity-0 blur-2xl transition-opacity group-hover:opacity-100" />
+      <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/40 opacity-0 blur-2xl transition-opacity group-hover:opacity-100 dark:bg-slate-100/10" />
     </div>
   );
 }
 
 function EmptyState({ onCreate }: { onCreate: () => void }) {
   return (
-    <div className="relative rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm">
-      <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md ring-1 ring-sky-200">
+    <div className="relative rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm dark:border-sky-800/50 dark:from-sky-950/30 dark:via-slate-900 dark:to-indigo-950/30">
+      <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md ring-1 ring-sky-200 dark:bg-slate-800 dark:ring-sky-800/50">
         <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
       </div>
-      <h3 className="mt-5 font-display text-xl uppercase text-slate-900">No orders yet</h3>
-      <p className="mx-auto mt-2 max-w-sm font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600">
+      <h3 className="mt-5 font-display text-xl uppercase text-slate-900 dark:text-slate-100">No orders yet</h3>
+      <p className="mx-auto mt-2 max-w-sm font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600 dark:text-slate-400">
         Create an escrow to hire a freelancer. USDC locks on Arc, the AI agent verifies the deliverable, and you release when ready.
       </p>
       <button
@@ -297,14 +297,14 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
 
       <div className="mt-8 grid gap-2 text-left sm:grid-cols-3">
         {[
-          { step: "01", title: "Fund",    desc: "Lock USDC in the on-chain escrow with one signed tx.", color: "from-sky-100" },
-          { step: "02", title: "Verify",  desc: "Agent checks deliverable URL, deadline, brief alignment.", color: "from-amber-100" },
-          { step: "03", title: "Release", desc: "Approve and the freelancer receives funds in <1 sec.", color: "from-emerald-100" },
+          { step: "01", title: "Fund",    desc: "Lock USDC in the on-chain escrow with one signed tx.",       color: "from-sky-100 dark:from-sky-950/40" },
+          { step: "02", title: "Verify",  desc: "Agent checks deliverable URL, deadline, brief alignment.",   color: "from-amber-100 dark:from-amber-950/40" },
+          { step: "03", title: "Release", desc: "Approve and the freelancer receives funds in <1 sec.",       color: "from-emerald-100 dark:from-emerald-950/40" },
         ].map((s) => (
-          <div key={s.step} className={`rounded-xl border border-slate-200 bg-gradient-to-br ${s.color} to-white p-3`}>
+          <div key={s.step} className={`rounded-xl border border-slate-200 bg-gradient-to-br ${s.color} to-white p-3 dark:border-slate-800 dark:to-slate-900`}>
             <span className="font-mono text-[10px] uppercase tracking-widest text-brand">Step {s.step}</span>
-            <p className="mt-1 font-display text-sm uppercase text-slate-900">{s.title}</p>
-            <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-600">{s.desc}</p>
+            <p className="mt-1 font-display text-sm uppercase text-slate-900 dark:text-slate-100">{s.title}</p>
+            <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-600 dark:text-slate-400">{s.desc}</p>
           </div>
         ))}
       </div>

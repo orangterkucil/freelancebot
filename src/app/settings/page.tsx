@@ -66,12 +66,15 @@ export default function SettingsPage() {
     } catch {}
   }, []);
 
-  // Dark mode is intentionally light-only in MVP 1 — see globals.css note.
-  // Force-clear any stale value so the user can't get stuck in a broken state.
+  // Apply theme instantly when user picks it (before Save) so preview works.
   useEffect(() => {
     if (typeof document === "undefined") return;
-    document.documentElement.classList.remove("dark");
-    try { window.localStorage.setItem("fb_theme", "light"); } catch {}
+    const html = document.documentElement;
+    const useDark =
+      theme === "dark" ||
+      (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    html.classList.toggle("dark", useDark);
+    try { window.localStorage.setItem("fb_theme", theme); } catch {}
   }, [theme]);
 
   const save = (e: React.FormEvent) => {
@@ -119,11 +122,11 @@ export default function SettingsPage() {
             </Section>
 
             {/* Theme */}
-            <Section icon={Sun} title="Theme" description="MVP 1 ships light-only. Dark theme is on the MVP 2 roadmap — it needs a full design pass across every gradient card, tinted background, and colored border for visual coherence.">
-              <div className="grid grid-cols-3 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
+            <Section icon={Sun} title="Theme" description="Applies instantly across the whole app. Stored in your browser only.">
+              <div className="grid grid-cols-3 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-slate-800 dark:bg-slate-950/50">
                 <ThemePill Icon={Sun}     label="Light"  active={theme === "light"}  onClick={() => setTheme("light")} />
-                <ThemePill Icon={Moon}    label="Dark"   active={theme === "dark"}   onClick={() => setTheme("dark")} disabled hint="MVP 2" />
-                <ThemePill Icon={Monitor} label="System" active={theme === "system"} onClick={() => setTheme("system")} disabled hint="MVP 2" />
+                <ThemePill Icon={Moon}    label="Dark"   active={theme === "dark"}   onClick={() => setTheme("dark")} />
+                <ThemePill Icon={Monitor} label="System" active={theme === "system"} onClick={() => setTheme("system")} />
               </div>
             </Section>
 
@@ -193,7 +196,7 @@ export default function SettingsPage() {
               {saved ? "Saved ✓" : "Save all settings"}
             </button>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
               <h3 className="font-display text-sm uppercase tracking-wider text-slate-900">Signed-in sessions</h3>
               <div className="mt-3 space-y-2">
                 <SessionRow role="Client"     email={clientEmail}      onSignOut={() => signOut("fb_client_email")} />
@@ -201,7 +204,7 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
               <h3 className="font-display text-sm uppercase tracking-wider text-slate-900">About</h3>
               <dl className="mt-3 space-y-2 font-mono text-[11px]">
                 <Row label="Version">v0.11.0</Row>
@@ -212,7 +215,7 @@ export default function SettingsPage() {
               </dl>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
               <h3 className="font-display text-sm uppercase tracking-wider text-slate-900">Links</h3>
               <ul className="mt-3 space-y-2 font-mono text-[11px]">
                 <li><a href="https://github.com/orangterkucil/freelancebot" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-brand hover:underline">GitHub repository <ExternalLink className="h-3 w-3" /></a></li>
@@ -241,7 +244,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-center gap-2">
         <Icon className="h-4 w-4 text-brand" />
         <h2 className="font-display text-base uppercase text-slate-900">{title}</h2>
