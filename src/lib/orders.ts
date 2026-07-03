@@ -296,11 +296,21 @@ export async function setOrderStatus(orderId: number, status: OrderStatus): Prom
   if (error) throw error;
 }
 
+/**
+ * Assign a freelancer to the order.
+ *
+ * v0.13.0: we no longer flip `is_public = false` here. Public jobs stay
+ * listed in the marketplace even after a freelancer is picked, so other
+ * freelancers can still see the listing (useful for showcase, "similar
+ * openings", and for clients who want to hire multiple parallel workers).
+ * The status change (draft → funded, etc.) is what indicates a job is no
+ * longer accepting applications.
+ */
 export async function setOrderFreelancer(orderId: number, freelancer_email: string): Promise<void> {
   const sb = supabaseAdmin();
   const { error } = await sb
     .from("orders")
-    .update({ freelancer_email, is_public: false })
+    .update({ freelancer_email })
     .eq("id", orderId);
   if (error) throw error;
 }
