@@ -51,15 +51,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Boot script: read fb_theme + fb_locale from localStorage BEFORE first
-  // paint. Prevents FOUC for both dark mode and Arabic RTL.
+  // Force light theme — dark mode needs a proper design token refactor
+  // (every gradient card, tinted surface, and Section header needs paired
+  // tokens, not bulk sed). Ships in MVP 2. Also apply lang/dir from
+  // fb_locale so Arabic RTL doesn't flash on first paint.
   const themeBoot = `
     (function() {
       try {
-        var t = localStorage.getItem('fb_theme') || 'light';
-        var useDark = t === 'dark' ||
-          (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        if (useDark) document.documentElement.classList.add('dark');
+        localStorage.setItem('fb_theme', 'light');
+        document.documentElement.classList.remove('dark');
         var l = localStorage.getItem('fb_locale') || 'en';
         var rtl = l === 'ar';
         document.documentElement.lang = l;
