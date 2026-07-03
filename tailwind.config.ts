@@ -13,6 +13,23 @@ import type { Config } from "tailwindcss";
 const config: Config = {
   darkMode: "class",
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  // Safelist dark-mode gradient/ring/bg classes used dynamically in accentMap
+  // objects. Tailwind JIT can miss these when the string is assembled at runtime.
+  safelist: [
+    // Client stat card gradients
+    "dark:from-sky-950/40", "dark:to-slate-900", "dark:ring-sky-800/60",
+    "dark:from-amber-950/40", "dark:ring-amber-800/60",
+    "dark:from-emerald-950/40", "dark:ring-emerald-800/60",
+    "dark:from-indigo-950/40", "dark:ring-indigo-800/60",
+    // Icon badges in cards
+    "dark:bg-sky-900/50", "dark:text-sky-300",
+    "dark:bg-amber-900/50", "dark:text-amber-300",
+    "dark:bg-emerald-900/50", "dark:text-emerald-300",
+    "dark:bg-indigo-900/50", "dark:text-indigo-300",
+    // Empty state 3-column step cards
+    "dark:from-sky-950/40", "dark:from-amber-950/40", "dark:from-emerald-950/40",
+    "dark:border-sky-800/50", "dark:via-slate-900", "dark:to-indigo-950/30", "dark:from-sky-950/30",
+  ],
   theme: {
     extend: {
       colors: {
