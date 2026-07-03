@@ -161,7 +161,7 @@ export default function JobDetailPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-6 shadow-sm">
+        <div className="rounded-2xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-6 shadow-sm">
           {!isOpen ? (
             <div>
               <p className="font-mono text-[11px] uppercase tracking-widest text-amber-700">· Closed</p>

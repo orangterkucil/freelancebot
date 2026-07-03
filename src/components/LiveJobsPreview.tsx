@@ -57,7 +57,7 @@ export function LiveJobsPreview() {
             ))}
           </div>
         ) : jobs.length === 0 ? (
-          <div className="mt-10 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 to-indigo-50 p-8 text-center">
+          <div className="mt-10 rounded-2xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 p-8 text-center">
             <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
               <Sparkles className="h-5 w-5 text-brand" strokeWidth={1.5} />
             </div>

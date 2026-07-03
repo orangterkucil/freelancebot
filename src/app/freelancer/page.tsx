@@ -92,7 +92,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
 
       {/* Two ways for freelancers to find work: browse jobs OR post their own service */}
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-3 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-5 shadow-sm dark:border-sky-800/50 dark:from-sky-950/30 dark:via-slate-900 dark:to-indigo-950/30">
+        <div className="flex flex-col gap-3 rounded-2xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-5 shadow-sm dark:border-sky-800/50 dark:from-sky-950/30 dark:via-slate-900 dark:to-indigo-950/30">
           <div className="flex items-start gap-3">
             <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-sky-200 dark:ring-sky-800/50">
               <Sparkles className="h-5 w-5 text-brand" />
@@ -203,7 +203,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
         )}
 
         {!loading && !error && orders.length === 0 && (
-          <div className="rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm">
+          <div className="rounded-3xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-10 text-center shadow-sm">
             <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
               <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
             </div>
@@ -258,10 +258,10 @@ function Stat({
   accent?: "sky" | "amber" | "emerald" | "indigo";
 }) {
   const accentMap = {
-    sky:     "from-sky-50 to-white text-sky-700 ring-sky-200",
-    amber:   "from-amber-50 to-white text-amber-700 ring-amber-200",
-    emerald: "from-emerald-50 to-white text-emerald-700 ring-emerald-200",
-    indigo:  "from-indigo-50 to-white text-indigo-700 ring-indigo-200",
+    sky:     "from-sky-50 to-white dark:from-sky-950/40 dark:to-slate-900 text-sky-700 dark:text-sky-300 ring-sky-200 dark:ring-sky-800/50",
+    amber:   "from-amber-50 to-white dark:from-amber-950/40 dark:to-slate-900 text-amber-700 dark:text-amber-300 ring-amber-200 dark:ring-amber-800/50",
+    emerald: "from-emerald-50 to-white dark:from-emerald-950/40 dark:to-slate-900 text-emerald-700 dark:text-emerald-300 ring-emerald-200 dark:ring-emerald-800/50",
+    indigo:  "from-indigo-50 to-white dark:from-indigo-950/40 dark:to-slate-900 text-indigo-700 dark:text-indigo-300 ring-indigo-200 dark:ring-indigo-800/50",
   };
   return (
     <div className={`relative rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm ${accentMap[accent]}`}>

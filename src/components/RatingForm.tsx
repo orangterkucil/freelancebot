@@ -51,7 +51,7 @@ export function RatingForm({
   return (
     <form
       onSubmit={submit}
-      className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-rose-50 p-5 shadow-sm"
+      className="rounded-2xl border border-amber-200 dark:border-amber-800/50 bg-gradient-to-br from-amber-50 via-white to-rose-50 dark:from-amber-950/40 dark:via-slate-900 dark:to-rose-950/40 p-5 shadow-sm"
     >
       <p className="font-mono text-[11px] uppercase tracking-widest text-amber-700">
         Rate this counterparty

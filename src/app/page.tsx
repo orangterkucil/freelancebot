@@ -333,7 +333,7 @@ function FlowSection() {
               href={s.href}
               className="liquid-glass group block rounded-[32px] p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
             >
-              <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-[24px] bg-gradient-to-br from-sky-50 via-white to-slate-50">
+              <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-[24px] bg-gradient-to-br from-sky-50 via-white to-slate-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-slate-950">
                 <div className="absolute inset-8 rounded-full border border-slate-200" />
                 <div className="absolute inset-16 rounded-full border border-slate-200" />
                 <div

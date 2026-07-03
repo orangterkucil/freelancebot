@@ -199,7 +199,7 @@ function JobCard({ job }: { job: Order }) {
 
 function EmptyState() {
   return (
-    <div className="mt-6 rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm">
+    <div className="mt-6 rounded-3xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-10 text-center shadow-sm">
       <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
         <Briefcase className="h-7 w-7 text-brand" strokeWidth={1.5} />
       </div>

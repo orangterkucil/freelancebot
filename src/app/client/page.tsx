@@ -279,7 +279,7 @@ function Stat({
 
 function EmptyState({ onCreate }: { onCreate: () => void }) {
   return (
-    <div className="relative rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm dark:border-sky-800/50 dark:from-sky-950/30 dark:via-slate-900 dark:to-indigo-950/30">
+    <div className="relative rounded-3xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-10 text-center shadow-sm dark:border-sky-800/50 dark:from-sky-950/30 dark:via-slate-900 dark:to-indigo-950/30">
       <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md ring-1 ring-sky-200 dark:bg-slate-800 dark:ring-sky-800/50">
         <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
       </div>

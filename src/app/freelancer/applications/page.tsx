@@ -80,7 +80,7 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
       )}
 
       {!loading && !error && apps.length === 0 && (
-        <div className="mt-8 rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm">
+        <div className="mt-8 rounded-3xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-10 text-center shadow-sm">
           <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
             <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
           </div>
@@ -119,10 +119,10 @@ function Stat({
   accent?: "sky" | "amber" | "emerald" | "rose";
 }) {
   const accentMap = {
-    sky:     "from-sky-50 to-white text-sky-700 ring-sky-200",
-    amber:   "from-amber-50 to-white text-amber-700 ring-amber-200",
-    emerald: "from-emerald-50 to-white text-emerald-700 ring-emerald-200",
-    rose:    "from-rose-50 to-white text-rose-700 ring-rose-200",
+    sky:     "from-sky-50 to-white dark:from-sky-950/40 dark:to-slate-900 text-sky-700 dark:text-sky-300 ring-sky-200 dark:ring-sky-800/50",
+    amber:   "from-amber-50 to-white dark:from-amber-950/40 dark:to-slate-900 text-amber-700 dark:text-amber-300 ring-amber-200 dark:ring-amber-800/50",
+    emerald: "from-emerald-50 to-white dark:from-emerald-950/40 dark:to-slate-900 text-emerald-700 dark:text-emerald-300 ring-emerald-200 dark:ring-emerald-800/50",
+    rose:    "from-rose-50 to-white dark:from-rose-950/40 dark:to-slate-900 text-rose-700 dark:text-rose-300 ring-rose-200 dark:ring-rose-800/50",
   };
   return (
     <div className={`relative rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm ${accentMap[accent]}`}>

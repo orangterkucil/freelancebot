@@ -76,7 +76,7 @@ export default function DocsPage() {
             ))}
           </nav>
 
-          <div className="mt-8 rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 to-indigo-50 p-4">
+          <div className="mt-8 rounded-xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 p-4">
             <p className="font-mono text-[10px] uppercase tracking-widest text-brand">Open source</p>
             <p className="mt-1 font-display text-sm uppercase text-slate-900">MIT licensed</p>
             <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-600">
@@ -309,7 +309,7 @@ function Section({ id, title, emoji, children }: { id: string; title: string; em
 
 function Callout({ children }: { children: React.ReactNode }) {
   return (
-    <aside className="my-4 rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 to-indigo-50 p-4 font-mono text-[12px] leading-relaxed text-slate-700">
+    <aside className="my-4 rounded-xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 p-4 font-mono text-[12px] leading-relaxed text-slate-700">
       {children}
     </aside>
   );
