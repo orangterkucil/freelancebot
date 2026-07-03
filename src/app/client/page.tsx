@@ -1,13 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Inbox, Search } from "lucide-react";
+import {
+  Plus, Inbox, Search, Activity, ArrowUpRight, CheckCircle2,
+  Wallet, Zap, TrendingUp, Clock, ShieldCheck,
+} from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { EmailGate } from "@/components/EmailGate";
 import { OrderCard } from "@/components/OrderCard";
 import { CreateOrderForm } from "@/components/CreateOrderForm";
 import { listOrders } from "@/lib/api";
 import type { Order, OrderStatus } from "@/lib/orders";
+
+const CONTRACT_ADDRESS = "0xA8CA04560603951b0f0e803039B059432F673ae4";
+const CONTRACT_SHORT = "0xA8CA…3ae4";
 
 const STATUS_FILTERS: { value: "all" | OrderStatus; label: string }[] = [
   { value: "all",       label: "All" },
@@ -92,11 +98,13 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
         </button>
       }
     >
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Total orders"     value={stats.total}    accent="sky" />
-        <Stat label="Active"            value={stats.active}   accent="amber" />
-        <Stat label="Released"          value={stats.released} accent="emerald" />
-        <Stat label="Locked in escrow"  value={`$${stats.locked.toLocaleString()}`} sub="USDC" accent="indigo" />
+      <NetworkStrip />
+
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Stat Icon={Inbox}         label="Total orders"     value={stats.total}    accent="sky" />
+        <Stat Icon={Clock}         label="Active"           value={stats.active}   accent="amber" />
+        <Stat Icon={CheckCircle2}  label="Released"         value={stats.released} accent="emerald" />
+        <Stat Icon={Wallet}        label="Locked in escrow" value={`$${stats.locked.toLocaleString()}`} sub="USDC" accent="indigo" />
       </div>
 
       {showForm && (
@@ -188,30 +196,83 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
   );
 }
 
+function NetworkStrip() {
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:gap-6">
+      <div className="flex items-center gap-2 pl-1">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+        </span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600">Arc Testnet · connected</span>
+      </div>
+      <div className="hidden h-4 w-px bg-slate-200 sm:block" />
+      <div className="flex items-center gap-2">
+        <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+        <a
+          href={`https://testnet.arcscan.app/address/${CONTRACT_ADDRESS}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-slate-600 hover:text-brand"
+        >
+          Contract <span className="text-slate-900 group-hover:text-brand">{CONTRACT_SHORT}</span>
+          <ArrowUpRight className="h-3 w-3" />
+        </a>
+      </div>
+      <div className="hidden h-4 w-px bg-slate-200 sm:block" />
+      <div className="flex items-center gap-2">
+        <Zap className="h-3.5 w-3.5 text-amber-500" />
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600">AI agent · Groq Llama 3.3 70B · online</span>
+      </div>
+      <div className="hidden h-4 w-px bg-slate-200 sm:block" />
+      <div className="flex items-center gap-2">
+        <Activity className="h-3.5 w-3.5 text-brand" />
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-600">Settlement · &lt;1s</span>
+      </div>
+      <span className="ml-auto rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-emerald-700">
+        All systems operational
+      </span>
+    </div>
+  );
+}
+
 function Stat({
+  Icon,
   label,
   value,
   sub,
   accent = "sky",
 }: {
+  Icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string | number;
   sub?: string;
   accent?: "sky" | "amber" | "emerald" | "indigo";
 }) {
   const accentMap = {
-    sky:     "from-sky-50 to-white text-sky-700 ring-sky-200",
-    amber:   "from-amber-50 to-white text-amber-700 ring-amber-200",
-    emerald: "from-emerald-50 to-white text-emerald-700 ring-emerald-200",
-    indigo:  "from-indigo-50 to-white text-indigo-700 ring-indigo-200",
+    sky:     { bg: "from-sky-50 to-white",     ring: "ring-sky-200",     iconBg: "bg-sky-100 text-sky-700" },
+    amber:   { bg: "from-amber-50 to-white",   ring: "ring-amber-200",   iconBg: "bg-amber-100 text-amber-700" },
+    emerald: { bg: "from-emerald-50 to-white", ring: "ring-emerald-200", iconBg: "bg-emerald-100 text-emerald-700" },
+    indigo:  { bg: "from-indigo-50 to-white",  ring: "ring-indigo-200",  iconBg: "bg-indigo-100 text-indigo-700" },
   };
+  const a = accentMap[accent];
   return (
-    <div className={`relative rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm ${accentMap[accent]}`}>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
-      <p className="mt-1 font-display text-2xl">
+    <div className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm transition-shadow hover:shadow-md ${a.bg} ${a.ring}`}>
+      <div className="flex items-start justify-between">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
+        <div className={`grid h-7 w-7 place-items-center rounded-lg ${a.iconBg}`}>
+          <Icon className="h-3.5 w-3.5" />
+        </div>
+      </div>
+      <p className="mt-2 font-display text-2xl text-slate-900 sm:text-3xl">
         {value}
         {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">{sub}</span>}
       </p>
+      <div className="mt-2 flex items-center gap-1 font-mono text-[9px] uppercase tracking-widest text-slate-400">
+        <TrendingUp className="h-2.5 w-2.5" />
+        <span>All time</span>
+      </div>
+      <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/40 opacity-0 blur-2xl transition-opacity group-hover:opacity-100" />
     </div>
   );
 }
