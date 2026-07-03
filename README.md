@@ -23,11 +23,11 @@
 
 ## Demo
 
+**[▶ Full 1:29 cinematic reel with AI voice-over](https://freelancebot-alpha.vercel.app/demo-reel.html)** — auto-play walkthrough covering hook, problem, solution, 6-step client tutorial, 6-step freelancer tutorial, tech credentials, and close. Voice narration via browser Speech API (studio-quality voice available by installing the [ElevenLabs Reader](https://elevenlabs.io/app/talk-to) Chrome extension and using `?tts=off` to disable the built-in voice).
+
 ![FreelanceBot marketplace flow](./public/marketplace-flow.gif)
 
-_10-second silent walkthrough: landing → marketplace → filter by field → open a job → apply._
-
-**Watch the narrated version:** [demo.mp4 (30 sec, ElevenLabs voice)](https://freelancebot-alpha.vercel.app/demo.mp4) — real Arc Testnet capture with AI voice-over covering hook, problem, solution, client + freelancer walkthroughs, tech credentials, and CTA.
+_10-second silent preview: landing → marketplace → filter by field → open a job → apply. Full narrated version linked above._
 
 **Prefer to click around yourself?** [Open the live app →](https://freelancebot-alpha.vercel.app)
 
