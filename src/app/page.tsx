@@ -25,27 +25,33 @@ import { useT } from "@/lib/i18n";
  * jarring transition at app boundary.
  */
 export default function Home() {
+  // Landing page always renders in light mode. Force-remove any .dark class
+  // that the user may have set in Settings — the marketing homepage should be
+  // consistent across all visitors (bright, catchy, high-contrast).
+  if (typeof document !== "undefined") {
+    document.documentElement.classList.remove("dark");
+  }
   return (
-    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased">
+    <div className="bg-slate-50 text-slate-900 antialiased">
       <HeroSection />
       <AboutSection />
       <FlowSection />
       <LiveJobsPreview />
       <CtaSection />
 
-      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-10 text-center">
+      <footer className="border-t border-slate-200 bg-white py-10 text-center">
         <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
-          MIT licensed · Open source · v0.11.0 ·{" "}
+          MIT licensed · Open source · v0.13.0 ·{" "}
           <a
             href="https://github.com/orangterkucil/freelancebot"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-600 dark:text-slate-400 hover:text-brand"
+            className="text-slate-600 hover:text-brand"
           >
             GitHub
           </a>{" "}
           ·{" "}
-          <Link href="/docs" className="text-slate-600 dark:text-slate-400 hover:text-brand">
+          <Link href="/docs" className="text-slate-600 hover:text-brand">
             Docs
           </Link>
         </p>
