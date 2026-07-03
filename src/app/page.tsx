@@ -40,12 +40,12 @@ export default function Home() {
             href="https://github.com/orangterkucil/freelancebot"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-brand"
+            className="text-slate-600 dark:text-slate-400 hover:text-brand"
           >
             GitHub
           </a>{" "}
           ·{" "}
-          <Link href="/docs" className="text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-brand">
+          <Link href="/docs" className="text-slate-600 dark:text-slate-400 hover:text-brand">
             Docs
           </Link>
         </p>
@@ -117,7 +117,7 @@ function HeroSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 dark:border-slate-800 bg-white/90 text-slate-600 dark:text-slate-400 dark:text-slate-500 shadow-sm backdrop-blur transition-colors hover:border-brand hover:text-brand"
+                  className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 dark:border-slate-800 bg-white/90 text-slate-600 dark:text-slate-400 shadow-sm backdrop-blur transition-colors hover:border-brand hover:text-brand"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -142,7 +142,7 @@ function HeroSection() {
             {t("hero.script")}
           </span>
 
-          <p className="mt-8 max-w-xl font-mono text-sm leading-relaxed text-slate-600 dark:text-slate-400 dark:text-slate-500 sm:text-base">
+          <p className="mt-8 max-w-xl font-mono text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
             {t("hero.subtitle1")}
             <br className="hidden sm:block" />
             {t("hero.subtitle2")}
@@ -231,7 +231,7 @@ function AboutSection() {
             </span>
           </div>
 
-          <p className="max-w-md font-mono text-sm leading-relaxed text-slate-600 dark:text-slate-400 dark:text-slate-500 sm:text-base lg:max-w-[280px]">
+          <p className="max-w-md font-mono text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base lg:max-w-[280px]">
             Built for the 75 million freelancers in Asia-Pacific who lose 18% of every gig
             to PayPal, SWIFT, and Upwork.
           </p>
@@ -337,7 +337,7 @@ function FlowSection() {
                 <span className="absolute left-5 top-4 font-display text-[11px] uppercase tracking-widest text-slate-400">
                   Step {String(idx + 1).padStart(2, "0")}
                 </span>
-                <s.Icon className="h-20 w-20 text-slate-500 dark:text-slate-400 dark:text-slate-500 transition-transform group-hover:scale-110" strokeWidth={1.2} />
+                <s.Icon className="h-20 w-20 text-slate-500 dark:text-slate-400 transition-transform group-hover:scale-110" strokeWidth={1.2} />
               </div>
 
               <div className="mt-4 flex items-center justify-between gap-3 rounded-[20px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-4">

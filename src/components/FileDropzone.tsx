@@ -163,7 +163,7 @@ export function FileDropzone({
                 <button
                   type="button"
                   onClick={() => remove(i)}
-                  className="grid h-7 w-7 place-items-center rounded-md border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 dark:text-slate-500 transition-colors hover:border-rose-400 hover:text-rose-600"
+                  className="grid h-7 w-7 place-items-center rounded-md border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 transition-colors hover:border-rose-400 hover:text-rose-600"
                   aria-label={`Remove ${a.filename}`}
                 >
                   <X className="h-3.5 w-3.5" />

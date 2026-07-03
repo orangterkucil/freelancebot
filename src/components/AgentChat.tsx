@@ -117,7 +117,7 @@ function Bubble({ message, viewer }: { message: Message; viewer: "client" | "fre
     : isAgent
     ? "bg-sky-50 text-sky-900 border border-sky-200"
     : isSystem
-    ? "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 dark:text-slate-500 text-xs italic"
+    ? "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs italic"
     : "bg-slate-100 dark:bg-slate-800 text-slate-900";
 
   const label = isAgent ? "FreelanceBot" : isSystem ? "system" : message.role;

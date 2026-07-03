@@ -138,7 +138,7 @@ export default function OrderDetailPage() {
           {role ? (
             <OrderActions order={order} role={role} onChanged={reloadAll} />
           ) : (
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 text-sm font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 text-sm font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 shadow-sm">
               Sign in to act on this order.
             </div>
           )}

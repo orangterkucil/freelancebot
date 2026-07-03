@@ -82,7 +82,7 @@ export function AppShell({
 
           <div className="flex items-center gap-2">
             {breadcrumb && (
-              <div className="hidden font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 dark:text-slate-500 md:block">
+              <div className="hidden font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 md:block">
                 {breadcrumb}
               </div>
             )}
@@ -112,7 +112,7 @@ export function AppShell({
                     "group flex items-center justify-between rounded-xl px-3 py-2.5 transition-colors " +
                     (active
                       ? "bg-brand/10 ring-1 ring-brand/30 dark:bg-brand/15"
-                      : "hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-800/50")
+                      : "hover:bg-slate-100 dark:hover:bg-slate-800/50")
                   }
                 >
                   <span className="flex items-center gap-3">
@@ -138,17 +138,17 @@ export function AppShell({
             </p>
             <ul className="mt-2 space-y-1">
               <li>
-                <a href="https://github.com/orangterkucil/freelancebot" target="_blank" rel="noopener noreferrer" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand dark:text-slate-400 dark:text-slate-500 dark:hover:text-brand">
+                <a href="https://github.com/orangterkucil/freelancebot" target="_blank" rel="noopener noreferrer" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand dark:text-slate-400 dark:hover:text-brand">
                   {t("nav.github")} ↗
                 </a>
               </li>
               <li>
-                <Link href="/docs" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand dark:text-slate-400 dark:text-slate-500 dark:hover:text-brand">
+                <Link href="/docs" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand dark:text-slate-400 dark:hover:text-brand">
                   {t("nav.docs")} ↗
                 </Link>
               </li>
               <li>
-                <a href={`https://testnet.arcscan.app/address/${process.env.NEXT_PUBLIC_ESCROW_ADDRESS ?? ""}`} target="_blank" rel="noopener noreferrer" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand dark:text-slate-400 dark:text-slate-500 dark:hover:text-brand">
+                <a href={`https://testnet.arcscan.app/address/${process.env.NEXT_PUBLIC_ESCROW_ADDRESS ?? ""}`} target="_blank" rel="noopener noreferrer" className="block font-mono text-[11px] uppercase tracking-wider text-slate-500 hover:text-brand dark:text-slate-400 dark:hover:text-brand">
                   {t("nav.contract")} ↗
                 </a>
               </li>
@@ -167,7 +167,7 @@ export function AppShell({
         <main className="px-5 py-6 lg:px-10 lg:py-10">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <Link href="/" className="mb-2 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-brand dark:text-slate-400 dark:text-slate-500 dark:hover:text-brand">
+              <Link href="/" className="mb-2 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-brand dark:text-slate-400 dark:hover:text-brand">
                 <ArrowLeft className="h-3 w-3" />
                 Back to landing
               </Link>

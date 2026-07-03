@@ -49,7 +49,7 @@ export function AppHeader({
               <Link
                 key={l.href}
                 href={l.href}
-                className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 dark:text-slate-500 transition-colors hover:text-brand"
+                className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 transition-colors hover:text-brand"
               >
                 {l.label}
               </Link>

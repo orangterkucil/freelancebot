@@ -40,18 +40,18 @@ export default function DocsPage() {
           <Link href="/" className="group flex items-center gap-2.5">
             <Image src="/logo-mark.svg" alt="FreelanceBot" width={32} height={32} className="transition-transform group-hover:scale-105" />
             <span className="font-display text-sm uppercase tracking-wider text-slate-900">FreelanceBot</span>
-            <span className="hidden rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-1.5 py-px font-mono text-[9px] uppercase text-slate-500 dark:text-slate-400 dark:text-slate-500 sm:inline-block">
+            <span className="hidden rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-1.5 py-px font-mono text-[9px] uppercase text-slate-500 dark:text-slate-400 sm:inline-block">
               docs · v0.11.0
             </span>
           </Link>
           <nav className="flex items-center gap-4">
-            <Link href="/client" className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-brand">Demo</Link>
-            <Link href="/jobs"   className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-brand">Marketplace</Link>
+            <Link href="/client" className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:text-brand">Demo</Link>
+            <Link href="/jobs"   className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:text-brand">Marketplace</Link>
             <a
               href="https://github.com/orangterkucil/freelancebot"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-brand"
+              className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:text-brand"
             >
               GitHub ↗
             </a>
@@ -68,7 +68,7 @@ export default function DocsPage() {
               <a
                 key={s.id}
                 href={`#${s.id}`}
-                className="group flex items-center gap-2 rounded-lg px-3 py-2 text-slate-600 dark:text-slate-400 dark:text-slate-500 transition-colors hover:bg-white dark:bg-slate-900 hover:text-slate-900"
+                className="group flex items-center gap-2 rounded-lg px-3 py-2 text-slate-600 dark:text-slate-400 transition-colors hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900"
               >
                 <s.Icon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 group-hover:text-brand" />
                 <span className="font-display text-[12px] uppercase tracking-wider">{s.label}</span>
@@ -269,7 +269,7 @@ export default function DocsPage() {
                     href="https://github.com/orangterkucil/freelancebot"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-brand"
+                    className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:text-brand"
                   >
                     GitHub ↗
                   </a>

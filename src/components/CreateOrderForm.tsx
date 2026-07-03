@@ -104,7 +104,7 @@ export function CreateOrderForm({
           onClick={() => setMode("public")}
           className={
             "flex items-center justify-center gap-2 rounded-lg px-3 py-2 font-display text-xs uppercase tracking-wider transition-colors " +
-            (mode === "public" ? "bg-brand text-white shadow-sm" : "text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900")
+            (mode === "public" ? "bg-brand text-white shadow-sm" : "text-slate-600 dark:text-slate-400 hover:text-slate-900")
           }
         >
           <Globe className="h-3.5 w-3.5" />
@@ -115,7 +115,7 @@ export function CreateOrderForm({
           onClick={() => setMode("private")}
           className={
             "flex items-center justify-center gap-2 rounded-lg px-3 py-2 font-display text-xs uppercase tracking-wider transition-colors " +
-            (mode === "private" ? "bg-brand text-white shadow-sm" : "text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900")
+            (mode === "private" ? "bg-brand text-white shadow-sm" : "text-slate-600 dark:text-slate-400 hover:text-slate-900")
           }
         >
           <Lock className="h-3.5 w-3.5" />

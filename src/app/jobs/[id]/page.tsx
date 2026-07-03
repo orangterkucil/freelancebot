@@ -101,7 +101,7 @@ export default function JobDetailPage() {
       }
       breadcrumb={<>Marketplace / Job #{job.id}</>}
     >
-      <Link href="/jobs" className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-brand">
+      <Link href="/jobs" className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-brand">
         <ArrowLeft className="h-3 w-3" />
         Back to marketplace
       </Link>
@@ -161,7 +161,7 @@ export default function JobDetailPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/30 dark:via-slate-900 dark:to-indigo-950/30 p-6 shadow-sm">
+        <div className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-6 shadow-sm">
           {!isOpen ? (
             <div>
               <p className="font-mono text-[11px] uppercase tracking-widest text-amber-700">· Closed</p>
