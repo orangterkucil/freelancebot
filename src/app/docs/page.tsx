@@ -286,6 +286,51 @@ export default function DocsPage() {
                 3–5%. None combine <strong>on-chain escrow + AI verification + open marketplace</strong> in a single
                 self-custody flow the way FreelanceBot does — that&apos;s the wedge.
               </p>
+
+              <h3 className="mt-8 text-base font-semibold text-slate-900">No token. Ever.</h3>
+              <p>
+                FreelanceBot is <strong>infrastructure, not a speculative asset</strong>. There is no <code>FBOT</code>{" "}
+                token, no governance token, no airdrop, no vesting schedule, no VC unlock, no points program, no season
+                pass, no NFT tier — none of it, ever. Payments settle in <strong>USDC</strong>, a fully-reserved
+                US-dollar stablecoin regulated under NYDFS BitLicense. The platform fee (1%) is collected in USDC and
+                routed to a recipient address the operator controls transparently on-chain.
+              </p>
+              <p>
+                This is a deliberate design choice, not an oversight. Adding a token would:
+              </p>
+              <ul>
+                <li>
+                  <strong>Break the value proposition.</strong> The whole point is that a freelancer in Jakarta gets a
+                  dollar-denominated payout without volatility. A native token would re-introduce the FX risk we spent
+                  the entire product design removing.
+                </li>
+                <li>
+                  <strong>Invite regulatory attack.</strong> Selling a token to fund development turns the protocol into
+                  an unregistered securities offering in most jurisdictions. Circle&apos;s USDC (already regulated) plus
+                  Arc (settlement layer) is legally clean end-to-end.
+                </li>
+                <li>
+                  <strong>Distract from execution.</strong> Every hour spent on token economics is an hour not spent
+                  making cross-border settlement faster, cheaper, and more auditable. We&apos;d rather ship features to
+                  the 75M APAC freelancers than manage a Discord about staking rewards.
+                </li>
+                <li>
+                  <strong>Contradict the open-source thesis.</strong> The contract is MIT-licensed. Anyone can fork it,
+                  deploy their own instance, and set their own fee (or zero). Trying to capture that value with a token
+                  would be self-defeating.
+                </li>
+              </ul>
+              <p>
+                If the protocol needs governance in the future, it will be handled by a lightweight multisig of
+                elected operators — funded transparently via the 1% platform fee, not by minting a new asset. If it
+                needs sustainability funding, it will come from grants (Ethereum Foundation, Circle Ventures, Arc
+                Foundation), audit sponsorships, or optional premium hosting for large clients — never from a token
+                sale that dilutes the workers this protocol exists to serve.
+              </p>
+              <Callout>
+                <strong>tl;dr:</strong> FreelanceBot is TCP/IP for cross-border freelance payments. TCP/IP has no
+                token; neither should this.
+              </Callout>
             </Section>
 
             <Section id="solution" title="The solution" emoji="✨">
