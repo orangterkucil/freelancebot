@@ -31,9 +31,11 @@
 
 ## Demo
 
-### 🎬 Watch the 30-second narrated walkthrough
+### 🎬 Watch the 90-second narrated walkthrough
 
-**► [Play the MP4](https://freelancebot-alpha.vercel.app/demo.mp4)** — direct MP4, opens in your browser (right-click → Save As to download).
+**► [Play the full MP4 (1:28)](https://freelancebot-alpha.vercel.app/demo.mp4)** — full-length demo with narration + lofi background music.
+
+Prefer a quick 30-sec teaser? **[Play the short version](https://freelancebot-alpha.vercel.app/demo-short.mp4)**.
 
 Voiced by ElevenLabs Roger. Covers: landing → marketplace → filter by field → open a job → apply → escrow verdict.
 
