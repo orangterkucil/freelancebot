@@ -31,21 +31,27 @@
 
 ## Demo
 
-### 🎬 Watch the 90-second narrated walkthrough
+<video src="https://freelancebot-alpha.vercel.app/demo.mp4" controls muted playsinline width="100%">
+  Your browser doesn't support HTML5 video. <a href="https://freelancebot-alpha.vercel.app/demo.mp4">Download the MP4</a> instead.
+</video>
 
-**► [Play the full MP4 (1:28)](https://freelancebot-alpha.vercel.app/demo.mp4)** — full-length demo with narration + lofi background music.
+<p align="center">
+  <a href="https://freelancebot-alpha.vercel.app/demo.mp4">
+    <img src="./public/marketplace-flow.gif" alt="FreelanceBot marketplace flow — click to play the 90-second walkthrough" width="100%" />
+  </a>
+</p>
 
-Prefer a quick 30-sec teaser? **[Play the short version](https://freelancebot-alpha.vercel.app/demo-short.mp4)**.
+<p align="center">
+  <b>▶ 90-second narrated walkthrough</b><br/>
+  ElevenLabs Roger voice-over · lofi background music<br/>
+  <sub>Landing → Marketplace → Filter by field → Apply → Escrow verdict</sub>
+</p>
 
-Voiced by ElevenLabs Roger. Covers: landing → marketplace → filter by field → open a job → apply → escrow verdict.
-
-### 🖼️ Silent 10-second preview
-
-![FreelanceBot marketplace flow](./public/marketplace-flow.gif)
-
-### 🚀 Click around yourself
-
-**[Open the live app →](https://freelancebot-alpha.vercel.app)** — full working demo on Arc Testnet with connected wallet.
+<p align="center">
+  <a href="https://freelancebot-alpha.vercel.app/demo.mp4"><b>Play full video (1:28) →</b></a> &nbsp;·&nbsp;
+  <a href="https://freelancebot-alpha.vercel.app/demo-short.mp4"><b>Play 30-sec teaser →</b></a> &nbsp;·&nbsp;
+  <a href="https://freelancebot-alpha.vercel.app"><b>Open live app →</b></a>
+</p>
 
 ## Features
 
