@@ -82,28 +82,25 @@
   /* Animated cursor for tutorial scenes */
   .fake-cursor {
     position: absolute;
-    width: 22px; height: 22px;
+    width: 40px; height: 40px;
     pointer-events: none;
     z-index: 30;
     transition:
-      left 700ms cubic-bezier(.4,0,.2,1),
-      top 700ms cubic-bezier(.4,0,.2,1),
-      opacity 200ms ease;
+      left 500ms cubic-bezier(.4,0,.2,1),
+      top 500ms cubic-bezier(.4,0,.2,1),
+      opacity 180ms ease;
     opacity: 0;
-    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+    /* Anchor: fingertip should be roughly at the cursor's absolute position */
+    transform: translate(-8px, -6px);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><path fill='%23ffffff' stroke='%230f172a' stroke-width='1.5' stroke-linejoin='round' d='M14 5c-1.7 0-3 1.3-3 3v13l-3-2c-1.5-.9-3.4-.5-4.2 1-.8 1.4-.3 3.2 1 4l7 5c1 .7 2.2 1 3.4 1h6.3c3 0 5.5-2.2 6-5.2l1.4-8c.3-1.7-.8-3.4-2.5-3.7-1.7-.3-3.4.8-3.7 2.5v-3c0-1.7-1.3-3-3-3s-3 1.3-3 3v-1c0-1.7-1.3-3-3-3z'/></svg>");
+    background-size: contain;
+    background-repeat: no-repeat;
   }
   .fake-cursor.show { opacity: 1; }
-  .fake-cursor::before {
-    content: "";
-    display: block;
-    width: 0; height: 0;
-    border-left: 12px solid transparent;
-    border-top: 18px solid #ffffff;
-    transform: rotate(-30deg) translate(2px, -4px);
-  }
   .fake-cursor.clicking {
-    transform: scale(0.85);
-    transition: transform 120ms ease;
+    transform: translate(-8px, -6px) scale(0.85);
+    transition: transform 100ms ease;
   }
   .fake-cursor.clicking::after {
     content: "";
@@ -392,10 +389,10 @@
     border-left: 3px solid var(--red);
     animation: slideRightIn 0.5s cubic-bezier(.34,1.56,.64,1) forwards;
   }
-  #scene-2 .deductions div:nth-child(1) { animation-delay: 0.7s; }
-  #scene-2 .deductions div:nth-child(2) { animation-delay: 1.0s; }
-  #scene-2 .deductions div:nth-child(3) { animation-delay: 1.3s; }
-  #scene-2 .deductions div:nth-child(4) { animation-delay: 1.6s; }
+  #scene-2 .deductions div:nth-child(1) { animation-delay: 0.15s; }
+  #scene-2 .deductions div:nth-child(2) { animation-delay: 0.35s; }
+  #scene-2 .deductions div:nth-child(3) { animation-delay: 0.55s; }
+  #scene-2 .deductions div:nth-child(4) { animation-delay: 0.75s; }
   #scene-2 .clock {
     margin-top: 20px;
     font-family: var(--font-display);
@@ -403,7 +400,7 @@
     color: var(--amber);
     letter-spacing: 0.05em;
     opacity: 0;
-    animation: fadeIn 0.5s ease 1.9s forwards;
+    animation: fadeIn 0.4s ease 1.0s forwards;
     text-shadow: 0 0 30px rgba(245,158,11,0.4);
   }
   #scene-2 .verdict {
@@ -413,7 +410,7 @@
     color: var(--red);
     text-shadow: 0 0 50px rgba(239,68,68,0.6);
     opacity: 0;
-    animation: slideUpIn 0.7s ease 2.3s forwards, verdictPulse 1.4s ease 3.2s infinite;
+    animation: slideUpIn 0.5s ease 1.3s forwards, verdictPulse 1.4s ease 2.0s infinite;
     letter-spacing: 0.02em;
   }
 
@@ -471,14 +468,14 @@
     opacity: 0; transform: scale(0.7);
     box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5);
   }
-  #scene-3 .node.n1 { animation: nodeIn 0.5s cubic-bezier(.34,1.56,.64,1) 0.4s forwards; }
+  #scene-3 .node.n1 { animation: nodeIn 0.4s cubic-bezier(.34,1.56,.64,1) 0.1s forwards; }
   #scene-3 .node.n2 {
     background: linear-gradient(135deg, rgba(34,211,238,0.15), rgba(99,102,241,0.15));
     border-color: var(--cyan);
     box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5), 0 0 80px -15px rgba(34,211,238,0.5);
-    animation: nodeIn 0.5s cubic-bezier(.34,1.56,.64,1) 0.7s forwards, glow 2.5s ease 1.5s infinite;
+    animation: nodeIn 0.4s cubic-bezier(.34,1.56,.64,1) 0.25s forwards, glow 2.5s ease 0.8s infinite;
   }
-  #scene-3 .node.n3 { animation: nodeIn 0.5s cubic-bezier(.34,1.56,.64,1) 1.0s forwards; }
+  #scene-3 .node.n3 { animation: nodeIn 0.4s cubic-bezier(.34,1.56,.64,1) 0.4s forwards; }
   #scene-3 .node .icon { font-size: 60px; }
   #scene-3 .node .name {
     font-family: var(--font-mono); font-size: 12px;
@@ -491,7 +488,7 @@
     position: relative;
     max-width: 130px;
     opacity: 0;
-    animation: fadeIn 0.3s ease 1.2s forwards;
+    animation: fadeIn 0.3s ease 0.5s forwards;
   }
   #scene-3 .connector::before {
     content: ""; position: absolute;
@@ -499,7 +496,7 @@
     width: 20px; height: 20px; border-radius: 50%;
     background: var(--cyan);
     box-shadow: 0 0 20px var(--cyan);
-    animation: travel 1.6s linear 1.5s infinite;
+    animation: travel 1.6s linear 0.8s infinite;
     opacity: 0;
     animation-fill-mode: forwards;
   }
@@ -508,7 +505,7 @@
     font-family: var(--font-mono); font-size: 14px;
     color: var(--dim);
     opacity: 0;
-    animation: fadeIn 0.5s ease 1.8s forwards;
+    animation: fadeIn 0.4s ease 0.9s forwards;
     margin-bottom: 24px;
   }
   #scene-3 .steps span {
