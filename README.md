@@ -19,15 +19,10 @@
   <img alt="Tests" src="https://img.shields.io/badge/tests-18%2F18%20passing-brightgreen?style=flat-square" />
   <img alt="OWASP" src="https://img.shields.io/badge/OWASP%20LLM-hardened-blueviolet?style=flat-square" />
   <img alt="i18n" src="https://img.shields.io/badge/i18n-6%20languages-orange?style=flat-square" />
-  <img alt="Track" src="https://img.shields.io/badge/track%204-agentic%20economy-ec4899?style=flat-square" />
   <img alt="Stack" src="https://img.shields.io/badge/stack-Next.js%20·%20Solidity%20·%20Groq%20·%20Supabase-0f172a?style=flat-square" />
 </p>
 
 ---
-
-**Submission for:** [The Stablecoins Commerce Stack Challenge](https://challenges.ignyte.ae/competition/the-stablecoins-commerce-stack-challenge-ozc0ih6kba) — **Track 4 (Agentic Economy)**
-**Tech sponsors:** Circle · Arc
-**Deadline:** July 13, 2026
 
 ## What it does
 
