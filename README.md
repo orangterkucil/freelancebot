@@ -31,15 +31,19 @@
 
 ## Demo
 
-https://github.com/user-attachments/assets/demo.mp4
+### 🎬 Watch the 30-second narrated walkthrough
 
-**[▶ Watch narrated MP4 · 30 sec](https://freelancebot-alpha.vercel.app/demo.mp4)** — AI-narrated walkthrough of the marketplace flow with ElevenLabs Roger voice-over.
+**► [Play the MP4](https://freelancebot-alpha.vercel.app/demo.mp4)** — direct MP4, opens in your browser (right-click → Save As to download).
+
+Voiced by ElevenLabs Roger. Covers: landing → marketplace → filter by field → open a job → apply → escrow verdict.
+
+### 🖼️ Silent 10-second preview
 
 ![FreelanceBot marketplace flow](./public/marketplace-flow.gif)
 
-_10-second silent GIF: landing → marketplace → filter by field → open a job → apply._
+### 🚀 Click around yourself
 
-**Prefer to click around yourself?** [Open the live app →](https://freelancebot-alpha.vercel.app)
+**[Open the live app →](https://freelancebot-alpha.vercel.app)** — full working demo on Arc Testnet with connected wallet.
 
 ## Features
 
