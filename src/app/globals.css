@@ -91,68 +91,165 @@ body { background-color: #f7fafc; }
    already high-contrast (emerald/sky/violet pastels look fine on dark).
    ======================================================================= */
 
+/* Softer dark palette — user feedback: prev dark was too contrasty and cards
+   looked like glossy virtual credit cards. New palette is a warm slate,
+   card surfaces just 1 step lighter than body so nothing screams.
+   - body:     #1a2338 (medium slate — easier on eyes than pitch black)
+   - surface:  #22304a (cards, panels)
+   - elevated: #2b3b58 (inputs, chips)
+   - border:   #384863 (visible but soft)
+   - text:     #e2e8f0 primary, #94a3b8 secondary                       */
 html.dark { color-scheme: dark; }
-html.dark body { background-color: #0b1220; color: rgb(226 232 240); }
+html.dark body { background-color: #1a2338; color: #e2e8f0; }
 
-/* Space + warm gradients — swap to a deep-navy base with tinted glow */
+/* Space + warm gradient panels — swap to slate base with subtle tint */
 html.dark .bg-space {
-  background-color: #0b1220;
+  background-color: #1a2338;
   background-image:
-    radial-gradient(ellipse at 15% 10%, rgba(14, 165, 233, 0.28) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 20%, rgba(99, 102, 241, 0.24) 0%, transparent 55%),
-    radial-gradient(ellipse at 60% 90%, rgba(244, 114, 182, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse at 30% 70%, rgba(34, 211, 238, 0.18) 0%, transparent 55%);
+    radial-gradient(ellipse at 15% 10%, rgba(56, 189, 248, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(129, 140, 248, 0.14) 0%, transparent 55%),
+    radial-gradient(ellipse at 60% 90%, rgba(244, 114, 182, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 30% 70%, rgba(34, 211, 238, 0.10) 0%, transparent 55%);
 }
 html.dark .bg-warm {
-  background-color: #0b1220;
+  background-color: #1a2338;
   background-image:
-    radial-gradient(ellipse at 20% 30%, rgba(251, 191, 36, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 70%, rgba(244, 114, 182, 0.16) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 100%, rgba(14, 165, 233, 0.14) 0%, transparent 60%);
+    radial-gradient(ellipse at 20% 30%, rgba(251, 191, 36, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(244, 114, 182, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(14, 165, 233, 0.10) 0%, transparent 60%);
 }
 
 /* Surface backgrounds */
 html.dark .bg-white,
 html.dark .bg-white\/90,
 html.dark .bg-white\/95,
-html.dark .bg-white\/60 { background-color: #111b2e !important; }
-html.dark .bg-slate-50   { background-color: #0b1220 !important; }
-html.dark .bg-slate-100  { background-color: #17223a !important; }
+html.dark .bg-white\/60,
+html.dark .bg-white\/80 { background-color: #22304a !important; }
+html.dark .bg-slate-50   { background-color: #1a2338 !important; }
+html.dark .bg-slate-100  { background-color: #2b3b58 !important; }
 
-/* Text colors */
-html.dark .text-slate-900 { color: rgb(241 245 249) !important; }
-html.dark .text-slate-800 { color: rgb(226 232 240) !important; }
-html.dark .text-slate-700 { color: rgb(203 213 225) !important; }
-html.dark .text-slate-600 { color: rgb(148 163 184) !important; }
-html.dark .text-slate-500 { color: rgb(100 116 139) !important; }
-html.dark .text-slate-400 { color: rgb(100 116 139) !important; }
+/* Text colors — bumped up brightness a notch so nothing feels dim */
+html.dark .text-slate-900 { color: #f1f5f9 !important; }
+html.dark .text-slate-800 { color: #e2e8f0 !important; }
+html.dark .text-slate-700 { color: #cbd5e1 !important; }
+html.dark .text-slate-600 { color: #94a3b8 !important; }
+html.dark .text-slate-500 { color: #94a3b8 !important; }
+html.dark .text-slate-400 { color: #94a3b8 !important; }
 
 /* Borders */
-html.dark .border-slate-200 { border-color: rgb(30 41 59) !important; }
-html.dark .border-slate-300 { border-color: rgb(51 65 85) !important; }
+html.dark .border-slate-200 { border-color: #384863 !important; }
+html.dark .border-slate-300 { border-color: #4a5b7a !important; }
 
-/* Inputs: darken bg-white forms so text-slate-900 is readable */
+/* Inputs — solid surface so text is readable */
 html.dark input.bg-white,
 html.dark select.bg-white,
-html.dark textarea.bg-white { background-color: #17223a !important; color: rgb(241 245 249) !important; }
+html.dark textarea.bg-white { background-color: #2b3b58 !important; color: #f1f5f9 !important; }
 html.dark input::placeholder,
-html.dark textarea::placeholder { color: rgb(100 116 139) !important; }
+html.dark textarea::placeholder { color: #94a3b8 !important; }
 
-/* Pastel gradient cards (emerald/sky/violet/rose/amber) — mute for dark */
-html.dark .from-emerald-50 { --tw-gradient-from: #052e1f var(--tw-gradient-from-position) !important; }
-html.dark .from-sky-50     { --tw-gradient-from: #082f4a var(--tw-gradient-from-position) !important; }
-html.dark .from-violet-50  { --tw-gradient-from: #1e1b4b var(--tw-gradient-from-position) !important; }
-html.dark .to-white        { --tw-gradient-to:   #111b2e var(--tw-gradient-to-position) !important; }
-html.dark .via-white       { --tw-gradient-via:  #111b2e var(--tw-gradient-via-position) !important; }
-html.dark .border-emerald-200 { border-color: rgba(16, 185, 129, 0.3) !important; }
-html.dark .border-sky-200     { border-color: rgba(14, 165, 233, 0.3) !important; }
-html.dark .border-violet-200  { border-color: rgba(139, 92, 246, 0.3) !important; }
-
-/* Liquid glass on dark */
-html.dark :where(.liquid-glass) {
-  background: #111b2e;
-  border-color: rgb(30 41 59);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.35),
-    0 4px 10px rgba(0, 0, 0, 0.25);
+/* KILL WHITE GRADIENTS on dark — this was the "virtual card" glossy look.
+   Any Tailwind gradient that goes from/via/to white or slate-50 gets flattened
+   to a solid dark card surface. Broad selectors ensure no card slips through. */
+html.dark [class*="from-white"],
+html.dark [class*="via-white"],
+html.dark [class*="to-white"],
+html.dark [class*="from-slate-50"],
+html.dark [class*="via-slate-50"],
+html.dark [class*="to-slate-50"] {
+  background-image: none !important;
+  background-color: #22304a !important;
 }
+
+/* Pastel bento cards (every 50/100 variant used across the app) —
+   flatten to a dark tinted surface. Broad selector so every gradient
+   card gets caught, not just the ones on the landing. */
+html.dark [class*="from-emerald-50"],
+html.dark [class*="from-emerald-100"],
+html.dark [class*="from-sky-50"],
+html.dark [class*="from-sky-100"],
+html.dark [class*="from-violet-50"],
+html.dark [class*="from-indigo-50"],
+html.dark [class*="from-rose-50"],
+html.dark [class*="from-amber-50"] {
+  background-image: none !important;
+}
+html.dark [class*="from-emerald-50"],
+html.dark [class*="from-emerald-100"] { background-color: #17342c !important; }
+html.dark [class*="from-sky-50"],
+html.dark [class*="from-sky-100"]     { background-color: #1b3448 !important; }
+html.dark [class*="from-violet-50"]   { background-color: #2a2547 !important; }
+html.dark [class*="from-indigo-50"]   { background-color: #232447 !important; }
+html.dark [class*="from-rose-50"]     { background-color: #3a2131 !important; }
+html.dark [class*="from-amber-50"]    { background-color: #3a2f14 !important; }
+
+/* Also flatten via/to pastel colors so multi-stop gradients don't leak white */
+html.dark [class*="via-sky-50"],
+html.dark [class*="via-emerald-50"],
+html.dark [class*="via-violet-50"],
+html.dark [class*="via-rose-50"],
+html.dark [class*="via-amber-50"],
+html.dark [class*="to-indigo-50"],
+html.dark [class*="to-pink-50"],
+html.dark [class*="to-rose-50"] {
+  background-image: none !important;
+}
+
+/* Bento card borders */
+html.dark .border-emerald-200 { border-color: rgba(16, 185, 129, 0.35) !important; }
+html.dark .border-sky-200     { border-color: rgba(56, 189, 248, 0.35) !important; }
+html.dark .border-violet-200  { border-color: rgba(139, 92, 246, 0.35) !important; }
+html.dark .border-brand\/30   { border-color: rgba(56, 189, 248, 0.4) !important; }
+
+/* Bento card mini-badge chips + extra pastel borders */
+html.dark .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.20) !important; }
+html.dark .bg-sky-100     { background-color: rgba(56, 189, 248, 0.20) !important; }
+html.dark .bg-violet-100  { background-color: rgba(139, 92, 246, 0.20) !important; }
+html.dark .bg-amber-100   { background-color: rgba(251, 191, 36, 0.20) !important; }
+html.dark .bg-indigo-100  { background-color: rgba(129, 140, 248, 0.20) !important; }
+html.dark .bg-rose-100    { background-color: rgba(244, 114, 182, 0.20) !important; }
+html.dark .text-emerald-800 { color: #6ee7b7 !important; }
+html.dark .text-sky-800     { color: #7dd3fc !important; }
+html.dark .text-violet-800  { color: #c4b5fd !important; }
+html.dark .text-amber-800   { color: #fcd34d !important; }
+html.dark .text-indigo-800  { color: #a5b4fc !important; }
+html.dark .text-rose-800    { color: #fda4af !important; }
+html.dark .text-emerald-900,
+html.dark .text-emerald-700 { color: #6ee7b7 !important; }
+html.dark .text-sky-900,
+html.dark .text-sky-700     { color: #7dd3fc !important; }
+html.dark .text-violet-900,
+html.dark .text-violet-700  { color: #c4b5fd !important; }
+html.dark .text-amber-900,
+html.dark .text-amber-700   { color: #fcd34d !important; }
+html.dark .text-rose-900,
+html.dark .text-rose-700    { color: #fda4af !important; }
+
+/* Extra pastel borders (amber/indigo/rose/pink) */
+html.dark .border-amber-200  { border-color: rgba(251, 191, 36, 0.35) !important; }
+html.dark .border-amber-300  { border-color: rgba(251, 191, 36, 0.45) !important; }
+html.dark .border-indigo-200 { border-color: rgba(129, 140, 248, 0.35) !important; }
+html.dark .border-rose-200   { border-color: rgba(244, 114, 182, 0.35) !important; }
+
+/* Amber alert cards + emerald success banners keep their tint */
+html.dark .bg-amber-50\/60,
+html.dark .bg-amber-50 { background-color: rgba(251, 191, 36, 0.08) !important; }
+html.dark .bg-emerald-50\/60,
+html.dark .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.08) !important; }
+html.dark .bg-rose-50\/60,
+html.dark .bg-rose-50 { background-color: rgba(244, 114, 182, 0.08) !important; }
+html.dark .bg-sky-50\/60,
+html.dark .bg-sky-50 { background-color: rgba(56, 189, 248, 0.08) !important; }
+
+/* Liquid glass on dark — soft card, no glossy white */
+html.dark :where(.liquid-glass) {
+  background: #22304a;
+  border-color: #384863;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Hover state cleanup */
+html.dark .hover\:bg-slate-100:hover { background-color: #2b3b58 !important; }
+html.dark .bg-brand\/5  { background-color: rgba(56, 189, 248, 0.08) !important; }
+html.dark .bg-brand\/10 { background-color: rgba(56, 189, 248, 0.15) !important; }
