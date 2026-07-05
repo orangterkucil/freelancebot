@@ -91,14 +91,15 @@ body { background-color: #f7fafc; }
    already high-contrast (emerald/sky/violet pastels look fine on dark).
    ======================================================================= */
 
-/* Dark palette — v0.14.3 tuned brighter after user said prev was "redup":
-   - body:     #1e2a44 (medium-bright slate, lively but not glaring)
-   - surface:  #26344f (cards)
-   - elevated: #2f405f (inputs, chips)
-   - border:   #4a5b7a (clearly visible)
-   - text:     #f1f5f9 primary, #cbd5e1 secondary                       */
+/* Dark palette — v0.14.4 aggressive brighten (user: "masih redup").
+   Body stays medium-dark, cards jump MUCH lighter so contrast pops.
+   - body:     #1c2842 (medium slate)
+   - surface:  #37476b (BIG jump — clearly a raised card, not a swatch)
+   - elevated: #445775 (inputs, chips)
+   - border:   #607499 (visible, not shy)
+   - text:     #ffffff primary, #dbe4ee secondary                       */
 html.dark { color-scheme: dark; }
-html.dark body { background-color: #1e2a44; color: #f1f5f9; }
+html.dark body { background-color: #1c2842; color: #ffffff; }
 
 /* Space + warm gradient panels — brighter tinted radial glow */
 html.dark .bg-space {
