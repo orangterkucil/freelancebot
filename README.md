@@ -36,22 +36,12 @@
 </video>
 
 <p align="center">
-  <a href="https://freelancebot-alpha.vercel.app/demo.mp4">
-    <img src="./public/marketplace-flow.gif" alt="FreelanceBot marketplace flow — click to play the 90-second walkthrough" width="100%" />
+  <a href="https://freelancebot-alpha.vercel.app/demo-reel.html">
+    <img src="./public/marketplace-flow.gif" alt="FreelanceBot marketplace flow — click to open the full demo reel" width="100%" />
   </a>
 </p>
 
-<p align="center">
-  <b>▶ 90-second narrated walkthrough</b><br/>
-  ElevenLabs Roger voice-over · lofi background music<br/>
-  <sub>Landing → Marketplace → Filter by field → Apply → Escrow verdict</sub>
-</p>
-
-<p align="center">
-  <a href="https://freelancebot-alpha.vercel.app/demo-reel.html"><b>▶ Watch the full demo reel →</b></a> &nbsp;·&nbsp;
-  <a href="https://freelancebot-alpha.vercel.app/demo.mp4"><b>Direct MP4 →</b></a> &nbsp;·&nbsp;
-  <a href="https://freelancebot-alpha.vercel.app"><b>Open live app →</b></a>
-</p>
+**FreelanceBot** replaces the 14-day PayPal → SWIFT → local-bank chain with a single on-chain escrow. A client posts a job, funds it in USDC on Arc with one signature, and locks the money in a verified smart contract. An AI agent (Groq Llama 3.3 70B) reviews the deliverable — checks URL reachability, deadline match, and brief alignment — and returns a structured JSON verdict. When the client approves, USDC settles to the freelancer in **under one second**. A $300 job that used to net $220 in 14 days now nets **$297 in 0.8 seconds**.
 
 ## Features
 
