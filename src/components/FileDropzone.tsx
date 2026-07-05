@@ -108,7 +108,7 @@ export function FileDropzone({
         onClick={() => !disabled && inputRef.current?.click()}
         className={
           "cursor-pointer rounded-xl border-2 border-dashed p-5 text-center transition-colors " +
-          (drag ? "border-brand bg-sky-50" : "border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 hover:border-brand hover:bg-sky-50/50") +
+          (drag ? "border-brand bg-sky-50" : "border-slate-300 bg-slate-50 hover:border-brand hover:bg-sky-50/50") +
           (disabled ? " pointer-events-none opacity-50" : "")
         }
       >
@@ -125,12 +125,12 @@ export function FileDropzone({
           {busy ? (
             <Loader2 className="h-5 w-5 animate-spin text-brand" />
           ) : (
-            <Upload className="h-5 w-5 text-slate-500 dark:text-slate-400" />
+            <Upload className="h-5 w-5 text-slate-500" />
           )}
-          <p className="font-mono text-[11px] uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-slate-700">
             {busy ? "Uploading…" : "Drop files or click to upload"}
           </p>
-          <p className="font-mono text-[10px] tracking-wide text-slate-400 dark:text-slate-500">
+          <p className="font-mono text-[10px] tracking-wide text-slate-400">
             Up to {MAX_FILES} files · {MAX_SIZE_MB} MB each · images, PDF, doc, csv, zip
           </p>
         </div>
@@ -145,17 +145,17 @@ export function FileDropzone({
           {value.map((a, i) => (
             <li
               key={a.url}
-              className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2"
+              className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2"
             >
               <a
                 href={a.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex min-w-0 flex-1 items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-brand"
+                className="flex min-w-0 flex-1 items-center gap-2 text-slate-700 hover:text-brand"
               >
                 <FileTypeIcon contentType={a.content_type} />
                 <span className="truncate font-mono text-xs">{a.filename}</span>
-                <span className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                <span className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-slate-400">
                   {formatBytes(a.size_bytes)}
                 </span>
               </a>
@@ -163,7 +163,7 @@ export function FileDropzone({
                 <button
                   type="button"
                   onClick={() => remove(i)}
-                  className="grid h-7 w-7 place-items-center rounded-md border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 transition-colors hover:border-rose-400 hover:text-rose-600"
+                  className="grid h-7 w-7 place-items-center rounded-md border border-slate-200 text-slate-500 transition-colors hover:border-rose-400 hover:text-rose-600"
                   aria-label={`Remove ${a.filename}`}
                 >
                   <X className="h-3.5 w-3.5" />
@@ -178,10 +178,10 @@ export function FileDropzone({
 }
 
 function FileTypeIcon({ contentType }: { contentType: string }) {
-  if (contentType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
-  if (contentType.includes("pdf"))      return <FileText className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
-  if (contentType.includes("text"))     return <FileText className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
-  return <FileIcon className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
+  if (contentType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-slate-400" />;
+  if (contentType.includes("pdf"))      return <FileText className="h-4 w-4 text-slate-400" />;
+  if (contentType.includes("text"))     return <FileText className="h-4 w-4 text-slate-400" />;
+  return <FileIcon className="h-4 w-4 text-slate-400" />;
 }
 
 function formatBytes(n: number): string {

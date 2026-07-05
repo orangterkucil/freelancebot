@@ -34,24 +34,24 @@ const SECTIONS = [
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-      <header className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-landing items-center justify-between gap-3 px-5 py-3 lg:px-12">
           <Link href="/" className="group flex items-center gap-2.5">
             <Image src="/logo-mark.svg" alt="FreelanceBot" width={32} height={32} className="transition-transform group-hover:scale-105" />
-            <span className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">FreelanceBot</span>
-            <span className="hidden rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-1.5 py-px font-mono text-[9px] uppercase text-slate-500 dark:text-slate-400 sm:inline-block">
+            <span className="font-display text-sm uppercase tracking-wider text-slate-900">FreelanceBot</span>
+            <span className="hidden rounded-full border border-slate-200 bg-white px-1.5 py-px font-mono text-[9px] uppercase text-slate-500 sm:inline-block">
               docs · v0.11.0
             </span>
           </Link>
           <nav className="flex items-center gap-4">
-            <Link href="/client" className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:text-brand">Demo</Link>
-            <Link href="/jobs"   className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:text-brand">Marketplace</Link>
+            <Link href="/client" className="font-display text-[12px] uppercase tracking-wider text-slate-600 hover:text-brand">Demo</Link>
+            <Link href="/jobs"   className="font-display text-[12px] uppercase tracking-wider text-slate-600 hover:text-brand">Marketplace</Link>
             <a
               href="https://github.com/orangterkucil/freelancebot"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:text-brand"
+              className="font-display text-[12px] uppercase tracking-wider text-slate-600 hover:text-brand"
             >
               GitHub ↗
             </a>
@@ -62,24 +62,24 @@ export default function DocsPage() {
       <div className="mx-auto grid max-w-landing grid-cols-1 lg:grid-cols-[260px_1fr] lg:gap-10 px-5 lg:px-12">
         {/* TOC */}
         <aside className="lg:sticky lg:top-[60px] lg:h-[calc(100vh-60px)] py-8 lg:py-12">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">On this page</p>
+          <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">On this page</p>
           <nav className="mt-4 space-y-1">
             {SECTIONS.map((s) => (
               <a
                 key={s.id}
                 href={`#${s.id}`}
-                className="group flex items-center gap-2 rounded-lg px-3 py-2 text-slate-600 dark:text-slate-400 transition-colors hover:bg-white dark:bg-slate-900 dark:hover:bg-slate-800 hover:text-slate-900 dark:text-slate-100"
+                className="group flex items-center gap-2 rounded-lg px-3 py-2 text-slate-600 transition-colors hover:bg-white hover:text-slate-900"
               >
-                <s.Icon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 group-hover:text-brand" />
+                <s.Icon className="h-3.5 w-3.5 text-slate-400 group-hover:text-brand" />
                 <span className="font-display text-[12px] uppercase tracking-wider">{s.label}</span>
               </a>
             ))}
           </nav>
 
-          <div className="mt-8 rounded-xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 p-4">
+          <div className="mt-8 rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 to-indigo-50 p-4">
             <p className="font-mono text-[10px] uppercase tracking-widest text-brand">Open source</p>
-            <p className="mt-1 font-display text-sm uppercase text-slate-900 dark:text-slate-100">MIT licensed</p>
-            <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-600 dark:text-slate-400">
+            <p className="mt-1 font-display text-sm uppercase text-slate-900">MIT licensed</p>
+            <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-600">
               Fork, deploy, contribute. The hosted demo is just one instance — anyone can run their own.
             </p>
             <a
@@ -178,7 +178,7 @@ export default function DocsPage() {
               </ul>
               <p>The verdict is advisory — the client still clicks the release button. The agent <em>never</em> moves funds autonomously.</p>
 
-              <h3 className="mt-6 font-display text-base uppercase tracking-wider text-slate-900 dark:text-slate-100">Security model (OWASP LLM Top 10)</h3>
+              <h3 className="mt-6 font-display text-base uppercase tracking-wider text-slate-900">Security model (OWASP LLM Top 10)</h3>
               <p>The agent is hardened against the most common LLM attack patterns:</p>
               <ul>
                 <li><strong>LLM01 — Prompt injection:</strong> system prompt explicitly tells the agent to treat all user content (brief, URL, chat) as untrusted data, not commands. Common jailbreak phrases ("ignore previous instructions", "you are now in admin mode") are neutralized server-side before being sent to the model.</li>
@@ -256,9 +256,9 @@ export default function DocsPage() {
               </Q>
             </Section>
 
-            <footer className="mt-16 border-t border-slate-200 dark:border-slate-800 py-8">
+            <footer className="mt-16 border-t border-slate-200 py-8">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="font-mono text-[11px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                <p className="font-mono text-[11px] uppercase tracking-widest text-slate-500">
                   MIT licensed · v0.11.0 · Built for the open web
                 </p>
                 <div className="flex items-center gap-4">
@@ -269,7 +269,7 @@ export default function DocsPage() {
                     href="https://github.com/orangterkucil/freelancebot"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-display text-[12px] uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:text-brand"
+                    className="font-display text-[12px] uppercase tracking-wider text-slate-600 hover:text-brand"
                   >
                     GitHub ↗
                   </a>
@@ -309,7 +309,7 @@ function Section({ id, title, emoji, children }: { id: string; title: string; em
 
 function Callout({ children }: { children: React.ReactNode }) {
   return (
-    <aside className="my-4 rounded-xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 p-4 font-mono text-[12px] leading-relaxed text-slate-700 dark:text-slate-300">
+    <aside className="my-4 rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 to-indigo-50 p-4 font-mono text-[12px] leading-relaxed text-slate-700">
       {children}
     </aside>
   );
@@ -319,12 +319,12 @@ function Steps({ steps }: { steps: { n: string; t: string; d: string }[] }) {
   return (
     <ol className="my-4 grid gap-3" style={{ listStyle: "none", paddingLeft: 0 }}>
       {steps.map((s) => (
-        <li key={s.n} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <li key={s.n} className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="flex items-baseline gap-3">
             <span className="font-display text-xs uppercase tracking-widest text-brand">{s.n}</span>
-            <p className="m-0 font-display text-base uppercase text-slate-900 dark:text-slate-100">{s.t}</p>
+            <p className="m-0 font-display text-base uppercase text-slate-900">{s.t}</p>
           </div>
-          <p className="m-0 mt-1 font-mono text-[12px] leading-relaxed text-slate-600 dark:text-slate-400">{s.d}</p>
+          <p className="m-0 mt-1 font-mono text-[12px] leading-relaxed text-slate-600">{s.d}</p>
         </li>
       ))}
     </ol>
@@ -333,9 +333,9 @@ function Steps({ steps }: { steps: { n: string; t: string; d: string }[] }) {
 
 function Q({ q, children }: { q: string; children: React.ReactNode }) {
   return (
-    <details className="my-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
-      <summary className="cursor-pointer font-display text-sm uppercase text-slate-900 dark:text-slate-100">{q}</summary>
-      <div className="mt-3 font-mono text-[12px] leading-relaxed text-slate-600 dark:text-slate-400">{children}</div>
+    <details className="my-3 rounded-xl border border-slate-200 bg-white p-4">
+      <summary className="cursor-pointer font-display text-sm uppercase text-slate-900">{q}</summary>
+      <div className="mt-3 font-mono text-[12px] leading-relaxed text-slate-600">{children}</div>
     </details>
   );
 }

@@ -18,8 +18,8 @@ export function AttachmentsList({
 
   if (!canSee) {
     return (
-      <div className={"rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 " + className}>
-        <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+      <div className={"rounded-xl border border-slate-200 bg-slate-50 p-3" + className}>
+        <div className="flex items-center gap-2 text-slate-500">
           <Lock className="h-3.5 w-3.5" />
           <span className="font-mono text-[11px] uppercase tracking-wider">
             {attachments.length} attachment{attachments.length === 1 ? "" : "s"} · sign in as a party to view
@@ -42,7 +42,7 @@ export function AttachmentsList({
               href={a.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative block aspect-square overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800"
+              className="group relative block aspect-square overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -67,17 +67,17 @@ export function AttachmentsList({
                 href={a.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 transition-colors hover:border-brand hover:bg-sky-50"
+                className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 transition-colors hover:border-brand hover:bg-sky-50"
               >
-                <span className="flex min-w-0 flex-1 items-center gap-2 text-slate-700 dark:text-slate-300">
+                <span className="flex min-w-0 flex-1 items-center gap-2 text-slate-700">
                   <FileTypeIcon contentType={a.content_type} />
                   <span className="truncate font-mono text-xs">{a.filename}</span>
                 </span>
                 <span className="flex shrink-0 items-center gap-2">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
                     {formatBytes(a.size_bytes)}
                   </span>
-                  <Download className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                  <Download className="h-3.5 w-3.5 text-slate-400" />
                 </span>
               </a>
             </li>
@@ -89,10 +89,10 @@ export function AttachmentsList({
 }
 
 function FileTypeIcon({ contentType }: { contentType: string }) {
-  if (contentType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
-  if (contentType.includes("pdf"))      return <FileText className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
-  if (contentType.includes("text"))     return <FileText className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
-  return <FileIcon className="h-4 w-4 text-slate-400 dark:text-slate-500" />;
+  if (contentType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-slate-400" />;
+  if (contentType.includes("pdf"))      return <FileText className="h-4 w-4 text-slate-400" />;
+  if (contentType.includes("text"))     return <FileText className="h-4 w-4 text-slate-400" />;
+  return <FileIcon className="h-4 w-4 text-slate-400" />;
 }
 
 function formatBytes(n: number): string {

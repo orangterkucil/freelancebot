@@ -76,7 +76,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
       title="Freelancer dashboard"
       subtitle={
         <>
-          Signed in as <span className="text-slate-700 dark:text-slate-300">{email}</span>
+          Signed in as <span className="text-slate-700">{email}</span>
           {" · "}
           <button onClick={signOut} className="text-brand hover:underline">switch</button>
         </>
@@ -92,19 +92,19 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
 
       {/* Two ways for freelancers to find work: browse jobs OR post their own service */}
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-3 rounded-2xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-5 shadow-sm dark:border-sky-800/50 dark:from-sky-950/30 dark:via-slate-900 dark:to-indigo-950/30">
+        <div className="flex flex-col gap-3 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-5 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-900 dark:bg-slate-800 shadow-sm ring-1 ring-sky-200 dark:ring-sky-800/50">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white shadow-sm ring-1 ring-sky-200">
               <Sparkles className="h-5 w-5 text-brand" />
             </div>
             <div>
               <p className="font-mono text-[11px] uppercase tracking-widest text-brand">
                 Browse the marketplace
               </p>
-              <p className="mt-1 font-display text-base uppercase text-slate-900 dark:text-slate-100">
+              <p className="mt-1 font-display text-base uppercase text-slate-900">
                 Find open jobs
               </p>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-slate-500">
                 Filter by field, budget, deadline. Apply with one click.
               </p>
             </div>
@@ -117,26 +117,26 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
           </Link>
         </div>
 
-        <div className="flex flex-col gap-3 rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-pink-50 p-5 shadow-sm dark:border-violet-800/50 dark:from-violet-950/30 dark:via-slate-900 dark:to-pink-950/30">
+        <div className="flex flex-col gap-3 rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-pink-50 p-5 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white dark:bg-slate-900 dark:bg-slate-800 shadow-sm ring-1 ring-violet-200 dark:ring-violet-800/50">
-              <Megaphone className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white shadow-sm ring-1 ring-violet-200">
+              <Megaphone className="h-5 w-5 text-violet-600" />
             </div>
             <div>
-              <p className="font-mono text-[11px] uppercase tracking-widest text-violet-600 dark:text-violet-400">
+              <p className="font-mono text-[11px] uppercase tracking-widest text-violet-600">
                 Offer your services
               </p>
-              <p className="mt-1 font-display text-base uppercase text-slate-900 dark:text-slate-100">
+              <p className="mt-1 font-display text-base uppercase text-slate-900">
                 Post a service listing
               </p>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-slate-500">
                 Clients browse services and hire you. Reverse marketplace.
               </p>
             </div>
           </div>
           <button
             onClick={() => setShowPostService((s) => !s)}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-300 bg-white dark:bg-slate-900 dark:bg-slate-800 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-violet-700 dark:text-violet-300 shadow-sm transition-colors hover:border-violet-500 dark:border-violet-800/50 self-start"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-300 bg-white px-4 py-2.5 font-display text-xs uppercase tracking-wider text-violet-700 shadow-sm transition-colors hover:border-violet-500 self-start"
           >
             <Plus className="h-4 w-4" />
             {showPostService ? "Close" : "Post a service"}
@@ -156,21 +156,21 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
 
       <section className="mt-10">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="font-display text-xl uppercase text-slate-900 dark:text-slate-100">My orders</h2>
+          <h2 className="font-display text-xl uppercase text-slate-900">My orders</h2>
 
           {orders.length > 0 && (
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search brief, client, ID..."
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 py-2 pl-9 pr-3 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand sm:w-72"
+                  className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand sm:w-72"
                 />
               </div>
-              <div className="flex gap-1 overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
+              <div className="flex gap-1 overflow-x-auto rounded-lg border border-slate-200 bg-white p-1">
                 {STATUS_FILTERS.map((f) => (
                   <button
                     key={f.value}
@@ -179,7 +179,7 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
                       "shrink-0 rounded-md px-3 py-1 font-mono text-[10px] uppercase tracking-wider transition-colors " +
                       (statusFilter === f.value
                         ? "bg-brand text-white shadow-sm"
-                        : "text-slate-600 hover:text-slate-900 dark:text-slate-100 hover:bg-slate-100")
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100")
                     }
                   >
                     {f.label}
@@ -191,8 +191,8 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
         </div>
 
         {loading && (
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-            <p className="font-mono text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Loading…</p>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+            <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
           </div>
         )}
 
@@ -203,14 +203,14 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
         )}
 
         {!loading && !error && orders.length === 0 && (
-          <div className="rounded-3xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-10 text-center shadow-sm">
-            <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
+          <div className="rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm">
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md ring-1 ring-sky-200">
               <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
             </div>
-            <h3 className="mt-5 font-display text-xl uppercase text-slate-900 dark:text-slate-100">
+            <h3 className="mt-5 font-display text-xl uppercase text-slate-900">
               No incoming orders yet
             </h3>
-            <p className="mx-auto mt-2 max-w-sm font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600 dark:text-slate-400">
+            <p className="mx-auto mt-2 max-w-sm font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600">
               Browse the public marketplace and apply to open jobs.
             </p>
             <Link
@@ -223,8 +223,8 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
         )}
 
         {!loading && !error && orders.length > 0 && filtered.length === 0 && (
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center">
-            <p className="font-mono text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center">
+            <p className="font-mono text-xs uppercase tracking-wider text-slate-500">
               No orders match this filter.
             </p>
             <button
@@ -258,17 +258,17 @@ function Stat({
   accent?: "sky" | "amber" | "emerald" | "indigo";
 }) {
   const accentMap = {
-    sky:     "from-sky-50 to-white dark:from-sky-950/40 dark:to-slate-900 text-sky-700 dark:text-sky-300 ring-sky-200 dark:ring-sky-800/50",
-    amber:   "from-amber-50 to-white dark:from-amber-950/40 dark:to-slate-900 text-amber-700 dark:text-amber-300 ring-amber-200 dark:ring-amber-800/50",
-    emerald: "from-emerald-50 to-white dark:from-emerald-950/40 dark:to-slate-900 text-emerald-700 dark:text-emerald-300 ring-emerald-200 dark:ring-emerald-800/50",
-    indigo:  "from-indigo-50 to-white dark:from-indigo-950/40 dark:to-slate-900 text-indigo-700 dark:text-indigo-300 ring-indigo-200 dark:ring-indigo-800/50",
+    sky:     "from-sky-50 to-white text-sky-700 ring-sky-200",
+    amber:   "from-amber-50 to-white text-amber-700 ring-amber-200",
+    emerald: "from-emerald-50 to-white text-emerald-700 ring-emerald-200",
+    indigo:  "from-indigo-50 to-white text-indigo-700 ring-indigo-200",
   };
   return (
     <div className={`relative rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm ${accentMap[accent]}`}>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
       <p className="mt-1 font-display text-2xl">
         {value}
-        {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">{sub}</span>}
+        {sub && <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">{sub}</span>}
       </p>
     </div>
   );

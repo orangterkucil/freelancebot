@@ -74,6 +74,7 @@ export function createOrder(body: {
   client_links?: ClientLinks;
   amount_usdc: number;
   deadline?: string | null;
+  poster_role?: "client" | "freelancer";
 }) {
   return jsonFetch<{ order: Order }>(`/api/orders`, {
     method: "POST",

@@ -41,7 +41,7 @@ export function RatingStars({
         );
       })}
       {showNumber && (
-        <span className="ml-1 font-mono text-[10px] tabular-nums text-slate-600 dark:text-slate-400">
+        <span className="ml-1 font-mono text-[10px] tabular-nums text-slate-600">
           {v.toFixed(1)}
         </span>
       )}

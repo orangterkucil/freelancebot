@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { LiveJobsPreview } from "@/components/LiveJobsPreview";
 import { LangPicker } from "@/components/LangPicker";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useT } from "@/lib/i18n";
 
 /**
@@ -25,33 +26,27 @@ import { useT } from "@/lib/i18n";
  * jarring transition at app boundary.
  */
 export default function Home() {
-  // Landing page always renders in light mode. Force-remove any .dark class
-  // that the user may have set in Settings — the marketing homepage should be
-  // consistent across all visitors (bright, catchy, high-contrast).
-  if (typeof document !== "undefined") {
-    document.documentElement.classList.remove("dark");
-  }
   return (
-    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased">
+    <div className="bg-slate-50 text-slate-900 antialiased">
       <HeroSection />
       <AboutSection />
       <FlowSection />
       <LiveJobsPreview />
       <CtaSection />
 
-      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-10 text-center">
-        <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+      <footer className="border-t border-slate-200 bg-white py-10 text-center">
+        <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
           MIT licensed · Open source · v0.13.0 ·{" "}
           <a
             href="https://github.com/orangterkucil/freelancebot"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-600 dark:text-slate-400 hover:text-brand"
+            className="text-slate-600 hover:text-brand"
           >
             GitHub
           </a>{" "}
           ·{" "}
-          <Link href="/docs" className="text-slate-600 dark:text-slate-400 hover:text-brand">
+          <Link href="/docs" className="text-slate-600 hover:text-brand">
             Docs
           </Link>
         </p>
@@ -79,7 +74,7 @@ function HeroSection() {
               className="drop-shadow-sm transition-transform group-hover:scale-105"
             />
             <div className="flex flex-col leading-none">
-              <span className="font-display text-base uppercase tracking-wider text-slate-900 dark:text-slate-100">
+              <span className="font-display text-base uppercase tracking-wider text-slate-900">
                 FreelanceBot
               </span>
               <span className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-brand">
@@ -89,7 +84,7 @@ function HeroSection() {
           </Link>
 
           <div className="hidden items-center gap-2 lg:flex">
-            <nav className="rounded-full border border-slate-200 dark:border-slate-800 bg-white/90 px-6 py-2.5 shadow-sm backdrop-blur">
+            <nav className="rounded-full border border-slate-200 bg-white/90 px-6 py-2.5 shadow-sm backdrop-blur">
               <ul className="flex items-center gap-6">
                 {[
                   { href: "#flow",   label: t("nav.howItWorks") },
@@ -101,7 +96,7 @@ function HeroSection() {
                   <li key={l.label}>
                     <a
                       href={l.href}
-                      className="font-display text-[12px] uppercase tracking-wider text-slate-700 dark:text-slate-300 transition-colors hover:text-brand"
+                      className="font-display text-[12px] uppercase tracking-wider text-slate-700 transition-colors hover:text-brand"
                     >
                       {l.label}
                     </a>
@@ -111,6 +106,7 @@ function HeroSection() {
             </nav>
 
             <LangPicker />
+            <ThemeToggle compact />
 
             <div className="flex items-center gap-1.5">
               {[
@@ -123,7 +119,7 @@ function HeroSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 dark:border-slate-800 bg-white/90 text-slate-600 dark:text-slate-400 shadow-sm backdrop-blur transition-colors hover:border-brand hover:text-brand"
+                  className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:border-brand hover:text-brand"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -133,11 +129,11 @@ function HeroSection() {
         </header>
 
         <div className="relative mt-14 lg:mt-20 lg:ml-32">
-          <h1 className="font-display text-[40px] uppercase leading-[1.05] tracking-tight sm:text-6xl md:text-[75px] lg:text-[90px] lg:leading-[1] max-w-[820px] text-slate-900 dark:text-slate-100">
+          <h1 className="font-display text-[40px] uppercase leading-[1.05] tracking-tight sm:text-6xl md:text-[75px] lg:text-[90px] lg:leading-[1] max-w-[820px] text-slate-900">
             {t("hero.line1")}
             <br />
             {t("hero.line2")}&nbsp;
-            <span className="text-slate-500 dark:text-slate-400">(&nbsp;{t("hero.line3")}&nbsp;)</span>
+            <span className="text-slate-500">(&nbsp;{t("hero.line3")}&nbsp;)</span>
             &nbsp;{t("hero.line4")}
           </h1>
 
@@ -148,7 +144,7 @@ function HeroSection() {
             {t("hero.script")}
           </span>
 
-          <p className="mt-8 max-w-xl font-mono text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
+          <p className="mt-8 max-w-xl font-mono text-sm leading-relaxed text-slate-600 sm:text-base">
             {t("hero.subtitle1")}
             <br className="hidden sm:block" />
             {t("hero.subtitle2")}
@@ -194,7 +190,7 @@ function HeroSection() {
             </Link>
             <Link
               href="/docs"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 dark:text-slate-300 shadow-sm transition-colors hover:border-brand hover:text-brand"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 shadow-sm transition-colors hover:border-brand hover:text-brand"
             >
               <Sparkles className="h-4 w-4" />
               {t("hero.cta.docs")}
@@ -208,9 +204,9 @@ function HeroSection() {
               { v: "75M+",  l: t("stats.asiaFreelancers") },
               { v: "$0",    l: t("stats.vcRaised") },
             ].map((s) => (
-              <div key={s.l} className="border-l border-slate-200 dark:border-slate-800 pl-3">
+              <div key={s.l} className="border-l border-slate-200 pl-3">
                 <p className="font-display text-2xl text-brand sm:text-3xl">{s.v}</p>
-                <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-slate-500">
                   {s.l}
                 </p>
               </div>
@@ -229,7 +225,7 @@ function HeroSection() {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm"
+              className="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 bg-white shadow-sm"
             >
               <Icon className="h-5 w-5" />
             </a>
@@ -373,10 +369,10 @@ function FlowSection() {
   ];
 
   return (
-    <section id="flow" className="relative bg-slate-50 dark:bg-slate-950 py-20 sm:py-28 lg:py-32">
+    <section id="flow" className="relative bg-slate-50 py-20 sm:py-28 lg:py-32">
       <div className="mx-auto max-w-landing px-6 lg:px-12">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-          <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-[60px]">
+          <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 sm:text-5xl lg:text-[60px]">
             How it
             <br className="lg:hidden" />
             <span className="ml-12 sm:ml-24 lg:ml-32">
@@ -387,18 +383,18 @@ function FlowSection() {
 
           <Link href="/client" className="group block">
             <div className="flex items-end gap-3">
-              <span className="font-display text-3xl uppercase tracking-wider text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-[60px]">
+              <span className="font-display text-3xl uppercase tracking-wider text-slate-900 sm:text-5xl lg:text-[60px]">
                 Run
               </span>
               <div className="flex flex-col">
-                <span className="font-display text-xl uppercase tracking-wider text-slate-700 dark:text-slate-300 sm:text-2xl lg:text-3xl">
+                <span className="font-display text-xl uppercase tracking-wider text-slate-700 sm:text-2xl lg:text-3xl">
                   the
                 </span>
-                <span className="font-display text-xl uppercase tracking-wider text-slate-700 dark:text-slate-300 sm:text-2xl lg:text-3xl">
+                <span className="font-display text-xl uppercase tracking-wider text-slate-700 sm:text-2xl lg:text-3xl">
                   demo
                 </span>
               </div>
-              <ArrowRight className="ml-1 mb-1 h-6 w-6 text-slate-900 dark:text-slate-100 transition-transform group-hover:translate-x-1 sm:h-8 sm:w-8" />
+              <ArrowRight className="ml-1 mb-1 h-6 w-6 text-slate-900 transition-transform group-hover:translate-x-1 sm:h-8 sm:w-8" />
             </div>
             <div className="mt-3 h-1.5 w-full bg-brand sm:h-2 lg:h-2.5" />
           </Link>
@@ -411,25 +407,25 @@ function FlowSection() {
               href={s.href}
               className="liquid-glass group block rounded-[32px] p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
             >
-              <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-[24px] bg-gradient-to-br from-sky-50 via-white to-slate-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-slate-950">
-                <div className="absolute inset-8 rounded-full border border-slate-200 dark:border-slate-800" />
-                <div className="absolute inset-16 rounded-full border border-slate-200 dark:border-slate-800" />
+              <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-[24px] bg-gradient-to-br from-sky-50 via-white to-slate-50">
+                <div className="absolute inset-8 rounded-full border border-slate-200" />
+                <div className="absolute inset-16 rounded-full border border-slate-200" />
                 <div
                   className="absolute h-2 w-2 animate-flow rounded-full bg-brand shadow-[0_0_16px_rgba(14,165,233,0.5)]"
                   style={{ top: `${20 + idx * 20}%`, left: `${30 + idx * 15}%` }}
                 />
-                <span className="absolute left-5 top-4 font-display text-[11px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                <span className="absolute left-5 top-4 font-display text-[11px] uppercase tracking-widest text-slate-400">
                   Step {String(idx + 1).padStart(2, "0")}
                 </span>
-                <s.Icon className="h-20 w-20 text-slate-500 dark:text-slate-400 transition-transform group-hover:scale-110" strokeWidth={1.2} />
+                <s.Icon className="h-20 w-20 text-slate-500 transition-transform group-hover:scale-110" strokeWidth={1.2} />
               </div>
 
-              <div className="mt-4 flex items-center justify-between gap-3 rounded-[20px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-4">
+              <div className="mt-4 flex items-center justify-between gap-3 rounded-[20px] border border-slate-200 bg-white px-5 py-4">
                 <div className="min-w-0">
-                  <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
                     {s.kpiLabel}
                   </p>
-                  <p className="font-display text-base uppercase text-slate-900 dark:text-slate-100">{s.kpi}</p>
+                  <p className="font-display text-base uppercase text-slate-900">{s.kpi}</p>
                 </div>
                 <div className="grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-brand to-brand-dark shadow-md shadow-brand/40 transition-transform group-hover:scale-110">
                   <ChevronRight className="h-5 w-5 text-white" strokeWidth={3} />
@@ -437,8 +433,8 @@ function FlowSection() {
               </div>
 
               <div className="mt-4 px-1">
-                <p className="font-display text-2xl uppercase text-slate-900 dark:text-slate-100">{s.title}</p>
-                <p className="mt-2 font-mono text-[11px] uppercase leading-relaxed text-slate-500 dark:text-slate-400">
+                <p className="font-display text-2xl uppercase text-slate-900">{s.title}</p>
+                <p className="mt-2 font-mono text-[11px] uppercase leading-relaxed text-slate-500">
                   {s.desc}
                 </p>
               </div>
@@ -457,7 +453,7 @@ function CtaSection() {
   return (
     <section className="relative overflow-hidden bg-space py-24 sm:py-28 lg:py-36">
       <div className="relative mx-auto grid max-w-landing grid-cols-1 items-center gap-16 px-6 lg:grid-cols-[auto_1fr] lg:gap-24 lg:px-12">
-        <div className="mx-auto w-fit flex-shrink-0 flex flex-col rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm lg:mx-0">
+        <div className="mx-auto w-fit flex-shrink-0 flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm lg:mx-0">
           {[
             { Icon: Mail,    href: "mailto:orangterkucil@gmail.com", label: "Email" },
             { Icon: Twitter, href: "https://x.com/geografinist",      label: "Twitter" },
@@ -470,7 +466,7 @@ function CtaSection() {
               rel="noopener noreferrer"
               aria-label={label}
               className={
-                "grid h-16 w-16 place-items-center text-slate-700 dark:text-slate-300 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 dark:bg-slate-950 hover:text-brand" +
+                "grid h-16 w-16 place-items-center text-slate-700 transition-colors hover:bg-slate-50 hover:text-brand" +
                 (i < arr.length - 1 ? " border-b border-slate-200" : "")
               }
             >
@@ -487,7 +483,7 @@ function CtaSection() {
             Go beyond
           </span>
 
-          <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-[64px]">
+          <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 sm:text-5xl lg:text-[64px]">
             <span className="block">Join us.</span>
             <span className="block">Fork the repo.</span>
             <span className="block">Ship your own.</span>
@@ -504,7 +500,7 @@ function CtaSection() {
             </Link>
             <Link
               href="/docs"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 dark:text-slate-300 transition-colors hover:border-brand hover:text-brand"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-4 font-display text-sm uppercase tracking-wider text-slate-700 transition-colors hover:border-brand hover:text-brand"
             >
               Read the docs
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

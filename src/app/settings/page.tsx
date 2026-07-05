@@ -66,12 +66,13 @@ export default function SettingsPage() {
     } catch {}
   }, []);
 
-  // Force-clear dark class — MVP 1 is light-only.
-  // Dark mode is on the MVP 2 roadmap with a full design token refactor.
+  // Apply theme choice to <html> so the toggle in Settings takes effect
+  // immediately (mirrors the ThemeToggle in the header).
   useEffect(() => {
     if (typeof document === "undefined") return;
-    document.documentElement.classList.remove("dark");
-    try { window.localStorage.setItem("fb_theme", "light"); } catch {}
+    if (theme === "dark") document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+    try { window.localStorage.setItem("fb_theme", theme); } catch {}
   }, [theme]);
 
   const save = (e: React.FormEvent) => {
@@ -122,8 +123,8 @@ export default function SettingsPage() {
             <Section icon={Sun} title="Theme" description="Light is the ship theme for MVP 1. Dark + System land in MVP 2 with a full design token refactor across every gradient card and tinted surface.">
               <div className="grid grid-cols-3 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
                 <ThemePill Icon={Sun}     label="Light"  active={theme === "light"}  onClick={() => setTheme("light")} />
-                <ThemePill Icon={Moon}    label="Dark"   active={theme === "dark"}   onClick={() => setTheme("dark")} disabled hint="MVP 2" />
-                <ThemePill Icon={Monitor} label="System" active={theme === "system"} onClick={() => setTheme("system")} disabled hint="MVP 2" />
+                <ThemePill Icon={Moon}    label="Dark"   active={theme === "dark"}   onClick={() => setTheme("dark")} />
+                <ThemePill Icon={Monitor} label="System" active={theme === "system"} onClick={() => setTheme("system")} disabled hint="Soon" />
               </div>
             </Section>
 
@@ -136,7 +137,7 @@ export default function SettingsPage() {
                   setLocale(next);
                   applyLocale(next);
                 }}
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 font-mono text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand"
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-xs text-slate-900 outline-none focus:border-brand"
               >
                 {LOCALES.map((l) => (
                   <option key={l.code} value={l.code}>
@@ -144,7 +145,7 @@ export default function SettingsPage() {
                   </option>
                 ))}
               </select>
-              <p className="mt-2 font-mono text-[10px] tracking-wide text-slate-400 dark:text-slate-500">
+              <p className="mt-2 font-mono text-[10px] tracking-wide text-slate-400">
                 6 languages covered · covers &gt;3.5B speakers worldwide.
               </p>
             </Section>
@@ -152,13 +153,13 @@ export default function SettingsPage() {
             {/* Notifications */}
             <Section icon={Bell} title="Email notifications" description="Get an email when something important happens. Wired in the next milestone — for now the toggles remember your choice.">
               <label className="block">
-                <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">Notification email</span>
+                <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">Notification email</span>
                 <input
                   type="email"
                   value={notifEmail}
                   onChange={(e) => setNotifEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="mt-1.5 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none focus:border-brand"
+                  className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:border-brand"
                 />
               </label>
               <div className="mt-4 space-y-2">
@@ -170,14 +171,14 @@ export default function SettingsPage() {
 
             {/* Privacy / Security */}
             <Section icon={ShieldCheck} title="Privacy & security">
-              <ul className="space-y-2 font-mono text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
+              <ul className="space-y-2 font-mono text-[11px] leading-relaxed text-slate-600">
                 <li>· We never ask for API keys, private keys, or wallet seed phrases here.</li>
                 <li>· Settings on this page live in your browser only.</li>
                 <li>· Order data lives in Supabase. Chat messages are visible only to the two parties.</li>
                 <li>· Attachments are visible per the order&apos;s public/private flag.</li>
                 <li>· On-chain transactions are signed by your wallet — we never see your key.</li>
               </ul>
-              <p className="mt-3 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="mt-3 font-mono text-[11px] text-slate-700">
                 If anything ever asks you to paste a private key or seed phrase into the FreelanceBot interface — that is not us. Report it.
               </p>
             </Section>
@@ -193,16 +194,16 @@ export default function SettingsPage() {
               {saved ? "Saved ✓" : "Save all settings"}
             </button>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">Signed-in sessions</h3>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900">Signed-in sessions</h3>
               <div className="mt-3 space-y-2">
                 <SessionRow role="Client"     email={clientEmail}      onSignOut={() => signOut("fb_client_email")} />
                 <SessionRow role="Freelancer" email={freelancerEmail}  onSignOut={() => signOut("fb_freelancer_email")} />
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">About</h3>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900">About</h3>
               <dl className="mt-3 space-y-2 font-mono text-[11px]">
                 <Row label="Version">v0.11.0</Row>
                 <Row label="Network">Arc Testnet</Row>
@@ -212,8 +213,8 @@ export default function SettingsPage() {
               </dl>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">Links</h3>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 className="font-display text-sm uppercase tracking-wider text-slate-900">Links</h3>
               <ul className="mt-3 space-y-2 font-mono text-[11px]">
                 <li><a href="https://github.com/orangterkucil/freelancebot" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-brand hover:underline">GitHub repository <ExternalLink className="h-3 w-3" /></a></li>
                 <li><a href="https://github.com/orangterkucil/freelancebot/blob/main/PRD.md" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-brand hover:underline">Product Requirements (PRD) <ExternalLink className="h-3 w-3" /></a></li>
@@ -241,13 +242,13 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex items-center gap-2">
         <Icon className="h-4 w-4 text-brand" />
-        <h2 className="font-display text-base uppercase text-slate-900 dark:text-slate-100">{title}</h2>
+        <h2 className="font-display text-base uppercase text-slate-900">{title}</h2>
       </div>
       {description && (
-        <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">{description}</p>
+        <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-500">{description}</p>
       )}
       <div className="mt-5 space-y-4">{children}</div>
     </div>
@@ -265,7 +266,7 @@ function SocialInput({
 }) {
   return (
     <label className="block">
-      <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">
+      <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-600">
         <Icon className="h-3 w-3" />
         {label}
       </span>
@@ -274,7 +275,7 @@ function SocialInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1.5 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand"
+        className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
       />
     </label>
   );
@@ -298,8 +299,8 @@ function ThemePill({
       className={
         "flex flex-col items-center gap-1 rounded-lg px-3 py-2 transition-colors " +
         (active ? "bg-brand text-white shadow-sm"
-          : disabled ? "text-slate-400 dark:text-slate-500 cursor-not-allowed"
-          : "text-slate-700 dark:text-slate-300 hover:bg-slate-100")
+          : disabled ? "text-slate-400 cursor-not-allowed"
+          : "text-slate-700 hover:bg-slate-100")
       }
     >
       <Icon className="h-4 w-4" />
@@ -318,10 +319,10 @@ function Toggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-start justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 transition-colors hover:bg-slate-50 dark:bg-slate-950">
+    <label className="flex cursor-pointer items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 transition-colors hover:bg-slate-50">
       <span className="min-w-0">
-        <span className="block font-display text-xs uppercase tracking-wider text-slate-900 dark:text-slate-100">{label}</span>
-        {sub && <span className="mt-0.5 block font-mono text-[10px] tracking-wide text-slate-500 dark:text-slate-400">{sub}</span>}
+        <span className="block font-display text-xs uppercase tracking-wider text-slate-900">{label}</span>
+        {sub && <span className="mt-0.5 block font-mono text-[10px] tracking-wide text-slate-500">{sub}</span>}
       </span>
       <span className="relative inline-block h-5 w-9 shrink-0">
         <input
@@ -331,7 +332,7 @@ function Toggle({
           className="peer absolute inset-0 opacity-0"
         />
         <span className="absolute inset-0 rounded-full bg-slate-300 transition-colors peer-checked:bg-brand" />
-        <span className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white dark:bg-slate-900 shadow transition-transform peer-checked:translate-x-4" />
+        <span className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
       </span>
     </label>
   );
@@ -339,18 +340,18 @@ function Toggle({
 
 function SessionRow({ role, email, onSignOut }: { role: string; email: string; onSignOut: () => void }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2.5">
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
       <div className="min-w-0">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{role}</span>
-        <p className="truncate font-mono text-xs text-slate-900 dark:text-slate-100">
-          {email ? email : <span className="italic text-slate-400 dark:text-slate-500">Not signed in</span>}
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{role}</span>
+        <p className="truncate font-mono text-xs text-slate-900">
+          {email ? email : <span className="italic text-slate-400">Not signed in</span>}
         </p>
       </div>
       {email && (
         <button
           type="button"
           onClick={onSignOut}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 font-display text-[11px] uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:border-rose-400 hover:text-rose-700"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-display text-[11px] uppercase tracking-wider text-slate-700 hover:border-rose-400 hover:text-rose-700"
         >
           <LogOut className="h-3 w-3" />
           Sign out
@@ -363,8 +364,8 @@ function SessionRow({ role, email, onSignOut }: { role: string; email: string; o
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <dt className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</dt>
-      <dd className="font-mono text-xs text-slate-900 dark:text-slate-100">{children}</dd>
+      <dt className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</dt>
+      <dd className="font-mono text-xs text-slate-900">{children}</dd>
     </div>
   );
 }

@@ -51,12 +51,12 @@ export function RatingForm({
   return (
     <form
       onSubmit={submit}
-      className="rounded-2xl border border-amber-200 dark:border-amber-800/50 bg-gradient-to-br from-amber-50 via-white to-rose-50 dark:from-amber-950/40 dark:via-slate-900 dark:to-rose-950/40 p-5 shadow-sm"
+      className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-rose-50 p-5 shadow-sm"
     >
       <p className="font-mono text-[11px] uppercase tracking-widest text-amber-700">
         Rate this counterparty
       </p>
-      <p className="mt-1 font-display text-base uppercase text-slate-900 dark:text-slate-100">
+      <p className="mt-1 font-display text-base uppercase text-slate-900">
         How was working with {rateeLabel}?
       </p>
 
@@ -83,7 +83,7 @@ export function RatingForm({
             </button>
           );
         })}
-        <span className="ml-2 font-mono text-xs tabular-nums text-slate-600 dark:text-slate-400">
+        <span className="ml-2 font-mono text-xs tabular-nums text-slate-600">
           {stars > 0 ? `${stars}/5` : "—"}
         </span>
       </div>
@@ -93,7 +93,7 @@ export function RatingForm({
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         placeholder="Optional comment (visible publicly on their profile)"
-        className="mt-4 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand"
+        className="mt-4 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
       />
 
       {error && (

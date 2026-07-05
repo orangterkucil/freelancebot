@@ -86,10 +86,10 @@ export function EmailGate({
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-slate-50">
         <AppHeader showWallet={false} />
         <main className="mx-auto max-w-3xl px-6 py-16">
-          <p className="font-mono text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <p className="font-mono text-xs uppercase tracking-wider text-slate-400">
             Loading…
           </p>
         </main>
@@ -100,24 +100,24 @@ export function EmailGate({
   if (!email) {
     return (
       <div className="relative min-h-screen overflow-hidden bg-space">
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/60 dark:border-slate-700/40" />
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/40 dark:border-slate-700/30" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/60" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/40" />
 
         <div className="relative">
           <AppHeader showWallet={false} />
 
           <main className="mx-auto flex min-h-[calc(100vh-72px)] max-w-md items-center px-6">
-            <div className="w-full rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="w-full rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
               <p className="mb-2 font-mono text-[11px] uppercase tracking-widest text-brand">
                 Step 01 · Identity
               </p>
-              <h1 className="font-display text-3xl uppercase leading-tight tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
+              <h1 className="font-display text-3xl uppercase leading-tight tracking-tight text-slate-900 sm:text-4xl">
                 {label}
               </h1>
 
               {state !== "sent" && (
                 <>
-                  <p className="mt-3 font-mono text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                  <p className="mt-3 font-mono text-xs leading-relaxed text-slate-600">
                     {demoMode
                       ? "Demo mode — no verification, no inbox needed."
                       : "We'll email you a magic link. No password."}
@@ -139,7 +139,7 @@ export function EmailGate({
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       disabled={state === "sending"}
-                      className="w-full rounded-xl border border-slate-300 bg-white dark:bg-slate-900 px-4 py-3 font-mono text-sm text-slate-900 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand disabled:opacity-60 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:text-slate-400"
+                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-mono text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand disabled:opacity-60"
                     />
                     <button
                       type="submit"
@@ -161,7 +161,7 @@ export function EmailGate({
                   </form>
 
                   {errorMsg && (
-                    <p className="mt-3 font-mono text-[11px] text-rose-600 dark:text-rose-400">
+                    <p className="mt-3 font-mono text-[11px] text-rose-600">
                       {errorMsg}
                     </p>
                   )}
@@ -170,7 +170,7 @@ export function EmailGate({
                     <button
                       type="button"
                       onClick={() => setDemoMode(true)}
-                      className="mt-4 w-full text-center font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-brand dark:text-slate-400"
+                      className="mt-4 w-full text-center font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-brand"
                     >
                       Or use demo mode (no email) →
                     </button>
@@ -179,14 +179,14 @@ export function EmailGate({
               )}
 
               {state === "sent" && (
-                <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5 dark:border-emerald-800/40 dark:bg-emerald-950/30">
+                <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5">
                   <div className="flex items-start gap-3">
-                    <MailCheck className="h-5 w-5 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
+                    <MailCheck className="h-5 w-5 flex-shrink-0 text-emerald-600" />
                     <div>
-                      <p className="font-display text-sm uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                      <p className="font-display text-sm uppercase tracking-wider text-emerald-800">
                         Check your inbox
                       </p>
-                      <p className="mt-1 font-mono text-[11px] leading-relaxed text-emerald-900/80 dark:text-emerald-200/80">
+                      <p className="mt-1 font-mono text-[11px] leading-relaxed text-emerald-900/80">
                         We sent a magic link to <strong className="font-semibold">{input.trim().toLowerCase()}</strong>. Click it to sign in — the link expires in 1 hour. Check spam if you don&apos;t see it.
                       </p>
                     </div>
@@ -194,14 +194,14 @@ export function EmailGate({
                   <button
                     type="button"
                     onClick={() => setState("idle")}
-                    className="mt-4 font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-brand dark:text-slate-400"
+                    className="mt-4 font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-brand"
                   >
                     ← Use a different email
                   </button>
                 </div>
               )}
 
-              <p className="mt-6 border-t border-slate-200 pt-4 font-mono text-[10px] uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:text-slate-400">
+              <p className="mt-6 border-t border-slate-200 pt-4 font-mono text-[10px] uppercase tracking-wider text-slate-500">
                 · USDC escrow on Arc
                 <br />· AI agent verifies deliverables
                 <br />· Sub-second settlement

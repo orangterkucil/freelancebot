@@ -45,7 +45,7 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
       title="My applications"
       subtitle={
         <>
-          Signed in as <span className="text-slate-700 dark:text-slate-300">{email}</span>
+          Signed in as <span className="text-slate-700">{email}</span>
           {" · "}
           <button onClick={signOut} className="text-brand hover:underline">switch</button>
         </>
@@ -54,7 +54,7 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
       actions={
         <Link
           href="/jobs"
-          className="inline-flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300 transition-colors hover:border-brand hover:text-brand"
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 font-display text-xs uppercase tracking-wider text-slate-700 transition-colors hover:border-brand hover:text-brand"
         >
           Browse marketplace →
         </Link>
@@ -68,8 +68,8 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
       </div>
 
       {loading && (
-        <div className="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Loading…</p>
+        <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+          <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
         </div>
       )}
 
@@ -80,12 +80,12 @@ function MyApplications({ email, signOut }: { email: string; signOut: () => void
       )}
 
       {!loading && !error && apps.length === 0 && (
-        <div className="mt-8 rounded-3xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-10 text-center shadow-sm">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white dark:bg-slate-900 shadow-md ring-1 ring-sky-200">
+        <div className="mt-8 rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-10 text-center shadow-sm">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md ring-1 ring-sky-200">
             <Inbox className="h-7 w-7 text-brand" strokeWidth={1.5} />
           </div>
-          <h3 className="mt-5 font-display text-xl uppercase text-slate-900 dark:text-slate-100">No applications yet</h3>
-          <p className="mx-auto mt-2 max-w-md font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600 dark:text-slate-400">
+          <h3 className="mt-5 font-display text-xl uppercase text-slate-900">No applications yet</h3>
+          <p className="mx-auto mt-2 max-w-md font-mono text-xs uppercase leading-relaxed tracking-wide text-slate-600">
             Browse the public marketplace and apply to open jobs.
           </p>
           <Link
@@ -119,14 +119,14 @@ function Stat({
   accent?: "sky" | "amber" | "emerald" | "rose";
 }) {
   const accentMap = {
-    sky:     "from-sky-50 to-white dark:from-sky-950/40 dark:to-slate-900 text-sky-700 dark:text-sky-300 ring-sky-200 dark:ring-sky-800/50",
-    amber:   "from-amber-50 to-white dark:from-amber-950/40 dark:to-slate-900 text-amber-700 dark:text-amber-300 ring-amber-200 dark:ring-amber-800/50",
-    emerald: "from-emerald-50 to-white dark:from-emerald-950/40 dark:to-slate-900 text-emerald-700 dark:text-emerald-300 ring-emerald-200 dark:ring-emerald-800/50",
-    rose:    "from-rose-50 to-white dark:from-rose-950/40 dark:to-slate-900 text-rose-700 dark:text-rose-300 ring-rose-200 dark:ring-rose-800/50",
+    sky:     "from-sky-50 to-white text-sky-700 ring-sky-200",
+    amber:   "from-amber-50 to-white text-amber-700 ring-amber-200",
+    emerald: "from-emerald-50 to-white text-emerald-700 ring-emerald-200",
+    rose:    "from-rose-50 to-white text-rose-700 ring-rose-200",
   };
   return (
     <div className={`relative rounded-2xl bg-gradient-to-br p-4 ring-1 shadow-sm ${accentMap[accent]}`}>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
       <p className="mt-1 font-display text-2xl">{value}</p>
     </div>
   );
@@ -134,7 +134,7 @@ function Stat({
 
 function ApplicationRow({ app }: { app: Application }) {
   const statusStyle = {
-    pending:   "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 ring-slate-200",
+    pending:   "bg-slate-100 text-slate-700 ring-slate-200",
     accepted:  "bg-emerald-100 text-emerald-800 ring-emerald-200",
     rejected:  "bg-rose-100 text-rose-800 ring-rose-200",
     withdrawn: "bg-amber-100 text-amber-800 ring-amber-200",
@@ -143,29 +143,29 @@ function ApplicationRow({ app }: { app: Application }) {
   return (
     <Link
       href={`/jobs/${app.order_id}`}
-      className="group relative block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
+      className="group relative block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">Job #{app.order_id}</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Job #{app.order_id}</span>
             <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest ring-1 ${statusStyle}`}>
               {app.status}
             </span>
           </div>
           {app.pitch && (
-            <p className="mt-2 line-clamp-2 font-mono text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">{app.pitch}</p>
+            <p className="mt-2 line-clamp-2 font-mono text-[11px] leading-relaxed text-slate-700">{app.pitch}</p>
           )}
           {app.bid_amount_usdc !== null && app.bid_amount_usdc !== undefined && (
-            <p className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
-              Counter-bid: <span className="text-slate-900 dark:text-slate-100">${app.bid_amount_usdc}</span>
+            <p className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+              Counter-bid: <span className="text-slate-900">${app.bid_amount_usdc}</span>
             </p>
           )}
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">
             Applied {new Date(app.created_at).toLocaleString()}
           </p>
         </div>
-        <ExternalLink className="h-4 w-4 text-slate-400 dark:text-slate-500 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand" />
+        <ExternalLink className="h-4 w-4 text-slate-400 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand" />
       </div>
     </Link>
   );

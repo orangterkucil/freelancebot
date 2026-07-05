@@ -61,27 +61,27 @@ function CallbackInner() {
 
 function CallbackShell({ state, msg }: { state: "working" | "ok" | "error"; msg: string }) {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50">
       <AppHeader showWallet={false} />
       <main className="mx-auto flex min-h-[calc(100vh-72px)] max-w-md items-center px-6">
-        <div className="w-full rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="w-full rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="flex items-center gap-3">
             {state === "working" && <Loader2 className="h-5 w-5 animate-spin text-brand" />}
-            {state === "ok" && <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-            {state === "error" && <AlertCircle className="h-5 w-5 text-rose-600 dark:text-rose-400" />}
-            <p className="font-display text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100">
+            {state === "ok" && <CheckCircle2 className="h-5 w-5 text-emerald-600" />}
+            {state === "error" && <AlertCircle className="h-5 w-5 text-rose-600" />}
+            <p className="font-display text-sm uppercase tracking-wider text-slate-900">
               {state === "working" && "Signing you in"}
               {state === "ok" && "Success"}
               {state === "error" && "Sign-in failed"}
             </p>
           </div>
-          <p className="mt-3 font-mono text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+          <p className="mt-3 font-mono text-xs leading-relaxed text-slate-600">
             {msg}
           </p>
           {state === "error" && (
             <a
               href="/client"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white dark:bg-slate-900 px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-slate-700 hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-slate-700 hover:border-brand hover:text-brand"
             >
               ← Back to client sign-in
             </a>

@@ -51,8 +51,8 @@ export default function JobDetailPage() {
   if (loading) {
     return (
       <AppShell title="Loading…" subtitle="Fetching job">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Loading…</p>
+        <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <p className="font-mono text-xs uppercase tracking-wider text-slate-400">Loading…</p>
         </div>
       </AppShell>
     );
@@ -61,7 +61,7 @@ export default function JobDetailPage() {
   if (error || !job) {
     return (
       <AppShell title="Job not found" subtitle={error ?? "This job does not exist"}>
-        <Link href="/jobs" className="inline-flex rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 font-display text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:border-brand hover:text-brand">
+        <Link href="/jobs" className="inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 font-display text-xs uppercase tracking-wider text-slate-700 hover:border-brand hover:text-brand">
           ← back to marketplace
         </Link>
       </AppShell>
@@ -101,19 +101,19 @@ export default function JobDetailPage() {
       }
       breadcrumb={<>Marketplace / Job #{job.id}</>}
     >
-      <Link href="/jobs" className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-brand">
+      <Link href="/jobs" className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-brand">
         <ArrowLeft className="h-3 w-3" />
         Back to marketplace
       </Link>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_400px]">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">Brief</p>
-          <p className="mt-2 whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Brief</p>
+          <p className="mt-2 whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-700">
             {job.brief}
           </p>
 
-          <div className="mt-6 grid grid-cols-3 gap-3 border-t border-slate-100 dark:border-slate-800 pt-4">
+          <div className="mt-6 grid grid-cols-3 gap-3 border-t border-slate-100 pt-4">
             <Field label="Budget">
               <span className="font-display text-lg text-brand">${job.amount_usdc.toLocaleString()}</span>
             </Field>
@@ -124,8 +124,8 @@ export default function JobDetailPage() {
           </div>
 
           {job.attachments && job.attachments.length > 0 && (
-            <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-4">
-              <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
+            <div className="mt-6 border-t border-slate-100 pt-4">
+              <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-slate-500">
                 Attachments
               </p>
               <AttachmentsList
@@ -136,8 +136,8 @@ export default function JobDetailPage() {
             </div>
           )}
 
-          <div className="mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">Posted by</p>
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Posted by</p>
             <div className="mt-1">
               <UserBadge email={job.client_email} links={job.client_links} />
             </div>
@@ -161,23 +161,23 @@ export default function JobDetailPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-sky-200 dark:border-sky-800/50 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/40 dark:via-slate-900 dark:to-indigo-950/40 p-6 shadow-sm">
+        <div className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-6 shadow-sm">
           {!isOpen ? (
             <div>
               <p className="font-mono text-[11px] uppercase tracking-widest text-amber-700">· Closed</p>
-              <p className="mt-2 font-display text-lg uppercase text-slate-900 dark:text-slate-100">This job is no longer open</p>
-              <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
-                Either the client picked a freelancer or withdrew the listing. Status: <span className="text-slate-700 dark:text-slate-300">{job.status}</span>.
+              <p className="mt-2 font-display text-lg uppercase text-slate-900">This job is no longer open</p>
+              <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600">
+                Either the client picked a freelancer or withdrew the listing. Status: <span className="text-slate-700">{job.status}</span>.
               </p>
-              <Link href="/jobs" className="mt-4 inline-flex rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:border-brand hover:text-brand">
+              <Link href="/jobs" className="mt-4 inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2.5 font-display text-xs uppercase tracking-wider text-slate-700 hover:border-brand hover:text-brand">
                 Browse other jobs →
               </Link>
             </div>
           ) : submitted ? (
             <div>
               <p className="font-mono text-[11px] uppercase tracking-widest text-emerald-700">✓ Applied</p>
-              <p className="mt-2 font-display text-lg uppercase text-slate-900 dark:text-slate-100">Application sent</p>
-              <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
+              <p className="mt-2 font-display text-lg uppercase text-slate-900">Application sent</p>
+              <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600">
                 The client will review and pick. You can see your applications in the freelancer dashboard.
               </p>
               <Link href="/freelancer/applications" className="btn-gradient mt-4 inline-flex rounded-xl px-4 py-2.5 font-display text-xs uppercase tracking-wider">
@@ -188,7 +188,7 @@ export default function JobDetailPage() {
             <form onSubmit={submit} className="space-y-4">
               <div>
                 <p className="font-mono text-[11px] uppercase tracking-widest text-brand">Apply to this job</p>
-                <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
+                <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-500">
                   Quick pitch + bid. Client picks one applicant, then escrow flow starts.
                 </p>
               </div>
@@ -225,7 +225,7 @@ export default function JobDetailPage() {
                     placeholder={String(job.amount_usdc)}
                     className={inputClass + " pr-16"}
                   />
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500">USDC</span>
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-slate-400">USDC</span>
                 </div>
               </FormField>
 
@@ -252,13 +252,13 @@ export default function JobDetailPage() {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 font-mono text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 outline-none transition-colors focus:border-brand";
+  "w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand";
 
 function Field({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
   return (
     <div>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</p>
-      <p className={"mt-1 font-mono text-xs text-slate-700 dark:text-slate-300 " + className}>{children}</p>
+      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
+      <p className={"mt-1 font-mono text-xs text-slate-700" + className}>{children}</p>
     </div>
   );
 }
@@ -266,9 +266,9 @@ function Field({ label, children, className = "" }: { label: string; children: R
 function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">{label}</span>
+      <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">{label}</span>
       <div className="mt-1.5">{children}</div>
-      {hint && <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400 dark:text-slate-500">{hint}</span>}
+      {hint && <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">{hint}</span>}
     </label>
   );
 }
@@ -287,7 +287,7 @@ function SocialChip({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 py-1 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors hover:border-brand hover:text-brand"
+      className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 font-mono text-[10px] text-slate-700 transition-colors hover:border-brand hover:text-brand"
     >
       <Icon className="h-3 w-3" />
       {label}

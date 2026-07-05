@@ -51,15 +51,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Force light theme — dark mode needs a proper design token refactor
-  // (every gradient card, tinted surface, and Section header needs paired
-  // tokens, not bulk sed). Ships in MVP 2. Also apply lang/dir from
-  // fb_locale so Arabic RTL doesn't flash on first paint.
+  // Boot script: read theme + locale from localStorage and apply BEFORE first
+  // paint so there's no flash. Dark mode works via html.dark CSS-variable
+  // overrides in globals.css (not per-element dark: classes) — this keeps
+  // the surface count small and consistent across every page.
   const themeBoot = `
     (function() {
       try {
-        localStorage.setItem('fb_theme', 'light');
-        document.documentElement.classList.remove('dark');
+        var t = localStorage.getItem('fb_theme');
+        if (t === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
         var l = localStorage.getItem('fb_locale') || 'en';
         var rtl = l === 'ar';
         document.documentElement.lang = l;
@@ -72,7 +73,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
       </head>
-      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-signal selection:text-white dark:bg-slate-950 dark:text-slate-100">
+      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-signal selection:text-white">
         {children}
       </body>
     </html>
