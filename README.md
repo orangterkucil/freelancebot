@@ -48,8 +48,9 @@
 </p>
 
 <p align="center">
-  <a href="https://freelancebot-alpha.vercel.app/demo.mp4"><b>Play full video (1:28) →</b></a> &nbsp;·&nbsp;
-  <a href="https://freelancebot-alpha.vercel.app/demo-short.mp4"><b>Play 30-sec teaser →</b></a> &nbsp;·&nbsp;
+  <a href="https://freelancebot-alpha.vercel.app/watch.html"><b>▶ Watch on dedicated page (1:02) →</b></a> &nbsp;·&nbsp;
+  <a href="https://freelancebot-alpha.vercel.app/demo.mp4"><b>Direct MP4 →</b></a> &nbsp;·&nbsp;
+  <a href="https://freelancebot-alpha.vercel.app/demo-short.mp4"><b>30-sec teaser →</b></a> &nbsp;·&nbsp;
   <a href="https://freelancebot-alpha.vercel.app"><b>Open live app →</b></a>
 </p>
 
