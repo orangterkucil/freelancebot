@@ -29,21 +29,7 @@
 **Tech sponsors:** Circle · Arc
 **Deadline:** July 13, 2026
 
-## Demo
-
-<p align="center">
-  <a href="https://freelancebot-alpha.vercel.app/demo-reel.html">
-    <img src="./public/demo-preview.gif" alt="FreelanceBot live app — click for the full cinematic reel" width="100%" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://freelancebot-alpha.vercel.app/demo-reel.html"><b>▶ Cinematic reel (1:29, auto-play, narrated)</b></a>
-  &nbsp;·&nbsp;
-  <a href="https://freelancebot-alpha.vercel.app/demo.mp4"><b>▶ Narrated MP4 (1:02)</b></a>
-  &nbsp;·&nbsp;
-  <a href="https://freelancebot-alpha.vercel.app"><b>▶ Open the live app</b></a>
-</p>
+## What it does
 
 FreelanceBot is an autonomous payment agent for cross-border freelance work. Clients fund USDC escrow on Arc in a single signed transaction; an AI verifier (Groq Llama 3.3 70B) evaluates the deliverable against the brief, deadline, and URL reachability; and once approved, USDC settles to the freelancer with sub-second finality. The result: a $300 job that historically netted $220 after 14 days of PayPal, SWIFT, and local-bank fees now nets **$297 in 0.8 seconds** — end-to-end, self-custody, no platform-held funds.
 
@@ -64,9 +50,12 @@ FreelanceBot is an autonomous payment agent for cross-border freelance work. Cli
 
 | Resource | URL |
 |---|---|
-| **Live demo** | https://freelancebot-alpha.vercel.app |
+| **Live app** | https://freelancebot-alpha.vercel.app |
+| **Cinematic demo reel** (1:29, auto-play, narrated) | https://freelancebot-alpha.vercel.app/demo-reel.html |
+| **Narrated MP4** (1:02) | https://freelancebot-alpha.vercel.app/demo.mp4 |
+| **Docs & whitepaper** | https://freelancebot-alpha.vercel.app/docs |
 | **GitHub repo** | https://github.com/orangterkucil/freelancebot |
-| **Deployed contract (Arc Testnet)** | [`0xA8CA04560603951b0f0e803039B059432F673ae4`](https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4) ✓ source verified |
+| **Deployed contract** (Arc Testnet) | [`0xA8CA04560603951b0f0e803039B059432F673ae4`](https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4) ✓ source verified |
 
 ---
 
