@@ -31,13 +31,15 @@
 
 ## Demo
 
-<video src="https://freelancebot-alpha.vercel.app/demo.mp4" controls muted playsinline width="100%">
-  Your browser doesn't support HTML5 video. <a href="https://freelancebot-alpha.vercel.app/demo.mp4">Download the MP4</a> instead.
-</video>
+<p align="center">
+  <a href="https://freelancebot-alpha.vercel.app/demo-reel.html">
+    <img src="./public/marketplace-flow.gif" alt="FreelanceBot cinematic demo reel — click to play" width="100%" />
+  </a>
+</p>
 
 <p align="center">
   <a href="https://freelancebot-alpha.vercel.app/demo-reel.html">
-    <img src="./public/marketplace-flow.gif" alt="FreelanceBot marketplace flow — click to open the full demo reel" width="100%" />
+    <b>▶ Open the cinematic demo reel</b>
   </a>
 </p>
 
