@@ -289,16 +289,6 @@ npm run deploy:arc
 
 Or use Remix in the browser — no local Node install required. See [`contracts/README.md`](./contracts/README.md).
 
-## Roadmap
-
-- [x] Week 1 — Setup, accounts, scaffold, architecture diagram
-- [x] Week 2 — Smart contract + 18-case test suite
-- [x] Week 3 — AI agent + verifier + orders API
-- [x] Week 4–5 — Frontend MVP (client + freelancer + order detail + chat)
-- [x] Week 6 — Smart contract deployed + verified on Arc testnet
-- [x] Week 7 — Wire frontend to on-chain (ethers.js), polish, marketplace + ratings + settings + docs + OWASP hardening (v0.7 → v0.11.2)
-- [ ] Week 8 — Record video, submit to Ignyte
-
 ## Project documents
 
 - [**PRD.md**](./PRD.md) — Product Requirements Document covering MVP 1 (shipped) and MVP 2 (roadmap), stack recommendations, governance.
