@@ -262,7 +262,7 @@ function AboutSection() {
         {/* Bento grid — 3 stakeholder cards */}
         <div className="mt-16 grid gap-4 lg:grid-cols-3">
           {/* Freelancer card */}
-          <div className="group relative overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8">
+          <div className="group relative overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-white p-6 shadow-sm sm:p-8">
             <div className="absolute right-4 top-4 rounded-full bg-emerald-100 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-emerald-800">
               For freelancers
             </div>

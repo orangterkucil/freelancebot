@@ -3,14 +3,152 @@
 @tailwind utilities;
 
 /* -----------------------------------------------------------------------
-   v0.10.0 — bright energetic light theme.
-   White base, vivid gradients, multi-accent colors for dopamine pop.
+   v0.14.5 — proper design tokens for both themes.
+   Light: bright energetic (white surfaces, sky brand, slate text).
+   Dark:  medium slate body, cards clearly elevated with brand-tinted glow.
    ----------------------------------------------------------------------- */
+
+:root {
+  /* Surfaces */
+  --fb-body:      #f7fafc;
+  --fb-surface:   #ffffff;
+  --fb-elevated:  #f8fafc;
+  --fb-border:    rgb(226 232 240);
+  --fb-border-strong: rgb(203 213 225);
+
+  /* Text */
+  --fb-text-primary:   #0f172a;
+  --fb-text-secondary: #475569;
+  --fb-text-muted:     #94a3b8;
+
+  /* Depth — three-tier shadow scale */
+  --fb-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04),
+                  0 1px 4px rgba(15, 23, 42, 0.02);
+  --fb-shadow-md: 0 4px 8px rgba(15, 23, 42, 0.06),
+                  0 2px 4px rgba(15, 23, 42, 0.04);
+  --fb-shadow-lg: 0 10px 20px rgba(15, 23, 42, 0.08),
+                  0 4px 8px rgba(15, 23, 42, 0.04);
+
+  /* Brand */
+  --fb-brand:     #0ea5e9;
+  --fb-brand-soft: rgba(14, 165, 233, 0.10);
+  --fb-focus-ring: 0 0 0 3px rgba(14, 165, 233, 0.35);
+
+  /* Motion */
+  --fb-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.dark {
+  --fb-body:      #1c2842;
+  --fb-surface:   #26344f;
+  --fb-elevated:  #2f405f;
+  --fb-border:    #4a5b7a;
+  --fb-border-strong: #5b6d8f;
+
+  --fb-text-primary:   #f8fafc;
+  --fb-text-secondary: #cbd5e1;
+  --fb-text-muted:     #94a3b8;
+
+  --fb-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.30),
+                  0 1px 4px rgba(56, 189, 248, 0.05);
+  --fb-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.35),
+                  0 2px 4px rgba(56, 189, 248, 0.08);
+  --fb-shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.45),
+                  0 4px 12px rgba(56, 189, 248, 0.10);
+
+  --fb-brand-soft: rgba(56, 189, 248, 0.15);
+  --fb-focus-ring: 0 0 0 3px rgba(56, 189, 248, 0.45);
+}
 
 html, body { height: 100%; }
 
-/* Slight off-white body to soften white-on-white card edges */
-body { background-color: #f7fafc; }
+/* Body — token-based, transitions smoothly on theme toggle */
+body {
+  background-color: var(--fb-body);
+  color: var(--fb-text-primary);
+  transition: background-color 220ms var(--fb-ease),
+              color 220ms var(--fb-ease);
+}
+
+/* Subtle grain — adds atmosphere so backgrounds don't feel flat.
+   Applied to body via ::before overlay, respects reduced-motion. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0.025 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  background-repeat: repeat;
+  opacity: 0.6;
+  mix-blend-mode: overlay;
+}
+html.dark body::before { opacity: 0.35; mix-blend-mode: screen; }
+
+/* Everything above the grain overlay */
+body > * { position: relative; z-index: 1; }
+
+/* Accessible focus ring — every interactive element */
+:focus-visible {
+  outline: none !important;
+  box-shadow: var(--fb-focus-ring) !important;
+  border-radius: 8px;
+  transition: box-shadow 150ms var(--fb-ease);
+}
+
+/* Buttons + links get a smooth press transition */
+button, a[href], [role="button"] {
+  transition: transform 120ms var(--fb-ease),
+              background-color 180ms var(--fb-ease),
+              border-color 180ms var(--fb-ease),
+              color 180ms var(--fb-ease),
+              box-shadow 180ms var(--fb-ease);
+}
+button:active:not(:disabled), a[href]:active { transform: scale(0.98); }
+
+/* Cards — universal hover lift for anything wrapped in .liquid-glass or
+   the pastel bento cards. Small translate + shadow bump so hover feels
+   physical, not a repaint. */
+.liquid-glass,
+[class*="from-emerald-50"],
+[class*="from-sky-50"],
+[class*="from-violet-50"],
+[class*="from-indigo-50"],
+[class*="from-rose-50"],
+[class*="from-amber-50"] {
+  transition: transform 220ms var(--fb-ease),
+              box-shadow 220ms var(--fb-ease),
+              border-color 220ms var(--fb-ease);
+  will-change: transform;
+}
+.liquid-glass:hover,
+[class*="from-emerald-50"]:hover,
+[class*="from-sky-50"]:hover,
+[class*="from-violet-50"]:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--fb-shadow-lg);
+}
+
+/* Section fade-in on mount (uses IntersectionObserver via `data-reveal`
+   attribute — components can opt-in) */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 600ms var(--fb-ease), transform 600ms var(--fb-ease);
+}
+[data-reveal="in"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Reduced motion — respect user preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  body::before { display: none; }
+}
 
 /* -----------------------------------------------------------------------
    Liquid glass — bright variant. Crisp white card, subtle sky-tinted ring,
