@@ -12,6 +12,14 @@
   <a href="https://freelancebot-alpha.vercel.app"><img alt="Live demo" src="https://img.shields.io/badge/live%20demo-online-22c55e?style=flat-square" /></a>
   <a href="https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4"><img alt="Contract verified" src="https://img.shields.io/badge/contract-verified%20on%20Arc-0369a1?style=flat-square" /></a>
   <a href="https://github.com/orangterkucil/freelancebot/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" /></a>
+  <img alt="Version" src="https://img.shields.io/badge/version-v0.13.0-informational?style=flat-square" />
+</p>
+
+<p align="center">
+  <img alt="Tests" src="https://img.shields.io/badge/tests-18%2F18%20passing-brightgreen?style=flat-square" />
+  <img alt="OWASP" src="https://img.shields.io/badge/OWASP%20LLM-hardened-blueviolet?style=flat-square" />
+  <img alt="i18n" src="https://img.shields.io/badge/i18n-6%20languages-orange?style=flat-square" />
+  <img alt="Track" src="https://img.shields.io/badge/track%204-agentic%20economy-ec4899?style=flat-square" />
   <img alt="Stack" src="https://img.shields.io/badge/stack-Next.js%20·%20Solidity%20·%20Groq%20·%20Supabase-0f172a?style=flat-square" />
 </p>
 

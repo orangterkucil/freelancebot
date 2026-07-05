@@ -154,6 +154,36 @@ function HeroSection() {
             {t("hero.subtitle2")}
           </p>
 
+          {/* Concrete before/after number contrast */}
+          <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/60 p-4 shadow-sm backdrop-blur sm:max-w-xl sm:flex-row sm:items-center sm:gap-6">
+            <div className="flex-1">
+              <span className="block font-mono text-[10px] uppercase tracking-widest text-rose-600">Before</span>
+              <span className="mt-1 block font-display text-lg text-slate-500 line-through decoration-rose-400 sm:text-xl">
+                $220 in 14 days
+              </span>
+            </div>
+            <ArrowRight className="hidden h-5 w-5 text-brand sm:block" />
+            <div className="flex-1">
+              <span className="block font-mono text-[10px] uppercase tracking-widest text-emerald-600">After</span>
+              <span className="mt-1 block font-display text-lg text-slate-900 sm:text-xl">
+                <span className="text-emerald-600">$297</span> in <span className="text-emerald-600">0.8 seconds</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Live activity ticker */}
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[10px] uppercase tracking-widest text-slate-500 sm:text-[11px]">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              </span>
+              <span className="text-emerald-700">Arc Testnet · live</span>
+            </span>
+            <span>Contract <span className="text-slate-700">0xA8CA…3ae4</span> verified</span>
+            <span>Groq Llama 3.3 70B · online</span>
+          </div>
+
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
             <Link
               href="/client"
@@ -211,48 +241,96 @@ function HeroSection() {
 }
 
 /* ===================================================================== *
- *  SECTION 2 — ABOUT                                                    *
+ *  SECTION 2 — ABOUT (bento grid — three perspectives)                  *
  * ===================================================================== */
 function AboutSection() {
   return (
-    <section id="about" className="relative overflow-hidden bg-white dark:bg-slate-900 py-20 sm:py-28 lg:py-32">
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/70" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[900px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/50" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[1200px] w-[1200px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-200/30" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 animate-orbit rounded-full bg-brand shadow-[0_0_24px_rgba(14,165,233,0.6)]" />
-
+    <section id="about" className="relative bg-white py-20 sm:py-28 lg:py-32">
       <div className="relative mx-auto max-w-landing px-6 lg:px-12">
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="relative">
-            <h2 className="font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-[60px]">
-              Hello.
-              <br />
-              I&apos;m FreelanceBot.
-            </h2>
-            <span
-              aria-hidden
-              className="font-script absolute -bottom-2 right-0 rotate-[-3deg] text-3xl text-brand opacity-90 sm:text-5xl lg:text-[68px]"
-            >
-              open source
-            </span>
-          </div>
-
-          <p className="max-w-md font-mono text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base lg:max-w-[280px]">
-            Built for the 75 million freelancers in Asia-Pacific who lose 18% of every gig
-            to PayPal, SWIFT, and Upwork.
+        {/* Section header */}
+        <div className="mx-auto max-w-3xl text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/5 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-brand">
+            <span className="h-1 w-1 rounded-full bg-brand" />
+            Why FreelanceBot
+          </span>
+          <h2 className="mt-4 font-display text-[32px] uppercase leading-[1.05] tracking-tight text-slate-900 sm:text-5xl lg:text-[54px]">
+            One escrow.<br className="sm:hidden" />
+            <span className="font-script text-brand"> three sides</span> served.
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl font-mono text-sm leading-relaxed text-slate-600">
+            Built for the 75M+ freelancers in Asia-Pacific who lose 18% of every gig to PayPal, SWIFT, and Upwork —
+            and for the clients + agents who make that flow possible.
           </p>
         </div>
 
-        <div className="mt-20 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Bento grid — 3 stakeholder cards */}
+        <div className="mt-16 grid gap-4 lg:grid-cols-3">
+          {/* Freelancer card */}
+          <div className="group relative overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8">
+            <div className="absolute right-4 top-4 rounded-full bg-emerald-100 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-emerald-800">
+              For freelancers
+            </div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-emerald-700">Net income</p>
+            <p className="mt-2 font-display text-4xl text-slate-900 sm:text-5xl">
+              <span className="text-emerald-600">+$77</span>
+            </p>
+            <p className="mt-1 font-mono text-xs text-slate-500">per $300 job vs Upwork+SWIFT</p>
+            <div className="mt-6 space-y-2 font-mono text-[11px] leading-relaxed text-slate-700">
+              <p>✓ Sub-second payout on release</p>
+              <p>✓ USDC in your wallet — self-custody</p>
+              <p>✓ AI agent verifies your delivery for you</p>
+              <p>✓ Ratings + social credibility follow you</p>
+            </div>
+          </div>
+
+          {/* Client card */}
+          <div className="group relative overflow-hidden rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8">
+            <div className="absolute right-4 top-4 rounded-full bg-sky-100 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-sky-800">
+              For clients
+            </div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-sky-700">Time to hire</p>
+            <p className="mt-2 font-display text-4xl text-slate-900 sm:text-5xl">
+              <span className="text-sky-600">3 min</span>
+            </p>
+            <p className="mt-1 font-mono text-xs text-slate-500">post → applicants → funded escrow</p>
+            <div className="mt-6 space-y-2 font-mono text-[11px] leading-relaxed text-slate-700">
+              <p>✓ Post publicly or send directly</p>
+              <p>✓ USDC locked until you approve release</p>
+              <p>✓ Refund path after grace period</p>
+              <p>✓ Applicant trust score inline</p>
+            </div>
+          </div>
+
+          {/* AI Agent card */}
+          <div className="group relative overflow-hidden rounded-3xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8">
+            <div className="absolute right-4 top-4 rounded-full bg-violet-100 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-violet-800">
+              For the AI agent
+            </div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-violet-700">Attack surface</p>
+            <p className="mt-2 font-display text-4xl text-slate-900 sm:text-5xl">
+              <span className="text-violet-600">OWASP</span>
+            </p>
+            <p className="mt-1 font-mono text-xs text-slate-500">LLM Top-10 hardened</p>
+            <div className="mt-6 space-y-2 font-mono text-[11px] leading-relaxed text-slate-700">
+              <p>✓ Prompt injection defense</p>
+              <p>✓ Server-derived verdict (not LLM-asserted)</p>
+              <p>✓ SSRF guard on URL checks</p>
+              <p>✓ 18-case Solidity test suite</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Stat strip */}
+        <div className="mt-10 grid grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:grid-cols-4 sm:gap-6">
           {[
-            { v: "$500B+", l: "Asia freelance flow / year",  k: "market" },
-            { v: "$10-20B", l: "Annual fee leakage",         k: "problem" },
-            { v: "<1 sec",  l: "Arc finality time",          k: "speed" },
-            { v: "MIT",     l: "Forever open source",        k: "license" },
+            { v: "$500B+", l: "APAC freelance flow / year" },
+            { v: "$10–20B", l: "Annual fee leakage" },
+            { v: "<1 sec",  l: "Arc finality" },
+            { v: "MIT",     l: "Forever open source" },
           ].map((s) => (
-            <div key={s.k} className="liquid-glass rounded-2xl p-5">
-              <p className="font-display text-3xl text-slate-900 dark:text-slate-100 sm:text-4xl">{s.v}</p>
-              <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <div key={s.l} className="border-l-2 border-brand pl-3">
+              <p className="font-display text-xl text-slate-900 sm:text-2xl">{s.v}</p>
+              <p className="mt-1 font-mono text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px]">
                 {s.l}
               </p>
             </div>
