@@ -23,11 +23,13 @@
 
 ## Demo
 
-**[▶ Full 1:29 cinematic reel with AI voice-over](https://freelancebot-alpha.vercel.app/demo-reel.html)** — auto-play walkthrough covering hook, problem, solution, 6-step client tutorial, 6-step freelancer tutorial, tech credentials, and close. Voice narration via browser Speech API (studio-quality voice available by installing the [ElevenLabs Reader](https://elevenlabs.io/app/talk-to) Chrome extension and using `?tts=off` to disable the built-in voice).
+https://github.com/user-attachments/assets/demo.mp4
+
+**[▶ Watch narrated MP4 · 30 sec](https://freelancebot-alpha.vercel.app/demo.mp4)** — AI-narrated walkthrough of the marketplace flow with ElevenLabs Roger voice-over.
 
 ![FreelanceBot marketplace flow](./public/marketplace-flow.gif)
 
-_10-second silent preview: landing → marketplace → filter by field → open a job → apply. Full narrated version linked above._
+_10-second silent GIF: landing → marketplace → filter by field → open a job → apply._
 
 **Prefer to click around yourself?** [Open the live app →](https://freelancebot-alpha.vercel.app)
 
