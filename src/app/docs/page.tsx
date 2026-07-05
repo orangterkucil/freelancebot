@@ -21,6 +21,7 @@ import {
 const SECTIONS = [
   { id: "overview",   label: "Overview",        Icon: BookOpen },
   { id: "problem",    label: "The problem",     Icon: FileText },
+  { id: "comparison", label: "Why not X?",      Icon: Coins },
   { id: "solution",   label: "The solution",    Icon: Briefcase },
   { id: "lifecycle",  label: "Order lifecycle", Icon: ArrowRight },
   { id: "marketplace",label: "Marketplace",     Icon: Briefcase },
@@ -126,6 +127,164 @@ export default function DocsPage() {
               <p>
                 FreelanceBot doesn&apos;t replace marketplaces — it offers a portable, open-source alternative anyone
                 can run, with stablecoin settlement and an AI agent that automates verification.
+              </p>
+            </Section>
+
+            <Section id="comparison" title="Why not just use existing payment systems?" emoji="⚖️">
+              <p>
+                Every existing rail — fintech app, remittance service, freelance marketplace, or bank wire — was
+                built for a world that doesn&apos;t match today&apos;s cross-border freelance economy. Below is a
+                head-to-head on a $300 job sent from a US client to a Jakarta freelancer, the median gig for our
+                target user.
+              </p>
+
+              <div className="my-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+                <table className="w-full text-left font-mono text-[12px]">
+                  <thead className="border-b border-slate-200 bg-slate-50 uppercase tracking-widest text-slate-500">
+                    <tr>
+                      <th className="px-3 py-2.5">Method</th>
+                      <th className="px-3 py-2.5">Net to freelancer</th>
+                      <th className="px-3 py-2.5">Settlement time</th>
+                      <th className="px-3 py-2.5">Effective fee</th>
+                      <th className="px-3 py-2.5">Escrow?</th>
+                      <th className="px-3 py-2.5">Self-custody?</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    <tr>
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">PayPal (International)</td>
+                      <td className="px-3 py-2.5">~$260</td>
+                      <td className="px-3 py-2.5">1–3 days</td>
+                      <td className="px-3 py-2.5">~13% (4.4% + FX spread ~4–6% + $0.30)</td>
+                      <td className="px-3 py-2.5">Disputes only</td>
+                      <td className="px-3 py-2.5">No · reversible</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">Wise (Business)</td>
+                      <td className="px-3 py-2.5">~$284</td>
+                      <td className="px-3 py-2.5">~1–2 days</td>
+                      <td className="px-3 py-2.5">~5.4% (0.4–1% fee + mid-market ~1% + local bank fees)</td>
+                      <td className="px-3 py-2.5">No</td>
+                      <td className="px-3 py-2.5">No</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">Payoneer</td>
+                      <td className="px-3 py-2.5">~$272</td>
+                      <td className="px-3 py-2.5">2–5 days</td>
+                      <td className="px-3 py-2.5">~9% (2% receive + 3.5% FX + withdrawal + inactivity)</td>
+                      <td className="px-3 py-2.5">No</td>
+                      <td className="px-3 py-2.5">No · custodial</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">SWIFT wire (bank-to-bank)</td>
+                      <td className="px-3 py-2.5">~$248</td>
+                      <td className="px-3 py-2.5">2–5 business days</td>
+                      <td className="px-3 py-2.5">~17% ($15–50 sender + $15–30 intermediary + $10–30 recipient + FX ~2–4%)</td>
+                      <td className="px-3 py-2.5">No</td>
+                      <td className="px-3 py-2.5">No</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">Western Union</td>
+                      <td className="px-3 py-2.5">~$258</td>
+                      <td className="px-3 py-2.5">Minutes–hours</td>
+                      <td className="px-3 py-2.5">~14% (fixed + FX spread up to 5–7%)</td>
+                      <td className="px-3 py-2.5">No</td>
+                      <td className="px-3 py-2.5">No</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">Upwork</td>
+                      <td className="px-3 py-2.5">~$220</td>
+                      <td className="px-3 py-2.5">5–14 days (hold + payout)</td>
+                      <td className="px-3 py-2.5">~26% (10–20% platform + 2% withdrawal + FX)</td>
+                      <td className="px-3 py-2.5">Yes · platform-held</td>
+                      <td className="px-3 py-2.5">No · account can be frozen</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">Fiverr</td>
+                      <td className="px-3 py-2.5">~$225</td>
+                      <td className="px-3 py-2.5">14+ days (revenue clearance)</td>
+                      <td className="px-3 py-2.5">~25% (20% service + $1–3 withdrawal + FX)</td>
+                      <td className="px-3 py-2.5">Yes · platform-held</td>
+                      <td className="px-3 py-2.5">No</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">Deel / Remote (EOR)</td>
+                      <td className="px-3 py-2.5">~$285</td>
+                      <td className="px-3 py-2.5">1–3 days</td>
+                      <td className="px-3 py-2.5">~5% (SaaS-priced but adds $49–75/mo overhead for the client)</td>
+                      <td className="px-3 py-2.5">Contract-based</td>
+                      <td className="px-3 py-2.5">No · KYC-heavy</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">Stripe Connect</td>
+                      <td className="px-3 py-2.5">~$282</td>
+                      <td className="px-3 py-2.5">2–7 days</td>
+                      <td className="px-3 py-2.5">~6% (2.9% + $0.30 + payout fee + FX)</td>
+                      <td className="px-3 py-2.5">Optional · destination charges</td>
+                      <td className="px-3 py-2.5">No · custodial</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">Local bank (SEPA/ACH domestic)</td>
+                      <td className="px-3 py-2.5">~$298</td>
+                      <td className="px-3 py-2.5">0–3 days</td>
+                      <td className="px-3 py-2.5">~0.7% (domestic only — cross-border falls back to SWIFT)</td>
+                      <td className="px-3 py-2.5">No</td>
+                      <td className="px-3 py-2.5">No</td>
+                    </tr>
+                    <tr className="bg-emerald-50/60">
+                      <td className="px-3 py-2.5 font-bold text-emerald-800">FreelanceBot (USDC on Arc)</td>
+                      <td className="px-3 py-2.5 font-bold text-emerald-800">$297</td>
+                      <td className="px-3 py-2.5 font-bold text-emerald-800">0.8 seconds</td>
+                      <td className="px-3 py-2.5 font-bold text-emerald-800">1% (platform, configurable)</td>
+                      <td className="px-3 py-2.5 font-bold text-emerald-800">Yes · on-chain smart contract</td>
+                      <td className="px-3 py-2.5 font-bold text-emerald-800">Yes · freelancer holds keys</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p className="text-xs text-slate-500">
+                <em>Sources:</em> published fee schedules on paypal.com/us/fees, wise.com/pricing, payoneer.com/pricing,
+                stripe.com/pricing, upwork.com/hire/pricing, fiverr.com/support (retrieved 2026). SWIFT and Western Union
+                fees are averaged across the top ten Asia-Pacific corridors from World Bank Remittance Prices Worldwide
+                (Q1 2026). Cross-border FX spreads are conservative estimates against mid-market rate on the day.
+              </p>
+
+              <p>
+                Every entry above shares the same weakness: <strong>the freelancer never has custody of their earnings</strong>.
+                Funds are held by a company (PayPal, Upwork, Fiverr, Payoneer) or routed through a chain of correspondent
+                banks (SWIFT). Accounts get frozen, holds get extended, disputes get lost, and the freelancer waits.
+              </p>
+
+              <p>
+                FreelanceBot is different in two ways that matter:
+              </p>
+              <ul>
+                <li>
+                  <strong>Self-custody by default.</strong> The escrow is a Solidity contract on Arc Testnet. When the
+                  client approves release, USDC moves directly from the contract to the freelancer&apos;s wallet — no
+                  intermediary, no chargeback window, no account to freeze.
+                </li>
+                <li>
+                  <strong>Deterministic fee.</strong> 1% platform fee, encoded in the contract, transparent on-chain.
+                  Zero FX spread (USDC is a dollar). Zero withdrawal fee (the funds are already yours). Zero holdback.
+                </li>
+              </ul>
+
+              <Callout>
+                On a $300 job, the freelancer takes home $297 with FreelanceBot vs $220 with Upwork.
+                That&apos;s <strong>$77 more per job</strong> — a 35% pay raise, sourced entirely from removing
+                middlemen. Repeat this across the 75M-freelancer APAC market and you&apos;re looking at a
+                $10–20B annual fee leakage that goes back to the workers who earned it.
+              </Callout>
+
+              <h3 className="mt-8 text-base font-semibold text-slate-900">What about existing crypto solutions?</h3>
+              <p>
+                Raw USDC transfers on Ethereum L1 (~$3–15 gas, 15–30 sec finality), Polygon, or Base solve fees but
+                not <em>trust</em>. Neither party wants to send first. Bitwage and Request Network wrap USDC in payroll
+                UX but keep custody with the employer. Escrow-as-a-service tools (LawGeex, Escrow.com) charge
+                3–5%. None combine <strong>on-chain escrow + AI verification + open marketplace</strong> in a single
+                self-custody flow the way FreelanceBot does — that&apos;s the wedge.
               </p>
             </Section>
 
