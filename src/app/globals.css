@@ -91,32 +91,30 @@ body { background-color: #f7fafc; }
    already high-contrast (emerald/sky/violet pastels look fine on dark).
    ======================================================================= */
 
-/* Softer dark palette — user feedback: prev dark was too contrasty and cards
-   looked like glossy virtual credit cards. New palette is a warm slate,
-   card surfaces just 1 step lighter than body so nothing screams.
-   - body:     #1a2338 (medium slate — easier on eyes than pitch black)
-   - surface:  #22304a (cards, panels)
-   - elevated: #2b3b58 (inputs, chips)
-   - border:   #384863 (visible but soft)
-   - text:     #e2e8f0 primary, #94a3b8 secondary                       */
+/* Dark palette — v0.14.3 tuned brighter after user said prev was "redup":
+   - body:     #1e2a44 (medium-bright slate, lively but not glaring)
+   - surface:  #26344f (cards)
+   - elevated: #2f405f (inputs, chips)
+   - border:   #4a5b7a (clearly visible)
+   - text:     #f1f5f9 primary, #cbd5e1 secondary                       */
 html.dark { color-scheme: dark; }
-html.dark body { background-color: #1a2338; color: #e2e8f0; }
+html.dark body { background-color: #1e2a44; color: #f1f5f9; }
 
-/* Space + warm gradient panels — swap to slate base with subtle tint */
+/* Space + warm gradient panels — brighter tinted radial glow */
 html.dark .bg-space {
-  background-color: #1a2338;
+  background-color: #1e2a44;
   background-image:
-    radial-gradient(ellipse at 15% 10%, rgba(56, 189, 248, 0.16) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 20%, rgba(129, 140, 248, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse at 60% 90%, rgba(244, 114, 182, 0.08) 0%, transparent 55%),
-    radial-gradient(ellipse at 30% 70%, rgba(34, 211, 238, 0.10) 0%, transparent 55%);
+    radial-gradient(ellipse at 15% 10%, rgba(56, 189, 248, 0.28) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(129, 140, 248, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 60% 90%, rgba(244, 114, 182, 0.14) 0%, transparent 55%),
+    radial-gradient(ellipse at 30% 70%, rgba(34, 211, 238, 0.18) 0%, transparent 55%);
 }
 html.dark .bg-warm {
-  background-color: #1a2338;
+  background-color: #1e2a44;
   background-image:
-    radial-gradient(ellipse at 20% 30%, rgba(251, 191, 36, 0.10) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 70%, rgba(244, 114, 182, 0.10) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 100%, rgba(14, 165, 233, 0.10) 0%, transparent 60%);
+    radial-gradient(ellipse at 20% 30%, rgba(251, 191, 36, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(244, 114, 182, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(14, 165, 233, 0.16) 0%, transparent 60%);
 }
 
 /* Surface backgrounds */
@@ -124,28 +122,28 @@ html.dark .bg-white,
 html.dark .bg-white\/90,
 html.dark .bg-white\/95,
 html.dark .bg-white\/60,
-html.dark .bg-white\/80 { background-color: #22304a !important; }
-html.dark .bg-slate-50   { background-color: #1a2338 !important; }
-html.dark .bg-slate-100  { background-color: #2b3b58 !important; }
+html.dark .bg-white\/80 { background-color: #26344f !important; }
+html.dark .bg-slate-50   { background-color: #1e2a44 !important; }
+html.dark .bg-slate-100  { background-color: #2f405f !important; }
 
-/* Text colors — bumped up brightness a notch so nothing feels dim */
-html.dark .text-slate-900 { color: #f1f5f9 !important; }
-html.dark .text-slate-800 { color: #e2e8f0 !important; }
-html.dark .text-slate-700 { color: #cbd5e1 !important; }
-html.dark .text-slate-600 { color: #94a3b8 !important; }
-html.dark .text-slate-500 { color: #94a3b8 !important; }
-html.dark .text-slate-400 { color: #94a3b8 !important; }
+/* Text colors — bright primary, medium-bright secondary */
+html.dark .text-slate-900 { color: #f8fafc !important; }
+html.dark .text-slate-800 { color: #f1f5f9 !important; }
+html.dark .text-slate-700 { color: #e2e8f0 !important; }
+html.dark .text-slate-600 { color: #cbd5e1 !important; }
+html.dark .text-slate-500 { color: #b8c1cc !important; }
+html.dark .text-slate-400 { color: #a1acbb !important; }
 
-/* Borders */
-html.dark .border-slate-200 { border-color: #384863 !important; }
-html.dark .border-slate-300 { border-color: #4a5b7a !important; }
+/* Borders — clearly visible */
+html.dark .border-slate-200 { border-color: #4a5b7a !important; }
+html.dark .border-slate-300 { border-color: #5b6d8f !important; }
 
 /* Inputs — solid surface so text is readable */
 html.dark input.bg-white,
 html.dark select.bg-white,
-html.dark textarea.bg-white { background-color: #2b3b58 !important; color: #f1f5f9 !important; }
+html.dark textarea.bg-white { background-color: #2f405f !important; color: #f8fafc !important; }
 html.dark input::placeholder,
-html.dark textarea::placeholder { color: #94a3b8 !important; }
+html.dark textarea::placeholder { color: #b8c1cc !important; }
 
 /* KILL WHITE GRADIENTS on dark — this was the "virtual card" glossy look.
    Any Tailwind gradient that goes from/via/to white or slate-50 gets flattened
@@ -173,14 +171,15 @@ html.dark [class*="from-rose-50"],
 html.dark [class*="from-amber-50"] {
   background-image: none !important;
 }
+/* Card fills — brighter tinted surfaces (bump saturation) */
 html.dark [class*="from-emerald-50"],
-html.dark [class*="from-emerald-100"] { background-color: #17342c !important; }
+html.dark [class*="from-emerald-100"] { background-color: #1d4a3d !important; }
 html.dark [class*="from-sky-50"],
-html.dark [class*="from-sky-100"]     { background-color: #1b3448 !important; }
-html.dark [class*="from-violet-50"]   { background-color: #2a2547 !important; }
-html.dark [class*="from-indigo-50"]   { background-color: #232447 !important; }
-html.dark [class*="from-rose-50"]     { background-color: #3a2131 !important; }
-html.dark [class*="from-amber-50"]    { background-color: #3a2f14 !important; }
+html.dark [class*="from-sky-100"]     { background-color: #1e4260 !important; }
+html.dark [class*="from-violet-50"]   { background-color: #322b5c !important; }
+html.dark [class*="from-indigo-50"]   { background-color: #292b5a !important; }
+html.dark [class*="from-rose-50"]     { background-color: #4a2a3e !important; }
+html.dark [class*="from-amber-50"]    { background-color: #4a3c1c !important; }
 
 /* Also flatten via/to pastel colors so multi-stop gradients don't leak white */
 html.dark [class*="via-sky-50"],
@@ -200,13 +199,13 @@ html.dark .border-sky-200     { border-color: rgba(56, 189, 248, 0.35) !importan
 html.dark .border-violet-200  { border-color: rgba(139, 92, 246, 0.35) !important; }
 html.dark .border-brand\/30   { border-color: rgba(56, 189, 248, 0.4) !important; }
 
-/* Bento card mini-badge chips + extra pastel borders */
-html.dark .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.20) !important; }
-html.dark .bg-sky-100     { background-color: rgba(56, 189, 248, 0.20) !important; }
-html.dark .bg-violet-100  { background-color: rgba(139, 92, 246, 0.20) !important; }
-html.dark .bg-amber-100   { background-color: rgba(251, 191, 36, 0.20) !important; }
-html.dark .bg-indigo-100  { background-color: rgba(129, 140, 248, 0.20) !important; }
-html.dark .bg-rose-100    { background-color: rgba(244, 114, 182, 0.20) !important; }
+/* Bento card mini-badge chips — punchier tint (0.32 instead of 0.20) */
+html.dark .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.32) !important; }
+html.dark .bg-sky-100     { background-color: rgba(56, 189, 248, 0.32) !important; }
+html.dark .bg-violet-100  { background-color: rgba(139, 92, 246, 0.32) !important; }
+html.dark .bg-amber-100   { background-color: rgba(251, 191, 36, 0.32) !important; }
+html.dark .bg-indigo-100  { background-color: rgba(129, 140, 248, 0.32) !important; }
+html.dark .bg-rose-100    { background-color: rgba(244, 114, 182, 0.32) !important; }
 html.dark .text-emerald-800 { color: #6ee7b7 !important; }
 html.dark .text-sky-800     { color: #7dd3fc !important; }
 html.dark .text-violet-800  { color: #c4b5fd !important; }
@@ -240,16 +239,16 @@ html.dark .bg-rose-50 { background-color: rgba(244, 114, 182, 0.08) !important; 
 html.dark .bg-sky-50\/60,
 html.dark .bg-sky-50 { background-color: rgba(56, 189, 248, 0.08) !important; }
 
-/* Liquid glass on dark — soft card, no glossy white */
+/* Liquid glass on dark — bright surface, no glossy white */
 html.dark :where(.liquid-glass) {
-  background: #22304a;
-  border-color: #384863;
+  background: #26344f;
+  border-color: rgba(56, 189, 248, 0.25);
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.25),
-    0 4px 10px rgba(0, 0, 0, 0.15);
+    0 1px 2px rgba(0, 0, 0, 0.20),
+    0 4px 10px rgba(56, 189, 248, 0.06);
 }
 
 /* Hover state cleanup */
-html.dark .hover\:bg-slate-100:hover { background-color: #2b3b58 !important; }
-html.dark .bg-brand\/5  { background-color: rgba(56, 189, 248, 0.08) !important; }
-html.dark .bg-brand\/10 { background-color: rgba(56, 189, 248, 0.15) !important; }
+html.dark .hover\:bg-slate-100:hover { background-color: #2f405f !important; }
+html.dark .bg-brand\/5  { background-color: rgba(56, 189, 248, 0.12) !important; }
+html.dark .bg-brand\/10 { background-color: rgba(56, 189, 248, 0.22) !important; }
