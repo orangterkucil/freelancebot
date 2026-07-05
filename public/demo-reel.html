@@ -1215,7 +1215,7 @@
             <label>Your email</label>
             <div class="input focus">nyc-client@example.com</div>
           </div>
-          <div style="margin-top: 20px;"><span class="btn primary">Continue →</span></div>
+          <div style="margin-top: 20px;"><span class="btn primary" data-cursor-target>Continue →</span></div>
         </div>
         <!-- Frame 4.2: Post job -->
         <div class="fr" data-i="1">
@@ -1246,7 +1246,7 @@
               <div class="input">2026-07-08</div>
             </div>
           </div>
-          <div style="margin-top: 20px;"><span class="btn primary">Post to marketplace</span></div>
+          <div style="margin-top: 20px;"><span class="btn primary" data-cursor-target>Post to marketplace</span></div>
         </div>
         <!-- Frame 4.3: Review applications -->
         <div class="fr" data-i="2">
@@ -1260,7 +1260,7 @@
               <div class="pitch">"I've built 20+ landing pages in Next.js. Portfolio: landings.dev"</div>
             </div>
             <div class="actions">
-              <span class="btn-sm btn-accept">Accept</span>
+              <span class="btn-sm btn-accept" data-cursor-target>Accept</span>
               <span class="btn-sm btn-reject">Reject</span>
             </div>
           </div>
@@ -1294,7 +1294,7 @@
             </div>
             <div class="btns">
               <span class="btn ghost">Cancel</span>
-              <span class="btn primary">Sign & fund →</span>
+              <span class="btn primary" data-cursor-target>Sign & fund →</span>
             </div>
           </div>
         </div>
@@ -1313,7 +1313,7 @@
               <div class="check"><span class="tick">✓</span> Confidence · high</div>
             </div>
             <div style="margin-top: 18px; display: flex; gap: 10px;">
-              <span class="btn success">Approve &amp; release →</span>
+              <span class="btn success" data-cursor-target>Approve &amp; release →</span>
               <span class="btn ghost">Hold for review</span>
             </div>
           </div>
@@ -1375,7 +1375,7 @@
             <div class="chip">📣 marketing</div>
           </div>
           <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px;">
-            <div class="job-card" style="flex: 1; min-width: 320px;">
+            <div class="job-card" data-cursor-target style="flex: 1; min-width: 320px;">
               <div class="tag">Development</div>
               <div class="title">Build a landing page in Next.js</div>
               <div class="brief">Tailwind, mobile-first. Ship by Friday.</div>
@@ -1397,7 +1397,7 @@
           <div class="chips">
             <div class="chip">all</div>
             <div class="chip">🎨 design</div>
-            <div class="chip active">⚙ development</div>
+            <div class="chip active" data-cursor-target>⚙ development</div>
             <div class="chip">✍ writing</div>
             <div class="chip">🎬 video</div>
             <div class="chip">📣 marketing</div>
@@ -1427,7 +1427,7 @@
             <label>Counter-bid (optional)</label>
             <div class="input">— leave blank —</div>
           </div>
-          <div style="margin-top: 20px;"><span class="btn primary">Send application →</span></div>
+          <div style="margin-top: 20px;"><span class="btn primary" data-cursor-target>Send application →</span></div>
         </div>
         <!-- 5.4 Deliver -->
         <div class="fr" data-i="3">
@@ -1445,7 +1445,7 @@
             <label>Notes to agent (optional)</label>
             <div class="input">All 3 sections rendered. Mobile-tested on iOS + Android.</div>
           </div>
-          <div style="margin-top: 20px;"><span class="btn primary">Submit deliverable →</span></div>
+          <div style="margin-top: 20px;"><span class="btn primary" data-cursor-target>Submit deliverable →</span></div>
         </div>
         <!-- 5.5 Verify -->
         <div class="fr" data-i="4">
@@ -1768,14 +1768,35 @@
     const body = document.getElementById('body-' + sceneId);
     const cursor = ensureFakeCursor(sceneId);
     if (!body || !cursor) return;
-    const target = (CURSOR_TARGETS[sceneId] || [])[stepIdx];
-    if (!target) { cursor.classList.remove('show'); return; }
-    cursor.classList.add('show');
-    const rect = body.getBoundingClientRect();
-    // Position with % so it stays responsive
-    cursor.style.left = target.x + '%';
-    cursor.style.top = target.y + '%';
-    // click animation slightly after cursor lands
+
+    // Prefer live element target — the frame that's about to become active
+    // may not be `.active` yet at this moment, so query by data-i.
+    const activeFrame = body.querySelector('.fr[data-i="' + stepIdx + '"]');
+    const domTarget = activeFrame && activeFrame.querySelector('[data-cursor-target]');
+
+    if (domTarget) {
+      // Wait one frame so layout is measurable, then position cursor over
+      // the actual clickable element (center of its bounding rect).
+      requestAnimationFrame(() => {
+        const bodyRect = body.getBoundingClientRect();
+        const tRect = domTarget.getBoundingClientRect();
+        if (bodyRect.width === 0 || tRect.width === 0) return; // not yet laid out
+        const cx = tRect.left - bodyRect.left + tRect.width / 2;
+        const cy = tRect.top  - bodyRect.top  + tRect.height / 2;
+        cursor.style.left = ((cx / bodyRect.width)  * 100) + '%';
+        cursor.style.top  = ((cy / bodyRect.height) * 100) + '%';
+        cursor.classList.add('show');
+      });
+    } else {
+      // Fallback: hardcoded % coordinates (kept for frames without target)
+      const target = (CURSOR_TARGETS[sceneId] || [])[stepIdx];
+      if (!target) { cursor.classList.remove('show'); return; }
+      cursor.style.left = target.x + '%';
+      cursor.style.top  = target.y + '%';
+      cursor.classList.add('show');
+    }
+
+    // click animation slightly after cursor lands (both paths)
     setTimeout(() => {
       cursor.classList.add('clicking');
       setTimeout(() => cursor.classList.remove('clicking'), 380);
