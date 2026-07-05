@@ -41,7 +41,7 @@
   </a>
 </p>
 
-**FreelanceBot** replaces the 14-day PayPal → SWIFT → local-bank chain with a single on-chain escrow. A client posts a job, funds it in USDC on Arc with one signature, and locks the money in a verified smart contract. An AI agent (Groq Llama 3.3 70B) reviews the deliverable — checks URL reachability, deadline match, and brief alignment — and returns a structured JSON verdict. When the client approves, USDC settles to the freelancer in **under one second**. A $300 job that used to net $220 in 14 days now nets **$297 in 0.8 seconds**.
+FreelanceBot is an autonomous payment agent for cross-border freelance work. Clients fund USDC escrow on Arc in a single signed transaction; an AI verifier (Groq Llama 3.3 70B) evaluates the deliverable against the brief, deadline, and URL reachability; and once approved, USDC settles to the freelancer with sub-second finality. The result: a $300 job that historically netted $220 after 14 days of PayPal, SWIFT, and local-bank fees now nets **$297 in 0.8 seconds** — end-to-end, self-custody, no platform-held funds.
 
 ## Features
 
