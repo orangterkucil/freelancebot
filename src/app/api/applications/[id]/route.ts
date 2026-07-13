@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getOrder, assertActorIsParty } from "@/lib/orders";
 import { setApplicationStatus, setOrderFreelancer } from "@/lib/orders";
 import { logger } from "@/lib/logger";
+import { getIdentity } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -30,10 +31,13 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
     const orderId         = Number(body.order_id);
     const freelancerEmail = String(body.freelancer_email ?? "").trim().toLowerCase();
-    const actorEmail      = String(body.actor_email ?? "").trim().toLowerCase();
 
-    if (!orderId || !actorEmail) {
-      return NextResponse.json({ error: "missing order_id or actor_email" }, { status: 400 });
+    const { email: actorEmail } = await getIdentity(req, body.actor_email);
+    if (!actorEmail) {
+      return NextResponse.json({ error: "Unauthorized — sign in required" }, { status: 401 });
+    }
+    if (!orderId) {
+      return NextResponse.json({ error: "missing order_id" }, { status: 400 });
     }
 
     const order = await getOrder(orderId);

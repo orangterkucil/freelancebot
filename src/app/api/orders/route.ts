@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createOrder, listOrdersForEmail } from "@/lib/orders";
+import { getIdentity } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,9 +16,12 @@ export const runtime = "nodejs";
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const email = url.searchParams.get("email")?.trim();
+    // A caller may only list THEIR OWN orders. We ignore any email query param
+    // for authorization and use the verified session identity instead — passing
+    // someone else's email no longer leaks their orders.
+    const { email } = await getIdentity(req, url.searchParams.get("email") ?? undefined);
     if (!email) {
-      return NextResponse.json({ error: "email query param required" }, { status: 400 });
+      return NextResponse.json({ error: "Unauthorized — sign in required" }, { status: 401 });
     }
     const orders = await listOrdersForEmail(email);
     return NextResponse.json({ orders });
@@ -46,6 +50,19 @@ export async function POST(req: Request) {
     // v0.11.0: allow $0 orders (microtasks / pro-bono). Only reject negative + invalid.
     if (!client_email || !freelancer_email || !brief || !Number.isFinite(amount_usdc) || amount_usdc < 0) {
       return NextResponse.json({ error: "missing or invalid fields" }, { status: 400 });
+    }
+
+    // The creator must be signed in and must be one of the two parties — you
+    // can't post an order that names other people as both sides.
+    const { email: actorEmail } = await getIdentity(req, client_email);
+    if (!actorEmail) {
+      return NextResponse.json({ error: "Unauthorized — sign in required" }, { status: 401 });
+    }
+    if (actorEmail !== client_email && actorEmail !== freelancer_email) {
+      return NextResponse.json(
+        { error: "Forbidden — you must be the client or freelancer on the order you create" },
+        { status: 403 }
+      );
     }
 
     const order = await createOrder({

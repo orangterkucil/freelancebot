@@ -7,6 +7,7 @@ import {
   listRatingsForRatee,
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
+import { getIdentity } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -28,9 +29,12 @@ export async function POST(req: Request) {
     const ratee_email = String(body.ratee_email ?? "").trim().toLowerCase();
     const stars       = Number(body.stars);
     const comment     = body.comment ? String(body.comment) : null;
-    const actor_email = String(body.actor_email ?? "").trim().toLowerCase();
 
-    if (!order_id || !ratee_email || !actor_email || !Number.isFinite(stars)) {
+    const { email: actor_email } = await getIdentity(req, body.actor_email);
+    if (!actor_email) {
+      return NextResponse.json({ error: "Unauthorized — sign in required" }, { status: 401 });
+    }
+    if (!order_id || !ratee_email || !Number.isFinite(stars)) {
       return NextResponse.json({ error: "missing or invalid fields" }, { status: 400 });
     }
     if (stars < 1 || stars > 5) {

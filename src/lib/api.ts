@@ -9,17 +9,36 @@
  */
 
 import type { Order, Message, OrderStatus, Application, Field, ClientLinks, Rating, RatingSummary } from "./orders";
+import { supabaseBrowser } from "./supabase";
+
+/**
+ * Attach the signed-in user's Supabase access token so the server can verify
+ * the caller's identity instead of trusting a spoofable actor_email. Returns an
+ * empty object when there is no session (demo mode / signed out).
+ */
+async function authHeader(): Promise<Record<string, string>> {
+  if (typeof window === "undefined") return {};
+  try {
+    const { data } = await supabaseBrowser().auth.getSession();
+    const token = data.session?.access_token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}
 
 async function jsonFetch<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   const attempts = 3;
   const baseMs   = 300;
   let lastErr: unknown;
 
+  const auth = await authHeader();
+
   for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
       const res = await fetch(input, {
         ...init,
-        headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+        headers: { "Content-Type": "application/json", ...auth, ...(init?.headers ?? {}) },
       });
       const data = await res.json().catch(() => ({}));
 

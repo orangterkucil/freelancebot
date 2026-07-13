@@ -7,6 +7,8 @@ import {
   setOrderDeliverable,
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
+import { rateLimit, clientIp } from "@/lib/ratelimit";
+import { getIdentity } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -20,10 +22,24 @@ export const runtime = "nodejs";
  */
 export async function POST(req: Request) {
   try {
+    // Cost guard: this route calls the Groq LLM. Cap per-IP to stop bill abuse.
+    const rl = rateLimit(`verify:${clientIp(req)}`, 10, 60_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "rate_limited", detail: "Too many verification requests. Slow down." },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfter) } }
+      );
+    }
+
     const body = await req.json();
     const orderId        = Number(body.orderId);
     const deliverableUrl = String(body.deliverableUrl ?? "").trim();
-    const actorEmail     = String(body.actor_email ?? "").trim();
+
+    // Identity from the verified session (falls back to body email only in demo).
+    const { email: actorEmail } = await getIdentity(req, body.actor_email);
+    if (!actorEmail) {
+      return NextResponse.json({ error: "Unauthorized — sign in required" }, { status: 401 });
+    }
 
     if (!orderId || !deliverableUrl) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });

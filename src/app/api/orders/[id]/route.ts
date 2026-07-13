@@ -7,6 +7,7 @@ import {
   assertActorIsParty,
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
+import { getIdentity } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -29,7 +30,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     if (!order) return NextResponse.json({ error: "not found" }, { status: 404 });
 
     const url = new URL(req.url);
-    const actorEmail = url.searchParams.get("actor_email") ?? "";
+    const { email: actorEmail } = await getIdentity(req, url.searchParams.get("actor_email") ?? undefined);
     const isParty =
       !!actorEmail &&
       (order.client_email.toLowerCase() === actorEmail.toLowerCase() ||
@@ -53,9 +54,12 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     if (!orderId) return NextResponse.json({ error: "bad id" }, { status: 400 });
 
     const body = await req.json();
-    const actorEmail = String(body.actor_email ?? "").trim();
 
     // ---- AUTH GUARD ----
+    const { email: actorEmail } = await getIdentity(req, body.actor_email);
+    if (!actorEmail) {
+      return NextResponse.json({ error: "Unauthorized — sign in required" }, { status: 401 });
+    }
     const { role } = await assertActorIsParty(orderId, actorEmail);
     if (!role) {
       logger.warn("api.orders.patch.forbidden", { orderId, actorEmail });

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { chatTurn, type ChatMessage } from "@/lib/agent";
 import { appendMessage, listMessages, assertActorIsParty } from "@/lib/orders";
 import { logger } from "@/lib/logger";
+import { rateLimit, clientIp } from "@/lib/ratelimit";
+import { getIdentity } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,11 +17,25 @@ export const runtime = "nodejs";
  */
 export async function POST(req: Request) {
   try {
+    // Cost guard: this route calls the Groq LLM. Cap per-IP to stop bill abuse.
+    const rl = rateLimit(`agent:${clientIp(req)}`, 20, 60_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "rate_limited", detail: "Too many messages. Slow down." },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfter) } }
+      );
+    }
+
     const body = await req.json();
     const orderId    = Number(body.orderId);
     const claimedRole = body.role as "client" | "freelancer";
     const message    = String(body.message ?? "").trim();
-    const actorEmail = String(body.actor_email ?? "").trim();
+
+    // Identity from the verified session (falls back to body email only in demo).
+    const { email: actorEmail } = await getIdentity(req, body.actor_email);
+    if (!actorEmail) {
+      return NextResponse.json({ error: "Unauthorized — sign in required" }, { status: 401 });
+    }
 
     if (!orderId || !message || (claimedRole !== "client" && claimedRole !== "freelancer")) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
