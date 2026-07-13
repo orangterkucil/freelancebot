@@ -7,6 +7,7 @@ import { patchOrder, verifyDeliverable } from "@/lib/api";
 import {
   connectWallet,
   getEscrowWithSigner,
+  getEscrowReadonly,
   getUsdcWithSigner,
   toUsdcUnits,
   ESCROW_ADDRESS,
@@ -14,6 +15,24 @@ import {
 } from "@/lib/contracts";
 
 const STATUS_NAMES = ["none", "funded", "delivered", "released", "refunded"];
+const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
+
+/**
+ * Does this order actually exist on the escrow contract? Orders funded in
+ * demo/simulated mode were never created on-chain, so calling release/refund on
+ * them reverts. We read the order back: a missing one has a zero client and
+ * status None(0). Read-only, no wallet prompt.
+ */
+async function orderExistsOnChain(onchainId: number): Promise<boolean> {
+  try {
+    const o: any = await getEscrowReadonly().getOrder(onchainId);
+    const client = String(o.client ?? o[0] ?? "").toLowerCase();
+    const status = Number(o.status ?? o[7] ?? 0);
+    return !!client && client !== ZERO_ADDR && status !== 0;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Turn an ethers error into a message a human can act on. With the custom-error
@@ -162,6 +181,20 @@ export function OrderActions({
     await patchOrder(order.id, { status: "refunded" });
   };
 
+  // Route to the on-chain path only when this order actually exists on the
+  // contract; otherwise (demo/simulated funding) settle it off-chain so the
+  // action still completes instead of reverting.
+  const releaseAuto = async () => {
+    const onchainId = order.onchain_id ?? order.id;
+    if (hasOnchain && (await orderExistsOnChain(onchainId))) await releaseOnChain();
+    else await releaseSimulated();
+  };
+  const refundAuto = async () => {
+    const onchainId = order.onchain_id ?? order.id;
+    if (hasOnchain && (await orderExistsOnChain(onchainId))) await refundOnChain();
+    else await refundSimulated();
+  };
+
   return (
     <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
@@ -218,7 +251,7 @@ export function OrderActions({
       {role === "client" && order.status === "delivered" && (
         <button
           disabled={busy}
-          onClick={() => run(hasOnchain ? releaseOnChain : releaseSimulated)}
+          onClick={() => run(releaseAuto)}
           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-emerald-500/30 transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
         >
           <CheckCircle2 className="h-4 w-4" />
@@ -290,7 +323,7 @@ export function OrderActions({
                   </p>
                   <button
                     disabled={busy}
-                    onClick={() => run(hasOnchain ? refundOnChain : refundSimulated)}
+                    onClick={() => run(refundAuto)}
                     className="mt-3 inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white px-3 py-2 font-display text-xs uppercase tracking-wider text-amber-800 shadow-sm transition-colors hover:bg-amber-50 disabled:opacity-50"
                   >
                     <RotateCcw className="h-3 w-3" />
