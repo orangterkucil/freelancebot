@@ -61,12 +61,16 @@ export function getBrowserProvider(): BrowserProvider {
   if (!eth) {
     throw new Error("No injected wallet found. Install MetaMask and switch to Arc Testnet.");
   }
-  return new BrowserProvider(eth, { chainId: ARC_CHAIN_ID, name: "arc-testnet" });
+  // Do NOT pin the network here. If the wallet is on a different chain (e.g.
+  // Ethereum mainnet, id 1), ethers v6 throws "network changed: 5042002 => 1"
+  // on the first request and every action dead-locks. Let it auto-detect the
+  // wallet's current chain; connectWallet() then prompts the switch to Arc.
+  return new BrowserProvider(eth);
 }
 
 /** Ask the user to connect their wallet and return a signer. */
 export async function connectWallet(): Promise<{ address: string; signer: Signer }> {
-  const provider = getBrowserProvider();
+  let provider = getBrowserProvider();
   // request account access (MetaMask popup)
   await provider.send("eth_requestAccounts", []);
   // make sure the user is on the right chain
@@ -92,6 +96,9 @@ export async function connectWallet(): Promise<{ address: string; signer: Signer
         throw err;
       }
     }
+    // Re-create the provider so ethers picks up the freshly-switched network
+    // instead of throwing on the stale one it detected a moment ago.
+    provider = getBrowserProvider();
   }
   const signer = await provider.getSigner();
   const address = await signer.getAddress();
