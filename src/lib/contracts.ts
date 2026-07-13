@@ -34,6 +34,15 @@ export const ESCROW_ABI = [
   "event DeliverySubmitted(uint256 indexed orderId, string deliverable)",
   "event OrderReleased(uint256 indexed orderId, address indexed releasedBy, uint256 freelancerNet, uint256 agentFee)",
   "event OrderRefunded(uint256 indexed orderId)",
+  // Custom errors — without these, ethers can only report "unknown custom error"
+  // instead of the actual revert reason (e.g. WrongStatus, TooEarlyForRefund).
+  "error WrongStatus(uint8 expected, uint8 actual)",
+  "error NotAuthorized()",
+  "error InvalidAmount()",
+  "error InvalidAddress()",
+  "error DeadlineInPast()",
+  "error TooEarlyForRefund()",
+  "error FeeTooHigh()",
 ];
 
 export const USDC_ABI = [

@@ -13,6 +13,40 @@ import {
   txUrl,
 } from "@/lib/contracts";
 
+const STATUS_NAMES = ["none", "funded", "delivered", "released", "refunded"];
+
+/**
+ * Turn an ethers error into a message a human can act on. With the custom-error
+ * ABI now loaded, on-chain reverts decode to their real reason (e.reason /
+ * e.revert.name) instead of "unknown custom error".
+ */
+function friendlyChainError(e: any): string {
+  if (e?.code === "ACTION_REJECTED" || /user rejected|denied|4001/i.test(String(e?.message))) {
+    return "You rejected the transaction in your wallet.";
+  }
+  const name: string | undefined = e?.revert?.name ?? e?.reason;
+  switch (name) {
+    case "WrongStatus": {
+      const actual = Number(e?.revert?.args?.[1] ?? e?.revert?.args?.actual ?? -1);
+      if (actual === 0)
+        return "This order was never funded on-chain (likely funded in demo/simulated mode), so there's nothing to refund on the contract.";
+      if (actual === 2) return "Work was already delivered — refund only applies to a funded, undelivered order.";
+      if (actual === 3) return "This order was already released to the freelancer.";
+      if (actual === 4) return "This order was already refunded.";
+      return `Order is in the wrong on-chain state (${STATUS_NAMES[actual] ?? actual}) for this action.`;
+    }
+    case "TooEarlyForRefund":
+      return "Too early: the contract's deadline + 7-day grace period hasn't passed yet (its on-chain clock can differ from what the app shows).";
+    case "NotAuthorized":
+      return "Your connected wallet isn't a party to this order on-chain.";
+    case "InvalidAmount":
+    case "InvalidAddress":
+      return `Contract rejected the input (${name}).`;
+    default:
+      return e?.shortMessage ?? e?.reason ?? e?.message ?? "Transaction failed";
+  }
+}
+
 export function OrderActions({
   order,
   role,
@@ -41,7 +75,7 @@ export function OrderActions({
       await fn();
       onChanged();
     } catch (e: any) {
-      setError(e?.shortMessage ?? e?.message ?? "Action failed");
+      setError(friendlyChainError(e));
     } finally {
       setBusy(false);
     }
