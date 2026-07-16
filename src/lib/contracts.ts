@@ -8,7 +8,16 @@
  *     signing via MetaMask injected provider).
  */
 
-import { BrowserProvider, Contract, JsonRpcProvider, type Eip1193Provider, type Signer } from "ethers";
+import {
+  BrowserProvider,
+  Contract,
+  JsonRpcProvider,
+  Interface,
+  keccak256,
+  toUtf8Bytes,
+  type Eip1193Provider,
+  type Signer,
+} from "ethers";
 
 export const ESCROW_ADDRESS = process.env.NEXT_PUBLIC_ESCROW_ADDRESS ?? "";
 export const ARC_RPC_URL    = process.env.NEXT_PUBLIC_ARC_RPC_URL    ?? "https://rpc.testnet.arc.network";
@@ -51,6 +60,46 @@ export const USDC_ABI = [
   "function balanceOf(address account) external view returns (uint256)",
   "function decimals() external view returns (uint8)",
 ];
+
+// ---------------------------------------------------------------------------
+// Transaction memos (Arc v0.7.2)
+// ---------------------------------------------------------------------------
+// Arc's Memo wrapper contract lets us attach a structured reference (invoice /
+// order id) to a call. It routes the inner call through the CallFrom precompile,
+// so the escrow still sees the client's EOA as msg.sender. Off by default until
+// verified on testnet — flip NEXT_PUBLIC_USE_MEMO=1 to enable.
+// Docs: https://docs.arc.io/arc/concepts/transaction-memos
+export const MEMO_ADDRESS = "0x5294E9927c3306DcBaDb03fe70b92e01cCede505";
+export const USE_MEMO = process.env.NEXT_PUBLIC_USE_MEMO === "1";
+
+export const MEMO_ABI = [
+  "function memo(address target, bytes data, bytes32 memoId, bytes memoData) external",
+  "event Memo(address indexed sender, address indexed target, bytes32 callDataHash, bytes32 indexed memoId, bytes memo, uint256 memoIndex)",
+];
+
+/**
+ * Call `fn(...args)` on `target` wrapped through Arc's Memo contract, attaching
+ * `reference` (indexed, for lookups) and `memoText` (free-form context). The
+ * caller's EOA is preserved as msg.sender in `target`. Returns the tx receipt —
+ * the target contract's own events are still present in receipt.logs, so callers
+ * can parse them exactly as with a direct call.
+ */
+export async function sendWithMemo(
+  signer: Signer,
+  target: string,
+  iface: Interface,
+  fn: string,
+  args: unknown[],
+  reference: string,
+  memoText: string,
+) {
+  const data = iface.encodeFunctionData(fn, args);
+  const memoId = keccak256(toUtf8Bytes(reference));
+  const memoData = toUtf8Bytes(memoText);
+  const memo = new Contract(MEMO_ADDRESS, MEMO_ABI, signer);
+  const tx = await memo.memo(target, data, memoId, memoData);
+  return tx.wait();
+}
 
 // ---------------------------------------------------------------------------
 // Provider helpers

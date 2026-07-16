@@ -12,6 +12,8 @@ import {
   toUsdcUnits,
   ESCROW_ADDRESS,
   txUrl,
+  USE_MEMO,
+  sendWithMemo,
 } from "@/lib/contracts";
 
 const STATUS_NAMES = ["none", "funded", "delivered", "released", "refunded"];
@@ -110,8 +112,10 @@ export function OrderActions({
     await approveTx.wait();
 
     const deadline = order.deadline ? Math.floor(new Date(order.deadline).getTime() / 1000) : Math.floor(Date.now() / 1000) + 86400 * 7;
-    const fundTx = await escrow.createAndFund(address, amount, order.brief, deadline);
-    const receipt = await fundTx.wait();
+    const args = [address, amount, order.brief, deadline];
+    const receipt = USE_MEMO
+      ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "createAndFund", args, `FB-${order.id}`, `fund;order=${order.id}`)
+      : await (await escrow.createAndFund(...args)).wait();
     setLastTxHash(receipt.hash);
 
     let onchainId: number | null = null;
@@ -139,8 +143,9 @@ export function OrderActions({
     const { signer } = await connectWallet();
     const escrow = getEscrowWithSigner(signer);
     const onchainId = order.onchain_id ?? order.id;
-    const tx = await escrow.approveAndRelease(onchainId);
-    const receipt = await tx.wait();
+    const receipt = USE_MEMO
+      ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "approveAndRelease", [onchainId], `FB-${order.id}`, `release;order=${order.id}`)
+      : await (await escrow.approveAndRelease(onchainId)).wait();
     setLastTxHash(receipt.hash);
     await patchOrder(order.id, { status: "released" });
   };
@@ -171,8 +176,9 @@ export function OrderActions({
     const { signer } = await connectWallet();
     const escrow = getEscrowWithSigner(signer);
     const onchainId = order.onchain_id ?? order.id;
-    const tx = await escrow.refund(onchainId);
-    const receipt = await tx.wait();
+    const receipt = USE_MEMO
+      ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "refund", [onchainId], `FB-${order.id}`, `refund;order=${order.id}`)
+      : await (await escrow.refund(onchainId)).wait();
     setLastTxHash(receipt.hash);
     await patchOrder(order.id, { status: "refunded" });
   };
