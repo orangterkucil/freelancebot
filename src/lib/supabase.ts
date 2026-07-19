@@ -34,5 +34,15 @@ export function supabaseAdmin(): SupabaseClient {
   const secret = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url) throw new Error("NEXT_PUBLIC_SUPABASE_URL missing");
   if (!secret) throw new Error("SUPABASE_SERVICE_ROLE_KEY missing");
-  return createClient(url, secret, { auth: { persistSession: false } });
+  // Force every read to bypass Next.js's fetch Data Cache. Without this the
+  // marketplace served STALE snapshots (e.g. the unfiltered "All" query kept
+  // returning an old, smaller result while category filters — different URLs —
+  // returned fresh data, so "All" showed FEWER jobs than a single category).
+  return createClient(url, secret, {
+    auth: { persistSession: false },
+    global: {
+      fetch: (input: RequestInfo | URL, init?: RequestInit) =>
+        fetch(input, { ...init, cache: "no-store" }),
+    },
+  });
 }
