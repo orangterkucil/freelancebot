@@ -338,9 +338,11 @@ export async function setOrderStatus(orderId: number, status: OrderStatus): Prom
  */
 export async function setOrderFreelancer(orderId: number, freelancer_email: string): Promise<void> {
   const sb = supabaseAdmin();
+  // Assigning a freelancer means the public job is now taken — flip is_public
+  // off so it leaves the marketplace (which lists is_public && status=draft).
   const { error } = await sb
     .from("orders")
-    .update({ freelancer_email })
+    .update({ freelancer_email, is_public: false })
     .eq("id", orderId);
   if (error) throw error;
 }

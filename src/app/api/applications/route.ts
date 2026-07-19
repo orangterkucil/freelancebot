@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createApplication, listApplicationsByFreelancer, listApplicationsForOrder } from "@/lib/orders";
+import { createApplication, listApplicationsByFreelancer, listApplicationsForOrder, getOrder } from "@/lib/orders";
 import { getIdentity } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -60,6 +60,12 @@ export async function GET(req: Request) {
     if (orderIdRaw) {
       const orderId = Number(orderIdRaw);
       if (!orderId) return NextResponse.json({ error: "bad order_id" }, { status: 400 });
+      // Only the order's client may see who applied to their job.
+      const order = await getOrder(orderId);
+      if (!order) return NextResponse.json({ error: "order not found" }, { status: 404 });
+      if (order.client_email.toLowerCase() !== me) {
+        return NextResponse.json({ error: "Forbidden — only the job's client can view applicants" }, { status: 403 });
+      }
       const applications = await listApplicationsForOrder(orderId);
       return NextResponse.json({ applications });
     }

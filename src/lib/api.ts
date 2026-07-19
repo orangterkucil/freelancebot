@@ -172,8 +172,11 @@ export function applyToJob(body: {
   });
 }
 
-export function listApplicationsForOrder(orderId: number) {
-  return jsonFetch<{ applications: Application[] }>(`/api/applications?order_id=${orderId}`);
+export function listApplicationsForOrder(orderId: number, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail("client");
+  return jsonFetch<{ applications: Application[] }>(
+    `/api/applications?order_id=${orderId}${actor ? "&email=" + encodeURIComponent(actor) : ""}`
+  );
 }
 
 export function listMyApplications(email: string) {
