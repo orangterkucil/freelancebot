@@ -242,6 +242,28 @@ export function OrderActions({
         ) : null;
       })()}
 
+      {/* Show the submitted deliverable so the client can actually review the
+          work before releasing (parties only — scrubbed for the public). */}
+      {order.deliverable_url && (
+        <div className="rounded-xl border border-sky-200 bg-sky-50 p-3">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-sky-700">
+            Deliverable submitted
+          </p>
+          <a
+            href={order.deliverable_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-flex items-center gap-1 break-all font-mono text-[11px] text-sky-900 hover:underline"
+          >
+            {order.deliverable_url}
+            <ExternalLink className="h-3 w-3 flex-shrink-0" />
+          </a>
+          <p className="mt-1.5 font-mono text-[10px] text-slate-500">
+            Open it and review the work before releasing payment.
+          </p>
+        </div>
+      )}
+
       {role === "client" && order.status === "draft" && !order.is_public && (
         <button
           disabled={busy}
