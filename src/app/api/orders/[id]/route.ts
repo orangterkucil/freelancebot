@@ -6,6 +6,7 @@ import {
   setOrderStatus,
   assertActorIsParty,
   scrubOrderForPublic,
+  updateOrderFields,
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
 import { getIdentity } from "@/lib/auth";
@@ -67,6 +68,36 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     if (!role) {
       logger.warn("api.orders.patch.forbidden", { orderId, actorEmail });
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // ---- EDIT (fix a mistake instead of creating a new order) ----
+    // Only the client, only while the order is still a draft — once funded the
+    // escrow terms are locked.
+    if (body.edit && typeof body.edit === "object") {
+      const current = await getOrder(orderId);
+      if (!current) return NextResponse.json({ error: "not found" }, { status: 404 });
+      if (current.client_email.toLowerCase() !== actorEmail.toLowerCase()) {
+        return NextResponse.json({ error: "Only the client can edit this order" }, { status: 403 });
+      }
+      if (current.status !== "draft") {
+        return NextResponse.json({ error: "This order is already funded — its terms are locked and can't be edited." }, { status: 400 });
+      }
+      const e = body.edit;
+      if (typeof e.amount_usdc === "number" && (!Number.isFinite(e.amount_usdc) || e.amount_usdc < 0)) {
+        return NextResponse.json({ error: "invalid amount" }, { status: 400 });
+      }
+      if (e.deadline && new Date(e.deadline).getTime() <= Date.now()) {
+        return NextResponse.json({ error: "Deadline must be a future date." }, { status: 400 });
+      }
+      await updateOrderFields(orderId, {
+        title:       e.title,
+        brief:       e.brief,
+        amount_usdc: e.amount_usdc,
+        deadline:    e.deadline,
+        field:       e.field,
+      });
+      const updated = await getOrder(orderId);
+      return NextResponse.json({ order: updated });
     }
 
     if (typeof body.onchain_id === "number") {

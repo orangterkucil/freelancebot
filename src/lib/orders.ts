@@ -347,6 +347,30 @@ export async function setOrderFreelancer(orderId: number, freelancer_email: stri
   if (error) throw error;
 }
 
+/**
+ * Edit an order's editable fields. Callers must enforce that this only happens
+ * while the order is a DRAFT (before funding) and by the client — the escrow
+ * terms must be immutable once USDC is locked.
+ */
+export async function updateOrderFields(orderId: number, fields: {
+  title?: string | null;
+  brief?: string;
+  amount_usdc?: number;
+  deadline?: string | null;
+  field?: Field;
+}): Promise<void> {
+  const sb = supabaseAdmin();
+  const patch: Record<string, unknown> = {};
+  if (fields.title       !== undefined) patch.title       = fields.title;
+  if (fields.brief       !== undefined) patch.brief       = fields.brief;
+  if (fields.amount_usdc !== undefined) patch.amount_usdc = fields.amount_usdc;
+  if (fields.deadline    !== undefined) patch.deadline    = fields.deadline;
+  if (fields.field       !== undefined) patch.field       = fields.field;
+  if (Object.keys(patch).length === 0) return;
+  const { error } = await sb.from("orders").update(patch).eq("id", orderId);
+  if (error) throw error;
+}
+
 export async function setOrderDeliverable(orderId: number, url: string): Promise<void> {
   const sb = supabaseAdmin();
   const { error } = await sb

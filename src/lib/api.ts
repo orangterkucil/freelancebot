@@ -108,6 +108,19 @@ export function getOrder(orderId: number, actorEmail?: string) {
   );
 }
 
+/** Edit a draft order's fields (client only, before funding). */
+export function editOrder(
+  orderId: number,
+  edit: { title?: string | null; brief?: string; amount_usdc?: number; deadline?: string | null; field?: Field },
+  actorEmail?: string,
+) {
+  const actor = actorEmail ?? readActorEmail("client");
+  return jsonFetch<{ order: Order }>(`/api/orders/${orderId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ edit, actor_email: actor }),
+  });
+}
+
 export function patchOrder(orderId: number, patch: { onchain_id?: number; status?: OrderStatus }, actorEmail?: string) {
   const actor = actorEmail ?? readActorEmail();
   return jsonFetch<{ order: Order }>(`/api/orders/${orderId}`, {

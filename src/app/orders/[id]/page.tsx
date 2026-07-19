@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { AgentChat } from "@/components/AgentChat";
 import { OrderActions } from "@/components/OrderActions";
+import { EditOrderPanel } from "@/components/EditOrderPanel";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ApplicationsList } from "@/components/ApplicationsList";
 import { AttachmentsList } from "@/components/AttachmentsList";
@@ -141,6 +142,10 @@ export default function OrderDetailPage() {
             <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm font-mono uppercase tracking-wider text-slate-500 shadow-sm">
               Sign in to act on this order.
             </div>
+          )}
+
+          {role === "client" && order.status === "draft" && (
+            <EditOrderPanel order={order} onSaved={reloadAll} />
           )}
 
           {role === "client" && order.is_public && order.status === "draft" && (
