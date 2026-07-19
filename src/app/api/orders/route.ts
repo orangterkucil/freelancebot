@@ -51,10 +51,11 @@ export async function POST(req: Request) {
     if (!client_email || !freelancer_email || !brief || !Number.isFinite(amount_usdc) || amount_usdc < 0) {
       return NextResponse.json({ error: "missing or invalid fields" }, { status: 400 });
     }
-    // You can't hire yourself: same email as both parties breaks the role guards
-    // (assertActorIsParty resolves one role, the other view claims the other →
-    // a confusing "Forbidden"). Reject it up front.
-    if (client_email === freelancer_email) {
+    // You can't hire yourself on a DIRECT order (same email as both parties
+    // breaks the role guards → a confusing "Forbidden"). Public marketplace
+    // posts legitimately set freelancer_email = client_email as a placeholder
+    // until an applicant is accepted, so this check only applies when NOT public.
+    if (!is_public && client_email === freelancer_email) {
       return NextResponse.json(
         { error: "Client and freelancer must be different people — you can't hire yourself." },
         { status: 400 }
