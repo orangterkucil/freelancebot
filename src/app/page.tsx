@@ -150,6 +150,21 @@ function HeroSection() {
             {t("hero.subtitle2")}
           </p>
 
+          {/* Built on Arc — official logo, links to arc.io (brand-compliant credential) */}
+          <a
+            href="https://www.arc.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Built on Arc"
+            className="mt-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-4 py-2 shadow-sm backdrop-blur transition-colors hover:border-brand"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+              Built on
+            </span>
+            <img src="/arc-logo.webp" alt="Arc" className="inline h-3.5 w-auto align-middle dark:hidden" />
+            <img src="/arc-logo-ondark.svg" alt="Arc" className="hidden h-3.5 w-auto align-middle dark:inline-block" />
+          </a>
+
           {/* Concrete before/after number contrast */}
           <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/60 p-4 shadow-sm backdrop-blur sm:max-w-xl sm:flex-row sm:items-center sm:gap-6">
             <div className="flex-1">
