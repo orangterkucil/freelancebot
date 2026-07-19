@@ -58,6 +58,8 @@ function friendlyChainError(e: any): string {
     }
     case "TooEarlyForRefund":
       return "Too early: the contract's deadline + 7-day grace period hasn't passed yet (its on-chain clock can differ from what the app shows).";
+    case "DeadlineInPast":
+      return "The order's deadline is in the past. Edit the order and set a future deadline before funding.";
     case "NotAuthorized":
       return "Your connected wallet isn't a party to this order on-chain.";
     case "InvalidAmount":
@@ -103,6 +105,17 @@ export function OrderActions({
   };
 
   const fundOnChain = async () => {
+    // Guard: the contract requires deadline strictly in the future (else it
+    // reverts DeadlineInPast). Fail fast with a clear message instead of a
+    // gas-wasting on-chain revert / "unknown custom error".
+    const nowSec = Math.floor(Date.now() / 1000);
+    const deadlineSec = order.deadline
+      ? Math.floor(new Date(order.deadline).getTime() / 1000)
+      : nowSec + 86400 * 7;
+    if (deadlineSec <= nowSec) {
+      throw new Error("This order's deadline is in the past — set a future deadline before funding.");
+    }
+
     const { signer, address } = await connectWallet();
     const amount = toUsdcUnits(order.amount_usdc);
     const usdc = getUsdcWithSigner(signer);
@@ -111,8 +124,7 @@ export function OrderActions({
     const approveTx = await usdc.approve(ESCROW_ADDRESS, amount);
     await approveTx.wait();
 
-    const deadline = order.deadline ? Math.floor(new Date(order.deadline).getTime() / 1000) : Math.floor(Date.now() / 1000) + 86400 * 7;
-    const args = [address, amount, order.brief, deadline];
+    const args = [address, amount, order.brief, deadlineSec];
     const receipt = USE_MEMO
       ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "createAndFund", args, `FB-${order.id}`, `fund;order=${order.id}`)
       : await (await escrow.createAndFund(...args)).wait();
