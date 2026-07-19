@@ -25,14 +25,15 @@ const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
  * them reverts. We read the order back: a missing one has a zero client and
  * status None(0). Read-only, no wallet prompt.
  */
-async function orderExistsOnChain(onchainId: number): Promise<boolean> {
+/** On-chain order status: 0 none/absent, 1 Funded, 2 Delivered, 3 Released, 4 Refunded. */
+async function onChainStatus(onchainId: number): Promise<number> {
   try {
     const o: any = await getEscrowReadonly().getOrder(onchainId);
     const client = String(o.client ?? o[0] ?? "").toLowerCase();
-    const status = Number(o.status ?? o[7] ?? 0);
-    return !!client && client !== ZERO_ADDR && status !== 0;
+    if (!client || client === ZERO_ADDR) return 0;
+    return Number(o.status ?? o[7] ?? 0);
   } catch {
-    return false;
+    return 0;
   }
 }
 
@@ -202,14 +203,19 @@ export function OrderActions({
   // Route to the on-chain path only when this order actually exists on the
   // contract; otherwise (demo/simulated funding) settle it off-chain so the
   // action still completes instead of reverting.
+  // Release on-chain only when the contract is actually in Delivered state.
+  // The app's submit flow updates the DB but not the on-chain submitDelivery, so
+  // an on-chain order can still be Funded here — fall back to an off-chain
+  // release so the action completes instead of reverting WrongStatus.
   const releaseAuto = async () => {
     const onchainId = order.onchain_id ?? order.id;
-    if (hasOnchain && (await orderExistsOnChain(onchainId))) await releaseOnChain();
+    if (hasOnchain && (await onChainStatus(onchainId)) === 2) await releaseOnChain();
     else await releaseSimulated();
   };
+  // Refund on-chain only when the contract is in Funded state (else settle off-chain).
   const refundAuto = async () => {
     const onchainId = order.onchain_id ?? order.id;
-    if (hasOnchain && (await orderExistsOnChain(onchainId))) await refundOnChain();
+    if (hasOnchain && (await onChainStatus(onchainId)) === 1) await refundOnChain();
     else await refundSimulated();
   };
 
