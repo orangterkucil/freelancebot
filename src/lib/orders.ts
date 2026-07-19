@@ -68,6 +68,31 @@ export type Order = {
   created_at: string;
 };
 
+/**
+ * Strip everything a non-party (public marketplace visitor) must not see, while
+ * keeping the shape as `Order` so callers/components don't need type changes.
+ *
+ * Kept public: the descriptive job fields (title, brief, budget, field,
+ * deadline, status) — a job listing is meant to be readable so people can apply.
+ * Removed: counterparty emails (PII), the freelancer's deliverable, uploaded
+ * attachments (the client's private material), private client links, and the
+ * internal AI agent notes. Full data is only returned to a party of the order.
+ *
+ * NOTE: emails are blanked here, so public job cards can't show the poster's
+ * email-keyed reputation. A pseudonymous display handle is the follow-up.
+ */
+export function scrubOrderForPublic(o: Order): Order {
+  return {
+    ...o,
+    client_email: "",
+    freelancer_email: "",
+    deliverable_url: null,
+    agent_notes: null,
+    attachments: [],
+    client_links: {},
+  };
+}
+
 export type Rating = {
   id: number;
   order_id: number;

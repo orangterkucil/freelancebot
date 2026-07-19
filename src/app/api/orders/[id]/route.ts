@@ -5,6 +5,7 @@ import {
   setOrderOnchainId,
   setOrderStatus,
   assertActorIsParty,
+  scrubOrderForPublic,
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
 import { getIdentity } from "@/lib/auth";
@@ -36,10 +37,12 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       (order.client_email.toLowerCase() === actorEmail.toLowerCase() ||
        order.freelancer_email.toLowerCase() === actorEmail.toLowerCase());
 
-    // Public jobs are readable but their chat thread is private to parties.
+    // Public jobs are readable but the full record (emails, deliverable,
+    // attachments, private links) and the chat thread are for parties only.
     const messages = isParty ? await listMessages(orderId) : [];
+    const view = isParty ? order : scrubOrderForPublic(order);
 
-    return NextResponse.json({ order, messages });
+    return NextResponse.json({ order: view, messages });
   } catch (err: any) {
     return NextResponse.json(
       { error: "get_order_failed", detail: err?.message ?? String(err) },
