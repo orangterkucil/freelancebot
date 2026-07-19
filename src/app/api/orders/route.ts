@@ -51,6 +51,15 @@ export async function POST(req: Request) {
     if (!client_email || !freelancer_email || !brief || !Number.isFinite(amount_usdc) || amount_usdc < 0) {
       return NextResponse.json({ error: "missing or invalid fields" }, { status: 400 });
     }
+    // You can't hire yourself: same email as both parties breaks the role guards
+    // (assertActorIsParty resolves one role, the other view claims the other →
+    // a confusing "Forbidden"). Reject it up front.
+    if (client_email === freelancer_email) {
+      return NextResponse.json(
+        { error: "Client and freelancer must be different people — you can't hire yourself." },
+        { status: 400 }
+      );
+    }
 
     // The creator must be signed in and must be one of the two parties — you
     // can't post an order that names other people as both sides.
