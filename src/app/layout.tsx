@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Anton, Condiment, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const anton = Anton({
   subsets: ["latin"],
@@ -75,6 +76,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-signal selection:text-white">
         {children}
+        <SiteFooter />
       </body>
     </html>
   );
