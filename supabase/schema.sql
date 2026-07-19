@@ -10,6 +10,7 @@ create table if not exists orders (
   onchain_id      bigint,
   client_email    text not null,
   freelancer_email text not null,
+  freelancer_wallet text,           -- on-chain payout address (set when freelancer connects wallet)
   brief           text not null,
   amount_usdc     numeric(18, 6) not null,
   deadline        timestamptz,

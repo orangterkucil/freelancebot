@@ -121,6 +121,15 @@ export function editOrder(
   });
 }
 
+/** Freelancer records their on-chain payout wallet on the order. */
+export function setFreelancerWallet(orderId: number, wallet: string, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail("freelancer");
+  return jsonFetch<{ order: Order }>(`/api/orders/${orderId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ freelancer_wallet: wallet, actor_email: actor }),
+  });
+}
+
 export function patchOrder(orderId: number, patch: { onchain_id?: number; status?: OrderStatus }, actorEmail?: string) {
   const actor = actorEmail ?? readActorEmail();
   return jsonFetch<{ order: Order }>(`/api/orders/${orderId}`, {

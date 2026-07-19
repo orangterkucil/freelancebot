@@ -53,6 +53,7 @@ export type Order = {
   onchain_id: number | null;
   client_email: string;
   freelancer_email: string;
+  freelancer_wallet: string | null;   // on-chain payout address (set when freelancer connects wallet)
   brief: string;
   title: string | null;
   field: Field;
@@ -86,11 +87,19 @@ export function scrubOrderForPublic(o: Order): Order {
     ...o,
     client_email: "",
     freelancer_email: "",
+    freelancer_wallet: null,
     deliverable_url: null,
     agent_notes: null,
     attachments: [],
     client_links: {},
   };
+}
+
+/** Record the freelancer's on-chain payout wallet (their connected address). */
+export async function setFreelancerWallet(orderId: number, wallet: string): Promise<void> {
+  const sb = supabaseAdmin();
+  const { error } = await sb.from("orders").update({ freelancer_wallet: wallet }).eq("id", orderId);
+  if (error) throw error;
 }
 
 export type Rating = {

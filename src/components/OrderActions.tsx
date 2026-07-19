@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, ArrowRightCircle, Coins, ExternalLink, ShieldAlert, RotateCcw } from "lucide-react";
+import { CheckCircle2, ArrowRightCircle, Coins, ExternalLink, ShieldAlert, RotateCcw, Wallet } from "lucide-react";
 import type { Order } from "@/lib/orders";
-import { patchOrder, verifyDeliverable } from "@/lib/api";
+import { patchOrder, verifyDeliverable, setFreelancerWallet } from "@/lib/api";
 import {
   connectWallet,
   getEscrowWithSigner,
@@ -116,8 +116,14 @@ export function OrderActions({
     if (deadlineSec <= nowSec) {
       throw new Error("This order's deadline is in the past — set a future deadline before funding.");
     }
+    // The escrow pays out to the freelancer's wallet baked in here. Require the
+    // real freelancer address — funding to the client's own wallet (the old bug)
+    // meant the freelancer could never be paid.
+    if (!order.freelancer_wallet) {
+      throw new Error("The freelancer hasn't connected their payout wallet yet — ask them to connect it before you fund.");
+    }
 
-    const { signer, address } = await connectWallet();
+    const { signer } = await connectWallet();
     const amount = toUsdcUnits(order.amount_usdc);
     const usdc = getUsdcWithSigner(signer);
     const escrow = getEscrowWithSigner(signer);
@@ -125,7 +131,7 @@ export function OrderActions({
     const approveTx = await usdc.approve(ESCROW_ADDRESS, amount);
     await approveTx.wait();
 
-    const args = [address, amount, order.brief, deadlineSec];
+    const args = [order.freelancer_wallet, amount, order.brief, deadlineSec];
     const receipt = USE_MEMO
       ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "createAndFund", args, `FB-${order.id}`, `fund;order=${order.id}`)
       : await (await escrow.createAndFund(...args)).wait();
@@ -200,6 +206,28 @@ export function OrderActions({
     await patchOrder(order.id, { status: "refunded" });
   };
 
+  // Freelancer records their payout wallet so the escrow can pay THEM on-chain
+  // (must happen before the client funds — the address is baked into createAndFund).
+  const connectPayoutWallet = async () => {
+    const { address } = await connectWallet();
+    await setFreelancerWallet(order.id, address);
+  };
+
+  // Freelancer submits: mark Delivered on-chain (their wallet signs submitDelivery
+  // so the client can then release on-chain) + persist and AI-verify off-chain.
+  const submitDeliverable = async () => {
+    const url = deliverable.trim();
+    const onchainId = order.onchain_id ?? order.id;
+    if (hasOnchain && (await onChainStatus(onchainId)) === 1) {
+      const { signer } = await connectWallet();
+      const escrow = getEscrowWithSigner(signer);
+      const receipt = await (await escrow.submitDelivery(onchainId, url)).wait();
+      setLastTxHash(receipt.hash);
+    }
+    const v = await verifyDeliverable(order.id, url);
+    setVerdict(v);
+  };
+
   // Route to the on-chain path only when this order actually exists on the
   // contract; otherwise (demo/simulated funding) settle it off-chain so the
   // action still completes instead of reverting.
@@ -232,12 +260,14 @@ export function OrderActions({
         let hint: string | null = null;
         if (role === "client") {
           if (s === "draft" && order.is_public) hint = "Your job is live in the marketplace. Wait for freelancers to apply, accept one (Applications), then fund the escrow.";
+          else if (s === "draft" && !order.freelancer_wallet) hint = "Waiting for the freelancer to connect their payout wallet — you can fund once they do.";
           else if (s === "draft") hint = "Fund the escrow to lock USDC until the work is approved.";
           else if (s === "funded") hint = "Funded ✓. Waiting for the freelancer to submit their deliverable.";
           else if (s === "delivered") hint = "Deliverable submitted. Review it, then approve & release the payment.";
         } else {
-          if (s === "draft") hint = "Waiting for the client to fund the escrow.";
-          else if (s === "funded") hint = "Submit your deliverable URL below — the AI agent will verify it.";
+          if (s === "draft" && !order.freelancer_wallet) hint = "Connect your payout wallet below so the client can fund the escrow to you.";
+          else if (s === "draft") hint = "Payout wallet set ✓. Waiting for the client to fund the escrow.";
+          else if (s === "funded") hint = "Submit your deliverable URL below — you'll sign an on-chain delivery, then the AI verifies it.";
           else if (s === "delivered") hint = "Submitted ✓. Waiting for the client/agent to release payment.";
         }
         return hint ? (
@@ -267,6 +297,29 @@ export function OrderActions({
           <p className="mt-1.5 font-mono text-[10px] text-slate-500">
             Open it and review the work before releasing payment.
           </p>
+        </div>
+      )}
+
+      {role === "freelancer" && order.status === "draft" && !order.freelancer_wallet && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-amber-800">Connect payout wallet</p>
+          <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600">
+            Connect the wallet you want to be paid to — the client funds the escrow to this address. Do this before they fund.
+          </p>
+          <button
+            disabled={busy}
+            onClick={() => run(connectPayoutWallet)}
+            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-brand px-4 py-2.5 font-display text-xs uppercase tracking-wider text-white shadow-sm shadow-brand/30 transition-transform hover:scale-[1.01] disabled:opacity-50"
+          >
+            <Wallet className="h-3.5 w-3.5" />
+            {busy ? "Connecting…" : "Connect payout wallet"}
+          </button>
+        </div>
+      )}
+
+      {order.freelancer_wallet && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-2.5 font-mono text-[10px] text-emerald-800">
+          Freelancer payout wallet set: {order.freelancer_wallet.slice(0, 6)}…{order.freelancer_wallet.slice(-4)} ✓
         </div>
       )}
 
@@ -302,12 +355,7 @@ export function OrderActions({
           </label>
           <button
             disabled={busy || !deliverable.trim()}
-            onClick={() =>
-              run(async () => {
-                const v = await verifyDeliverable(order.id, deliverable.trim());
-                setVerdict(v);
-              })
-            }
+            onClick={() => run(submitDeliverable)}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-brand/30 transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
           >
             <CheckCircle2 className="h-4 w-4" />

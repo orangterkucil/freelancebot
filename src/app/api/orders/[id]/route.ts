@@ -7,6 +7,7 @@ import {
   assertActorIsParty,
   scrubOrderForPublic,
   updateOrderFields,
+  setFreelancerWallet,
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
 import { getIdentity } from "@/lib/auth";
@@ -96,6 +97,22 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         deadline:    e.deadline,
         field:       e.field,
       });
+      const updated = await getOrder(orderId);
+      return NextResponse.json({ order: updated });
+    }
+
+    // ---- Freelancer sets their on-chain payout wallet ----
+    if (typeof body.freelancer_wallet === "string" && body.freelancer_wallet) {
+      const wallet = body.freelancer_wallet.trim();
+      if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
+        return NextResponse.json({ error: "invalid wallet address" }, { status: 400 });
+      }
+      const current = await getOrder(orderId);
+      if (!current) return NextResponse.json({ error: "not found" }, { status: 404 });
+      if (current.freelancer_email.toLowerCase() !== actorEmail.toLowerCase()) {
+        return NextResponse.json({ error: "Only the freelancer can set their payout wallet" }, { status: 403 });
+      }
+      await setFreelancerWallet(orderId, wallet);
       const updated = await getOrder(orderId);
       return NextResponse.json({ order: updated });
     }
