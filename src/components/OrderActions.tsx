@@ -220,7 +220,29 @@ export function OrderActions({
         <p className="font-display text-sm uppercase tracking-wider text-slate-900">Actions</p>
       </div>
 
-      {role === "client" && order.status === "draft" && (
+      {/* Guided next step — tells the current viewer exactly what to do now */}
+      {(() => {
+        const s = order.status;
+        let hint: string | null = null;
+        if (role === "client") {
+          if (s === "draft" && order.is_public) hint = "Your job is live in the marketplace. Wait for freelancers to apply, accept one (Applications), then fund the escrow.";
+          else if (s === "draft") hint = "Fund the escrow to lock USDC until the work is approved.";
+          else if (s === "funded") hint = "Funded ✓. Waiting for the freelancer to submit their deliverable.";
+          else if (s === "delivered") hint = "Deliverable submitted. Review it, then approve & release the payment.";
+        } else {
+          if (s === "draft") hint = "Waiting for the client to fund the escrow.";
+          else if (s === "funded") hint = "Submit your deliverable URL below — the AI agent will verify it.";
+          else if (s === "delivered") hint = "Submitted ✓. Waiting for the client/agent to release payment.";
+        }
+        return hint ? (
+          <div className="rounded-xl border border-brand/30 bg-brand/5 px-3 py-2 font-mono text-[11px] leading-relaxed text-slate-700">
+            <span className="font-semibold uppercase tracking-wider text-brand">Next step · </span>
+            {hint}
+          </div>
+        ) : null;
+      })()}
+
+      {role === "client" && order.status === "draft" && !order.is_public && (
         <button
           disabled={busy}
           onClick={() => run(hasOnchain ? fundOnChain : fundSimulated)}

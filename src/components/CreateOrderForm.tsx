@@ -55,10 +55,26 @@ export function CreateOrderForm({
     } catch {}
   }, []);
 
+  // Earliest selectable deadline = tomorrow. The contract rejects a deadline
+  // that isn't strictly in the future, so we never let one be picked.
+  const minDeadline = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split("T")[0];
+  })();
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setError(null);
+
+    // Root-cause guard: a past/today deadline reverts on funding (DeadlineInPast).
+    if (deadline && new Date(deadline).getTime() <= Date.now()) {
+      setError("Deadline must be a future date — pick tomorrow or later.");
+      setBusy(false);
+      return;
+    }
+
     try {
       const client_links: ClientLinks = {};
       if (xHandle.trim())  client_links.x        = xHandle.trim();
@@ -219,6 +235,7 @@ export function CreateOrderForm({
             <input
               type="date"
               value={deadline}
+              min={minDeadline}
               onChange={(e) => setDeadline(e.target.value)}
               className={inputClass}
             />
