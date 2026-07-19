@@ -38,12 +38,28 @@ export default function OrderDetailPage() {
     if (!orderId) return;
     setLoading(true); setError(null);
     try {
-      const { order } = await getOrder(orderId);
+      let clientEmail = "", freelancerEmail = "";
+      try {
+        clientEmail = window.localStorage.getItem("fb_client_email") ?? "";
+        freelancerEmail = window.localStorage.getItem("fb_freelancer_email") ?? "";
+      } catch {}
+
+      // Fetch as a PARTY: try each known identity until the API returns the full
+      // record. A non-party gets a scrubbed order (blank emails), which would
+      // break role detection and hide the connect-wallet / action UI.
+      let order: Order | null = null;
+      for (const email of [clientEmail, freelancerEmail].filter(Boolean)) {
+        const res = await getOrder(orderId, email);
+        if (res.order && (res.order.client_email || res.order.freelancer_email)) {
+          order = res.order;
+          break;
+        }
+      }
+      if (!order) order = (await getOrder(orderId)).order;
       setOrder(order);
 
-      const ctx = (window as any).__fbAuthCtx ?? {};
-      const isClient     = ctx.clientEmail === order.client_email;
-      const isFreelancer = ctx.freelancerEmail === order.freelancer_email;
+      const isClient     = !!clientEmail && clientEmail === order.client_email;
+      const isFreelancer = !!freelancerEmail && freelancerEmail === order.freelancer_email;
 
       if (isClient && isFreelancer) {
         if (order.status === "funded") setRole("freelancer");

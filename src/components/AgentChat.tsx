@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Sparkles, Send } from "lucide-react";
-import { getOrder, sendChat } from "@/lib/api";
+import { getOrder, sendChat, readActorEmail } from "@/lib/api";
 import type { Message } from "@/lib/orders";
 
 export function AgentChat({
@@ -22,7 +22,9 @@ export function AgentChat({
 
   const load = async () => {
     try {
-      const { messages } = await getOrder(orderId);
+      // Pass the role-appropriate identity so the party's message thread isn't
+      // scrubbed to empty (the API only returns messages to a party).
+      const { messages } = await getOrder(orderId, readActorEmail(role));
       setMessages(messages);
     } catch (e: any) {
       setError(e?.message ?? "Failed to load messages");
