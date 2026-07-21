@@ -13,6 +13,7 @@ import {
   Contract,
   JsonRpcProvider,
   Interface,
+  Wallet,
   keccak256,
   toUtf8Bytes,
   type Eip1193Provider,
@@ -183,6 +184,20 @@ export function getUsdcReadonly() {
 
 export function getUsdcWithSigner(signer: Signer) {
   return new Contract(USDC_ADDRESS, USDC_ABI, signer);
+}
+
+/**
+ * Server-side signer for the AI agent. Uses AGENT_PRIVATE_KEY, which must match
+ * the `agent` address set in the escrow contract at deploy time. This lets the
+ * agent release payment itself (approveAndRelease) — no human clicks "release".
+ * Returns null when not configured, so callers fall back to an off-chain release.
+ * SECURITY: this is a hot key on the server — testnet only until a KMS/HSM setup.
+ */
+export function getEscrowWithAgent(): Contract | null {
+  const key = process.env.AGENT_PRIVATE_KEY;
+  if (!key || !ESCROW_ADDRESS) return null;
+  const signer = new Wallet(key, getReadProvider());
+  return new Contract(ESCROW_ADDRESS, ESCROW_ABI, signer);
 }
 
 // ---------------------------------------------------------------------------

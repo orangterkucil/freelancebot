@@ -5,7 +5,9 @@ import {
   appendMessage,
   assertActorIsParty,
   setOrderDeliverable,
+  setOrderStatus,
 } from "@/lib/orders";
+import { getEscrowWithAgent } from "@/lib/contracts";
 import { logger } from "@/lib/logger";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 import { getIdentity } from "@/lib/auth";
@@ -78,7 +80,31 @@ export async function POST(req: Request) {
     await appendAgentNotes(orderId, summary);
     await appendMessage(orderId, "agent", summary);
 
-    return NextResponse.json(verdict);
+    // ---- AUTONOMOUS RELEASE ----
+    // If the deliverable passes verification, the AGENT releases payment itself —
+    // no human clicks "release". On-chain when possible (agent signs
+    // approveAndRelease), otherwise settled off-chain for the demo flow.
+    let autoReleased = false;
+    if (verdict.verified) {
+      try {
+        const escrow = getEscrowWithAgent();
+        if (escrow && order.onchain_id != null) {
+          const o: any = await escrow.getOrder(order.onchain_id);
+          if (Number(o.status) === 2 /* Delivered */) {
+            const tx = await escrow.approveAndRelease(order.onchain_id);
+            await tx.wait();
+          }
+        }
+        await setOrderStatus(orderId, "released");
+        autoReleased = true;
+        await appendMessage(orderId, "agent", "✅ Deliverable verified — payment released to the freelancer automatically. No manual approval needed.");
+      } catch (err: any) {
+        // Leave the order as 'delivered' so the client can release manually.
+        logger.error("api.verify.autorelease_failed", { orderId, err: err?.message ?? String(err) });
+      }
+    }
+
+    return NextResponse.json({ ...verdict, autoReleased });
   } catch (err: any) {
     logger.error("api.verify.failed", { err: err?.message ?? String(err) });
     return NextResponse.json(

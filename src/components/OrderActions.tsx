@@ -266,12 +266,12 @@ export function OrderActions({
           if (s === "draft" && order.is_public) hint = "Your job is live in the marketplace. Wait for freelancers to apply, accept one (Applications), then fund the escrow.";
           else if (s === "draft" && !order.freelancer_wallet) hint = "Waiting for the freelancer to connect their payout wallet — you can fund once they do.";
           else if (s === "draft") hint = "Fund the escrow to lock USDC until the work is approved.";
-          else if (s === "funded") hint = "Funded ✓. Waiting for the freelancer to submit their deliverable.";
-          else if (s === "delivered") hint = "Deliverable submitted. Review it, then approve & release the payment.";
+          else if (s === "funded") hint = "Funded ✓. The freelancer submits, the AI verifies, and the agent releases automatically if it passes — you don't need to click anything.";
+          else if (s === "delivered") hint = "The agent didn't auto-release (verification wasn't a clear pass). Review the deliverable — release manually if you approve.";
         } else {
           if (s === "draft" && !order.freelancer_wallet) hint = "Connect your payout wallet below so the client can fund the escrow to you.";
           else if (s === "draft") hint = "Payout wallet set ✓. Waiting for the client to fund the escrow.";
-          else if (s === "funded") hint = "Submit your deliverable URL below — you'll sign an on-chain delivery, then the AI verifies it.";
+          else if (s === "funded") hint = "Submit your deliverable — you sign an on-chain delivery, the AI verifies it, and if it passes the agent releases your payment automatically.";
           else if (s === "delivered") hint = "Submitted ✓. Waiting for the client/agent to release payment.";
         }
         return hint ? (
