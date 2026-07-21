@@ -208,9 +208,13 @@ export function OrderActions({
 
   // Freelancer records their payout wallet so the escrow can pay THEM on-chain
   // (must happen before the client funds — the address is baked into createAndFund).
+  // This block only renders for the order's freelancer (role check), so pass the
+  // order's freelancer_email as the identity — otherwise a mismatched localStorage
+  // email silently 403s and the wallet never saves.
   const connectPayoutWallet = async () => {
     const { address } = await connectWallet();
-    await setFreelancerWallet(order.id, address);
+    await setFreelancerWallet(order.id, address, order.freelancer_email);
+    setLastTxHash(null);
   };
 
   // Freelancer submits: mark Delivered on-chain (their wallet signs submitDelivery
