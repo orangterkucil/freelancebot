@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Sparkles, Send } from "lucide-react";
 import { getOrder, sendChat, readActorEmail } from "@/lib/api";
 import type { Message } from "@/lib/orders";
@@ -20,21 +20,28 @@ export function AgentChat({
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const load = async () => {
+  const load = useCallback(async (silent = false) => {
     try {
       // Pass the role-appropriate identity so the party's message thread isn't
       // scrubbed to empty (the API only returns messages to a party).
       const { messages } = await getOrder(orderId, readActorEmail(role));
       setMessages(messages);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load messages");
+      if (!silent) setError(e?.message ?? "Failed to load messages");
     }
-  };
+  }, [orderId, role]);
 
+  useEffect(() => { load(); }, [load, refreshKey]);
+
+  // Live chat: poll for new messages so both parties see each other's messages
+  // (and the agent's) without refreshing. Pauses when the tab is hidden.
   useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderId, refreshKey]);
+    const id = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      load(true);
+    }, 4000);
+    return () => clearInterval(id);
+  }, [load]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });

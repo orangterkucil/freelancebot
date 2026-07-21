@@ -34,9 +34,9 @@ export default function OrderDetailPage() {
     } catch {}
   }, []);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (silent = false) => {
     if (!orderId) return;
-    setLoading(true); setError(null);
+    if (!silent) { setLoading(true); setError(null); }
     try {
       let clientEmail = "", freelancerEmail = "";
       try {
@@ -76,11 +76,24 @@ export default function OrderDetailPage() {
         setRatings(ratings);
       } catch {}
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load order");
-    } finally { setLoading(false); }
+      if (!silent) setError(e?.message ?? "Failed to load order");
+    } finally { if (!silent) setLoading(false); }
   }, [orderId]);
 
   useEffect(() => { load(); }, [load]);
+
+  // Live updates: silently re-fetch the order every few seconds so the client
+  // sees the freelancer's actions (wallet connect, delivery) and vice versa
+  // without a manual refresh. Pauses on terminal states + when the tab is hidden.
+  useEffect(() => {
+    const id = setInterval(() => {
+      const s = order?.status;
+      if (s === "released" || s === "refunded") return;   // nothing more will change
+      if (typeof document !== "undefined" && document.hidden) return;
+      load(true);
+    }, 5000);
+    return () => clearInterval(id);
+  }, [load, order?.status]);
 
   const reloadAll = () => {
     setChatKey((k) => k + 1);
