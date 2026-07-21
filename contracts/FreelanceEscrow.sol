@@ -36,6 +36,7 @@ contract FreelanceEscrow is Ownable {
         uint64  deadline;     // unix seconds; freelancer must deliver before this
         uint64  createdAt;
         Status  status;
+        uint64  deliveredAt;  // set on submitDelivery; enables the review-timeout claim
     }
 
     // ---------------------------------------------------------------------
@@ -159,6 +160,7 @@ contract FreelanceEscrow is Ownable {
 
         o.deliverable = deliverable;
         o.status      = Status.Delivered;
+        o.deliveredAt = uint64(block.timestamp);
         emit DeliverySubmitted(orderId, deliverable);
     }
 
@@ -192,6 +194,27 @@ contract FreelanceEscrow is Ownable {
         o.status = Status.Refunded;
         usdc.safeTransfer(o.client, o.amount);
         emit OrderRefunded(orderId);
+    }
+
+    /// @notice Finalize a delivery the client never acted on. Once the review
+    ///         grace period after delivery has passed, the freelancer (or anyone)
+    ///         can trigger payout to the freelancer — so delivered work can never
+    ///         lock in escrow forever if the client ghosts.
+    function claimDelivered(uint256 orderId) external {
+        Order storage o = orders[orderId];
+        if (o.status != Status.Delivered)                                          revert WrongStatus(Status.Delivered, o.status);
+        if (block.timestamp <= uint256(o.deliveredAt) + uint256(refundGracePeriod)) revert TooEarlyForRefund();
+
+        uint256 fee = (o.amount * agentFeeBps) / 10000;
+        uint256 net = o.amount - fee;
+        o.status    = Status.Released;
+
+        if (fee > 0) {
+            usdc.safeTransfer(agentFeeRecipient, fee);
+        }
+        usdc.safeTransfer(o.freelancer, net);
+
+        emit OrderReleased(orderId, msg.sender, net, fee);
     }
 
     // ---------------------------------------------------------------------
