@@ -367,6 +367,7 @@ export async function updateOrderFields(orderId: number, fields: {
   amount_usdc?: number;
   deadline?: string | null;
   field?: Field;
+  is_public?: boolean;
 }): Promise<void> {
   const sb = supabaseAdmin();
   const patch: Record<string, unknown> = {};
@@ -375,6 +376,7 @@ export async function updateOrderFields(orderId: number, fields: {
   if (fields.amount_usdc !== undefined) patch.amount_usdc = fields.amount_usdc;
   if (fields.deadline    !== undefined) patch.deadline    = fields.deadline;
   if (fields.field       !== undefined) patch.field       = fields.field;
+  if (fields.is_public   !== undefined) patch.is_public   = fields.is_public;
   if (Object.keys(patch).length === 0) return;
   const { error } = await sb.from("orders").update(patch).eq("id", orderId);
   if (error) throw error;

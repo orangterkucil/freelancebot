@@ -96,6 +96,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         amount_usdc: e.amount_usdc,
         deadline:    e.deadline,
         field:       e.field,
+        is_public:   typeof e.is_public === "boolean" ? e.is_public : undefined,
       });
       const updated = await getOrder(orderId);
       return NextResponse.json({ order: updated });
