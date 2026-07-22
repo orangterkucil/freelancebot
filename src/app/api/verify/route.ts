@@ -80,12 +80,14 @@ export async function POST(req: Request) {
     await appendAgentNotes(orderId, summary);
     await appendMessage(orderId, "agent", summary);
 
-    // ---- AUTONOMOUS RELEASE ----
-    // If the deliverable passes verification, the AGENT releases payment itself —
-    // no human clicks "release". On-chain when possible (agent signs
-    // approveAndRelease), otherwise settled off-chain for the demo flow.
+    // ---- AUTONOMOUS RELEASE (opt-in, OFF by default) ----
+    // Money safety: autonomous release gives the agent "excessive agency" over
+    // funds, and verification only sees the deliverable URL (not its contents),
+    // so a reachable-but-junk deliverable could pass. Keep it OFF unless the
+    // operator explicitly enables it (AGENT_AUTO_RELEASE=1) — otherwise release
+    // stays a human decision (the client clicks "Approve & release").
     let autoReleased = false;
-    if (verdict.verified) {
+    if (verdict.verified && process.env.AGENT_AUTO_RELEASE === "1") {
       try {
         const escrow = getEscrowWithAgent();
         if (escrow && order.onchain_id != null) {
