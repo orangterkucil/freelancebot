@@ -181,6 +181,12 @@ export default function OrderDetailPage() {
             <EditOrderPanel order={order} onSaved={reloadAll} />
           )}
 
+          {role === "client" && order.status !== "draft" && (
+            <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono text-[11px] leading-relaxed text-slate-500 shadow-sm">
+              🔒 Order terms are locked — the amount and deadline can't be changed once the escrow is funded.
+            </p>
+          )}
+
           {role === "client" && order.is_public && order.status === "draft" && (
             <ApplicationsList orderId={order.id} onAccepted={reloadAll} />
           )}
