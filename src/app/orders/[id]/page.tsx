@@ -129,7 +129,11 @@ export default function OrderDetailPage() {
     >
       <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Field label="Client"><UserBadge email={order.client_email} raw /></Field>
-        <Field label="Freelancer"><UserBadge email={order.freelancer_email} raw /></Field>
+        <Field label="Freelancer">
+          {order.is_public && order.freelancer_email === order.client_email
+            ? <span className="font-mono text-xs text-slate-400">Open · awaiting applicant</span>
+            : <UserBadge email={order.freelancer_email} raw />}
+        </Field>
         <Field label="Amount">
           <span className="font-display text-base text-brand">${order.amount_usdc.toLocaleString()}</span>
           <span className="ml-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">USDC</span>
