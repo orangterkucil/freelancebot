@@ -111,7 +111,7 @@ export function getOrder(orderId: number, actorEmail?: string) {
 /** Edit a draft order's fields (client only, before funding). */
 export function editOrder(
   orderId: number,
-  edit: { title?: string | null; brief?: string; amount_usdc?: number; deadline?: string | null; field?: Field },
+  edit: { title?: string | null; brief?: string; amount_usdc?: number; deadline?: string | null; field?: Field; is_public?: boolean },
   actorEmail?: string,
 ) {
   const actor = actorEmail ?? readActorEmail("client");

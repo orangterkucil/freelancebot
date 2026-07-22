@@ -16,6 +16,7 @@ export function EditOrderPanel({ order, onSaved }: { order: Order; onSaved: () =
   const [brief, setBrief] = useState(order.brief);
   const [amount, setAmount] = useState<number | "">(order.amount_usdc);
   const [deadline, setDeadline] = useState(order.deadline ? order.deadline.split("T")[0] : "");
+  const [isPublic, setIsPublic] = useState(order.is_public);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,6 +39,7 @@ export function EditOrderPanel({ order, onSaved }: { order: Order; onSaved: () =
         brief: brief.trim(),
         amount_usdc: amount === "" ? 0 : Number(amount),
         deadline: deadline ? new Date(deadline).toISOString() : null,
+        is_public: isPublic,
       });
       setOpen(false);
       onSaved();
@@ -90,6 +92,11 @@ export function EditOrderPanel({ order, onSaved }: { order: Order; onSaved: () =
           <input type="date" min={minDeadline} value={deadline} onChange={(e) => setDeadline(e.target.value)} className={inputClass} />
         </Field>
       </div>
+
+      <label className="flex items-center gap-2 pt-1">
+        <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} className="h-4 w-4 accent-brand" />
+        <span className="font-mono text-[11px] text-slate-700">List on the public marketplace</span>
+      </label>
 
       {error && <p className="font-mono text-[11px] text-rose-600">{error}</p>}
 
