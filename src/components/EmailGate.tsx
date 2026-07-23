@@ -186,7 +186,7 @@ export function EmailGate({
                       <p className="font-display text-sm uppercase tracking-wider text-emerald-800">
                         Check your inbox
                       </p>
-                      <p className="mt-1 font-mono text-[11px] leading-relaxed text-emerald-900/80">
+                      <p className="mt-1 font-mono text-[11px] leading-relaxed text-emerald-800">
                         We sent a magic link to <strong className="font-semibold">{input.trim().toLowerCase()}</strong>. Click it to sign in — the link expires in 1 hour. Check spam if you don&apos;t see it.
                       </p>
                     </div>

@@ -25,15 +25,25 @@ const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
  * them reverts. We read the order back: a missing one has a zero client and
  * status None(0). Read-only, no wallet prompt.
  */
-/** On-chain order status: 0 none/absent, 1 Funded, 2 Delivered, 3 Released, 4 Refunded. */
+/**
+ * On-chain order status: 0 none/absent, 1 Funded, 2 Delivered, 3 Released,
+ * 4 Refunded, and -1 = READ FAILED (network/RPC error).
+ *
+ * The -1 case is critical: a transient read failure must NOT be mistaken for
+ * "order absent" (0). Callers use 0 to mean "no on-chain escrow → settle the
+ * demo order off-chain"; if a read error also mapped to 0, a flaky RPC at
+ * release/refund time would silently mark the DB released/refunded WITHOUT
+ * moving any USDC on-chain. So we return a distinct -1 and callers refuse to
+ * settle on it.
+ */
 async function onChainStatus(onchainId: number): Promise<number> {
   try {
     const o: any = await getEscrowReadonly().getOrder(onchainId);
     const client = String(o.client ?? o[0] ?? "").toLowerCase();
-    if (!client || client === ZERO_ADDR) return 0;
+    if (!client || client === ZERO_ADDR) return 0; // confirmed absent
     return Number(o.status ?? o[7] ?? 0);
   } catch {
-    return 0;
+    return -1; // read failed — do NOT treat as absent
   }
 }
 
@@ -176,7 +186,10 @@ export function OrderActions({
   // Dispute — refund after deadline + grace period
   const GRACE_DAYS = 7;
   const isRefundable = (() => {
-    if (order.status === "released" || order.status === "refunded" || order.status === "draft") return false;
+    // Refund applies ONLY to a funded, undelivered order — the escrow contract
+    // permits refund only in Funded state. Once delivered/released/refunded, the
+    // refund path is closed (a delivered order is reviewed & released, or disputed).
+    if (order.status !== "funded") return false;
     if (!order.deadline) return false;
     const deadlineMs = new Date(order.deadline).getTime();
     const graceMs = GRACE_DAYS * 86400 * 1000;
@@ -232,23 +245,27 @@ export function OrderActions({
     setVerdict(v);
   };
 
-  // Route to the on-chain path only when this order actually exists on the
-  // contract; otherwise (demo/simulated funding) settle it off-chain so the
-  // action still completes instead of reverting.
-  // Release on-chain only when the contract is actually in Delivered state.
-  // The app's submit flow updates the DB but not the on-chain submitDelivery, so
-  // an on-chain order can still be Funded here — fall back to an off-chain
-  // release so the action completes instead of reverting WrongStatus.
+  // Settle the escrow. The off-chain ("simulated") path only marks the DB — it
+  // moves NO money — so we take it ONLY for a genuine demo order that was never
+  // created on-chain (status 0). For a real on-chain order we require the exact
+  // contract state; we NEVER fake a settle on a read failure (-1) or a
+  // wrong-but-real state, because that would tell the user their money moved
+  // when it did not.
   const releaseAuto = async () => {
-    const onchainId = order.onchain_id ?? order.id;
-    if (hasOnchain && (await onChainStatus(onchainId)) === 2) await releaseOnChain();
-    else await releaseSimulated();
+    const st = hasOnchain ? await onChainStatus(order.onchain_id ?? order.id) : 0;
+    if (st === 2) return releaseOnChain();
+    if (st === -1) throw new Error("Couldn't read the escrow on-chain (network hiccup). Nothing was changed — please try again in a moment.");
+    if (st === 1) throw new Error("The delivery isn't recorded on-chain yet, so the payment can't be released on-chain. Ask the freelancer to (re)submit the deliverable — they sign an on-chain delivery — then release.");
+    if (st === 3) throw new Error("This order was already released to the freelancer.");
+    return releaseSimulated(); // st === 0: demo order, never on-chain — safe to settle off-chain
   };
-  // Refund on-chain only when the contract is in Funded state (else settle off-chain).
   const refundAuto = async () => {
-    const onchainId = order.onchain_id ?? order.id;
-    if (hasOnchain && (await onChainStatus(onchainId)) === 1) await refundOnChain();
-    else await refundSimulated();
+    const st = hasOnchain ? await onChainStatus(order.onchain_id ?? order.id) : 0;
+    if (st === 1) return refundOnChain();
+    if (st === -1) throw new Error("Couldn't read the escrow on-chain (network hiccup). Nothing was changed — please try again in a moment.");
+    if (st === 2) throw new Error("Work was already delivered on-chain — a refund only applies to a funded, undelivered order. Review the delivery and release, or resolve the dispute directly.");
+    if (st === 4) throw new Error("This order was already refunded.");
+    return refundSimulated(); // st === 0: demo order, never on-chain — safe to settle off-chain
   };
 
   return (
@@ -266,13 +283,13 @@ export function OrderActions({
           if (s === "draft" && order.is_public) hint = "Your job is live in the marketplace. Wait for freelancers to apply, accept one (Applications), then fund the escrow.";
           else if (s === "draft" && !order.freelancer_wallet) hint = "Waiting for the freelancer to connect their payout wallet — you can fund once they do.";
           else if (s === "draft") hint = "Fund the escrow to lock USDC until the work is approved.";
-          else if (s === "funded") hint = "Funded ✓. The freelancer submits, the AI verifies, and the agent releases automatically if it passes — you don't need to click anything.";
-          else if (s === "delivered") hint = "The agent didn't auto-release (verification wasn't a clear pass). Review the deliverable — release manually if you approve.";
+          else if (s === "funded") hint = "Funded ✓. The freelancer submits their work and the AI verifies it — then you review the deliverable and release the payment.";
+          else if (s === "delivered") hint = "The freelancer delivered and the AI posted its verdict. Review the deliverable, then release the payment if you approve.";
         } else {
           if (s === "draft" && !order.freelancer_wallet) hint = "Connect your payout wallet below so the client can fund the escrow to you.";
           else if (s === "draft") hint = "Payout wallet set ✓. Waiting for the client to fund the escrow.";
-          else if (s === "funded") hint = "Submit your deliverable — you sign an on-chain delivery, the AI verifies it, and if it passes the agent releases your payment automatically.";
-          else if (s === "delivered") hint = "Submitted ✓. Waiting for the client/agent to release payment.";
+          else if (s === "funded") hint = "Submit your deliverable — you sign an on-chain delivery and the AI verifies it. The client then reviews it and releases your payment.";
+          else if (s === "delivered") hint = "Submitted ✓. Waiting for the client to review and release your payment.";
         }
         return hint ? (
           <div className="rounded-xl border border-brand/30 bg-brand/5 px-3 py-2 font-mono text-[11px] leading-relaxed text-slate-700">
@@ -426,8 +443,8 @@ export function OrderActions({
         </div>
       )}
 
-      {/* Dispute resolution — appears after deadline + grace period */}
-      {order.status !== "released" && order.status !== "refunded" && order.status !== "draft" && order.deadline && (
+      {/* Dispute resolution — only for a funded, undelivered order (refund path) */}
+      {order.status === "funded" && order.deadline && (
         <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
           <div className="flex items-start gap-2">
             <ShieldAlert className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-amber-700" />

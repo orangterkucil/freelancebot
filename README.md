@@ -99,7 +99,7 @@ Client (NYC)                                  Freelancer (Jakarta)
 Off-chain, the AI agent (Groq Llama 3.3 70B) handles:
 - **Chat** with both parties for clarification
 - **Deliverable verification** — URL reachable, deadline match, brief alignment (structured JSON verdict)
-- **Release recommendation** — never auto-releases for safety, but tells the client when it's ready
+- **Release recommendation** — by default it does *not* auto-release; it tells the client when the work is ready and the client releases. Autonomous release is opt-in and off by default (`AGENT_AUTO_RELEASE`).
 
 ## Tech stack
 
@@ -183,8 +183,8 @@ All routes under `src/app/api/`.
 ```json
 {
   "verified": true,
-  "confidence": "high",
-  "reasoning": "URL is reachable and contents appear to satisfy the brief...",
+  "confidence": "medium",
+  "reasoning": "URL is reachable and appears to satisfy the brief. [server downgraded confidence: deliverable contents not directly inspected]",
   "checks": {
     "urlReachable": true,
     "deadlineMet": true,

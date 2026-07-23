@@ -90,16 +90,30 @@ export async function POST(req: Request) {
     if (verdict.verified && process.env.AGENT_AUTO_RELEASE === "1") {
       try {
         const escrow = getEscrowWithAgent();
-        if (escrow && order.onchain_id != null) {
-          const o: any = await escrow.getOrder(order.onchain_id);
+        const isOnchain = !!escrow && order.onchain_id != null;
+        if (isOnchain) {
+          // Real escrow: only mark released if the on-chain release ACTUALLY
+          // executed. If the contract isn't in Delivered state (e.g. the
+          // on-chain submitDelivery never landed), move no money and leave the
+          // order 'delivered' for the client to handle — never claim a release
+          // that didn't happen.
+          const o: any = await escrow!.getOrder(order.onchain_id);
           if (Number(o.status) === 2 /* Delivered */) {
-            const tx = await escrow.approveAndRelease(order.onchain_id);
+            const tx = await escrow!.approveAndRelease(order.onchain_id);
             await tx.wait();
+            await setOrderStatus(orderId, "released");
+            autoReleased = true;
+          } else {
+            logger.warn("api.verify.autorelease_skipped_wrong_state", { orderId, onchainStatus: Number(o.status) });
           }
+        } else {
+          // No on-chain escrow configured (demo mode) — settle off-chain.
+          await setOrderStatus(orderId, "released");
+          autoReleased = true;
         }
-        await setOrderStatus(orderId, "released");
-        autoReleased = true;
-        await appendMessage(orderId, "agent", "✅ Deliverable verified — payment released to the freelancer automatically. No manual approval needed.");
+        if (autoReleased) {
+          await appendMessage(orderId, "agent", "✅ Deliverable verified — payment released to the freelancer automatically. No manual approval needed.");
+        }
       } catch (err: any) {
         // Leave the order as 'delivered' so the client can release manually.
         logger.error("api.verify.autorelease_failed", { orderId, err: err?.message ?? String(err) });

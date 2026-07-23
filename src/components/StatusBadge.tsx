@@ -6,7 +6,7 @@ const STYLES: Record<OrderStatus, string> = {
   delivered: "bg-sky-100 text-sky-800 ring-sky-200",
   released:  "bg-emerald-100 text-emerald-800 ring-emerald-200",
   refunded:  "bg-rose-100 text-rose-800 ring-rose-200",
-  disputed:  "bg-purple-100 text-purple-800 ring-purple-200",
+  disputed:  "bg-violet-100 text-violet-800 ring-violet-200",
 };
 
 const LABELS: Record<OrderStatus, string> = {

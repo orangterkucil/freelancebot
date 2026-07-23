@@ -19,8 +19,11 @@ import { logger } from "./logger";
  *     The "verified" flag is server-derived, not LLM-asserted.
  *   - LLM06 Sensitive Info Disclosure: SYSTEM_PROMPT instructs the agent never
  *     to repeat seed phrases or private keys back to a user.
- *   - LLM08 Excessive Agency: the agent is explicitly advisory. It never calls
- *     a function that moves money. Release is always a human click in the UI.
+ *   - LLM08 Excessive Agency: the LLM itself is advisory — it never calls a
+ *     function that moves money; the "verified" flag is server-derived. By
+ *     default release is a human click in the UI. Autonomous release (the server
+ *     releasing on a passing verdict) is opt-in and OFF by default, gated behind
+ *     AGENT_AUTO_RELEASE, precisely to keep agency over funds minimal.
  *   - LLM09 Overreliance: verdicts always include a confidence level; UI
  *     surfaces "Hold for review" on anything below "high" with "matches".
  */
@@ -293,10 +296,16 @@ async function isUrlReachable(url: string): Promise<boolean> {
     // Refuse private / link-local hosts — prevents SSRF from a malicious deliverable
     if (isPrivateHost(u.hostname)) return false;
 
-    const res = await fetch(url, { method: "HEAD", redirect: "follow" });
-    if (res.ok) return true;
-    const res2 = await fetch(url, { method: "GET", headers: { Range: "bytes=0-1" }, redirect: "follow" });
-    return res2.ok || res2.status === 206;
+    // SSRF hardening: do NOT follow redirects. isPrivateHost only validates the
+    // ORIGINAL host; a public URL that 3xx-redirects to an internal target
+    // (169.254.169.254 metadata, localhost, private ranges) would defeat the
+    // allowlist if followed. redirect:"manual" stops at the first hop; a 3xx is
+    // still treated as "reachable" (the resource responds) without us chasing it.
+    const reachable = (s: number) => s === 206 || (s >= 200 && s < 400);
+    const res = await fetch(url, { method: "HEAD", redirect: "manual" });
+    if (reachable(res.status)) return true;
+    const res2 = await fetch(url, { method: "GET", headers: { Range: "bytes=0-1" }, redirect: "manual" });
+    return reachable(res2.status);
   } catch {
     return false;
   }
