@@ -8,7 +8,7 @@
  * in PRD.md; real auth lands in MVP 2.
  */
 
-import type { Order, Message, OrderStatus, Application, Field, ClientLinks, Rating, RatingSummary } from "./orders";
+import type { Order, Message, OrderStatus, Application, Field, ClientLinks, Rating, RatingSummary, Attachment } from "./orders";
 import { supabaseBrowser } from "./supabase";
 
 /**
@@ -148,7 +148,12 @@ export function sendChat(orderId: number, role: "client" | "freelancer", message
   });
 }
 
-export function verifyDeliverable(orderId: number, deliverableUrl: string, actorEmail?: string) {
+export function verifyDeliverable(
+  orderId: number,
+  deliverableUrl: string,
+  actorEmail?: string,
+  deliverableFiles?: Attachment[]
+) {
   const actor = actorEmail ?? readActorEmail("freelancer");
   return jsonFetch<{
     verified: boolean;
@@ -157,7 +162,7 @@ export function verifyDeliverable(orderId: number, deliverableUrl: string, actor
     checks: { urlReachable: boolean; deadlineMet: boolean; briefAlignment: string };
   }>(`/api/verify`, {
     method: "POST",
-    body: JSON.stringify({ orderId, deliverableUrl, actor_email: actor }),
+    body: JSON.stringify({ orderId, deliverableUrl, actor_email: actor, deliverableFiles: deliverableFiles ?? [] }),
   });
 }
 

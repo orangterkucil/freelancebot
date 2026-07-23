@@ -382,12 +382,22 @@ export async function updateOrderFields(orderId: number, fields: {
   if (error) throw error;
 }
 
-export async function setOrderDeliverable(orderId: number, url: string): Promise<void> {
+export async function setOrderDeliverable(
+  orderId: number,
+  url: string,
+  files?: Attachment[]
+): Promise<void> {
   const sb = supabaseAdmin();
-  const { error } = await sb
-    .from("orders")
-    .update({ deliverable_url: url, status: "delivered" })
-    .eq("id", orderId);
+  const update: Record<string, unknown> = { deliverable_url: url, status: "delivered" };
+  if (files && files.length) {
+    // Merge the freelancer's uploaded deliverable files into the order's
+    // attachments (each tagged uploaded_by) so the client reviews the actual
+    // work — a real file/photo — not just a link. No new column needed.
+    const { data: cur } = await sb.from("orders").select("attachments").eq("id", orderId).single();
+    const existing: Attachment[] = ((cur?.attachments as Attachment[]) ?? []).filter(Boolean);
+    update.attachments = [...existing, ...files];
+  }
+  const { error } = await sb.from("orders").update(update).eq("id", orderId);
   if (error) throw error;
 }
 

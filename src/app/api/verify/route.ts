@@ -37,6 +37,20 @@ export async function POST(req: Request) {
     const orderId        = Number(body.orderId);
     const deliverableUrl = String(body.deliverableUrl ?? "").trim();
 
+    // Optional uploaded deliverable files (from the freelancer's FileDropzone).
+    // Sanitize hard: cap the count, keep only known fields, require http(s) URLs.
+    const deliverableFiles = (Array.isArray(body.deliverableFiles) ? body.deliverableFiles : [])
+      .slice(0, 6)
+      .map((f: any) => ({
+        filename:     String(f?.filename ?? "file").slice(0, 200),
+        url:          String(f?.url ?? ""),
+        size_bytes:   Number(f?.size_bytes) || 0,
+        content_type: String(f?.content_type ?? "application/octet-stream").slice(0, 100),
+        uploaded_by:  String(f?.uploaded_by ?? "").slice(0, 200),
+        created_at:   new Date().toISOString(),
+      }))
+      .filter((f: any) => /^https?:\/\//i.test(f.url));
+
     // Identity from the verified session (falls back to body email only in demo).
     const { email: actorEmail } = await getIdentity(req, body.actor_email);
     if (!actorEmail) {
@@ -57,8 +71,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden — only the freelancer can submit a deliverable" }, { status: 403 });
     }
 
-    // 1) persist deliverable
-    await setOrderDeliverable(orderId, deliverableUrl);
+    // 1) persist deliverable (URL + any uploaded files)
+    await setOrderDeliverable(orderId, deliverableUrl, deliverableFiles);
 
     // 2) verify
     const verdict = await verifyDeliverable({

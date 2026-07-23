@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { CheckCircle2, ArrowRightCircle, Coins, ExternalLink, ShieldAlert, RotateCcw, Wallet } from "lucide-react";
-import type { Order } from "@/lib/orders";
+import type { Order, Attachment } from "@/lib/orders";
 import { patchOrder, verifyDeliverable, setFreelancerWallet } from "@/lib/api";
+import { FileDropzone } from "./FileDropzone";
 import {
   connectWallet,
   getEscrowWithSigner,
@@ -18,6 +19,11 @@ import {
 
 const STATUS_NAMES = ["none", "funded", "delivered", "released", "refunded"];
 const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
+
+/** Does this URL point at an image we can preview inline? */
+function isImageUrl(url: string): boolean {
+  return /\.(png|jpe?g|webp|gif|svg|avif)(\?|#|$)/i.test(url);
+}
 
 /**
  * Does this order actually exist on the escrow contract? Orders funded in
@@ -98,6 +104,7 @@ export function OrderActions({
     reasoning: string;
   }>(null);
   const [deliverable, setDeliverable] = useState(order.deliverable_url ?? "");
+  const [deliverableFiles, setDeliverableFiles] = useState<Attachment[]>([]);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
 
   const hasOnchain = !!ESCROW_ADDRESS;
@@ -233,7 +240,13 @@ export function OrderActions({
   // Freelancer submits: mark Delivered on-chain (their wallet signs submitDelivery
   // so the client can then release on-chain) + persist and AI-verify off-chain.
   const submitDeliverable = async () => {
-    const url = deliverable.trim();
+    // The deliverable is either uploaded files, a link, or both. The URL sent to
+    // verification / stored for the client is the typed link if given, else the
+    // first uploaded file's public URL (which is reachable, so verify works).
+    const url = deliverable.trim() || deliverableFiles[0]?.url || "";
+    if (!url) {
+      throw new Error("Upload your work (file/photo) or paste a link before submitting.");
+    }
     const onchainId = order.onchain_id ?? order.id;
     if (hasOnchain && (await onChainStatus(onchainId)) === 1) {
       const { signer } = await connectWallet();
@@ -241,7 +254,7 @@ export function OrderActions({
       const receipt = await (await escrow.submitDelivery(onchainId, url)).wait();
       setLastTxHash(receipt.hash);
     }
-    const v = await verifyDeliverable(order.id, url);
+    const v = await verifyDeliverable(order.id, url, order.freelancer_email, deliverableFiles);
     setVerdict(v);
   };
 
@@ -315,6 +328,16 @@ export function OrderActions({
             {order.deliverable_url}
             <ExternalLink className="h-3 w-3 flex-shrink-0" />
           </a>
+          {isImageUrl(order.deliverable_url) && (
+            <a href={order.deliverable_url} target="_blank" rel="noopener noreferrer" className="mt-2 block">
+              {/* Preview the delivered image inline so the client can review at a glance */}
+              <img
+                src={order.deliverable_url}
+                alt="Delivered work preview"
+                className="max-h-56 w-full rounded-lg border border-sky-200 object-contain"
+              />
+            </a>
+          )}
           <p className="mt-1.5 font-mono text-[10px] text-slate-500">
             Open it and review the work before releasing payment.
           </p>
@@ -359,15 +382,37 @@ export function OrderActions({
 
       {role === "freelancer" && order.status === "funded" && (
         <div className="space-y-3">
+          <div>
+            <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">
+              Upload your work
+            </span>
+            <p className="mb-1.5 mt-1 font-mono text-[10px] tracking-wide text-slate-400">
+              Attach the actual files/photos you made — or paste a link below.
+            </p>
+            <FileDropzone
+              value={deliverableFiles}
+              onChange={setDeliverableFiles}
+              uploadedBy={order.freelancer_email}
+              pathPrefix={`deliverables/${order.id}`}
+              disabled={busy}
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-slate-200" />
+            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-400">or a link</span>
+            <span className="h-px flex-1 bg-slate-200" />
+          </div>
+
           <label className="block">
             <span className="block font-mono text-[10px] uppercase tracking-widest text-slate-600">
-              Deliverable URL
+              Deliverable link
             </span>
             <input
               type="url"
               value={deliverable}
               onChange={(e) => setDeliverable(e.target.value)}
-              placeholder="https://figma.com/file/..."
+              placeholder="https://figma.com/file/... (optional if you uploaded files)"
               className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-xs text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-brand"
             />
             <span className="mt-1 block font-mono text-[10px] tracking-wide text-slate-400">
@@ -375,7 +420,7 @@ export function OrderActions({
             </span>
           </label>
           <button
-            disabled={busy || !deliverable.trim()}
+            disabled={busy || (!deliverable.trim() && deliverableFiles.length === 0)}
             onClick={() => run(submitDeliverable)}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-brand/30 transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
           >
