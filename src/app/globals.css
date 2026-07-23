@@ -258,10 +258,12 @@ html.dark .bg-warm {
 
 /* Surface backgrounds */
 html.dark .bg-white,
-html.dark .bg-white\/90,
 html.dark .bg-white\/95,
+html.dark .bg-white\/90,
+html.dark .bg-white\/80,
+html.dark .bg-white\/70,
 html.dark .bg-white\/60,
-html.dark .bg-white\/80 { background-color: #26344f !important; }
+html.dark .bg-white\/40 { background-color: #26344f !important; }
 html.dark .bg-slate-50   { background-color: #1e2a44 !important; }
 html.dark .bg-slate-100  { background-color: #2f405f !important; }
 
