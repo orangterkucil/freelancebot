@@ -27,9 +27,20 @@ export function SiteFooter() {
         </a>
         <span>· Settled in USDC</span>
       </p>
+      <p className="mt-3 font-mono text-[10px] text-slate-500">
+        <a
+          href="https://github.com/orangterkucil/freelancebot/blob/main/docs/RISKS-AND-SECURITY.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-brand"
+        >
+          Risks &amp; Security
+        </a>
+      </p>
       <p className="mx-auto mt-2 max-w-xl font-mono text-[10px] leading-relaxed text-slate-400">
         Arc is a trademark of Circle Internet Group, Inc. FreelanceBot is an
         independent project, not affiliated with or endorsed by Circle.
+        Testnet software — not financial advice; no guaranteed outcome.
       </p>
     </footer>
   );

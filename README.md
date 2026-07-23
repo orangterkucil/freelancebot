@@ -285,7 +285,11 @@ Or use Remix in the browser — no local Node install required. See [`contracts/
 - [**circle_product_feedback.md**](./circle_product_feedback.md) — honest Circle DX feedback (hackathon submission requirement).
 - [**submission_narrative.md**](./submission_narrative.md) — one-page pitch.
 - [**video_demo_script.md**](./video_demo_script.md) — 7-section storyboard + compression instructions.
+- [**docs/RISKS-AND-SECURITY.md**](./docs/RISKS-AND-SECURITY.md) — honest risk & security disclosure (testnet status, unaudited-contract risk, AI-verification limits, opsec). Read this before trusting the system with anything.
 
-## License
+## License & attribution
 
-MIT
+Licensed under the [MIT License](./LICENSE) — you may use, copy, and modify this
+code, but you **must preserve the `Copyright (c) 2026 orangterkucil` notice** and
+may not present it as your own original work. See [**NOTICE**](./NOTICE) for
+ownership, provenance, and attribution requirements.

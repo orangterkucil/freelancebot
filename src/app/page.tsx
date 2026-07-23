@@ -181,6 +181,9 @@ function HeroSection() {
               </span>
             </div>
           </div>
+          <p className="mt-2 font-mono text-[10px] text-slate-400">
+            Illustrative example — actual figures vary by job, platform fees, and network conditions.
+          </p>
 
           {/* Live activity ticker */}
           <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[10px] uppercase tracking-widest text-slate-500 sm:text-[11px]">
@@ -347,6 +350,20 @@ function AboutSection() {
             </div>
           ))}
         </div>
+        <p className="mt-4 font-mono text-[10px] leading-relaxed text-slate-400">
+          Market figures (freelancer count, fee leakage, per-job savings) are
+          illustrative estimates drawn from public reports; they are not
+          guarantees of any individual outcome. See{" "}
+          <a
+            href="https://github.com/orangterkucil/freelancebot/blob/main/docs/RISKS-AND-SECURITY.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-brand"
+          >
+            Risks &amp; Security
+          </a>
+          .
+        </p>
       </div>
     </section>
   );

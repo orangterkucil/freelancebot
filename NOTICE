@@ -1,0 +1,42 @@
+FreelanceBot
+Copyright (c) 2026 orangterkucil. All rights reserved to the author except as
+granted by the accompanying MIT License.
+
+------------------------------------------------------------------------------
+ORIGIN & OWNERSHIP
+------------------------------------------------------------------------------
+FreelanceBot is an original work authored by orangterkucil. It is an autonomous
+USDC-escrow payment agent for freelancers, built on Arc (Circle's stablecoin
+Layer-1) for the Encode "Build on Arc" hackathon.
+
+Authoritative sources of provenance:
+  - Git commit history of this repository (authored by orangterkucil)
+  - The deployed escrow contract on Arc testnet:
+      FreelanceEscrow 0xA8CA04560603951b0f0e803039B059432F673ae4
+  - The project's hackathon submission timestamp
+
+------------------------------------------------------------------------------
+LICENSE & ATTRIBUTION (READ BEFORE REUSE)
+------------------------------------------------------------------------------
+This software is released under the MIT License (see the LICENSE file). You are
+free to use, copy, modify, and distribute it, BUT the MIT License requires that
+the copyright notice and permission notice be preserved in all copies or
+substantial portions of the Software.
+
+That means:
+  - You MAY build on this code.
+  - You MUST keep the "Copyright (c) 2026 orangterkucil" notice intact.
+  - You MAY NOT remove attribution or represent this work, in whole or in
+    substantial part, as your own original creation.
+
+Removing the copyright notice, or presenting FreelanceBot (or a substantial
+portion of it) as your own original work, is a violation of the MIT License and
+of the author's rights.
+
+------------------------------------------------------------------------------
+TRADEMARKS
+------------------------------------------------------------------------------
+"Arc" and "USDC" are trademarks of Circle Internet Group, Inc. FreelanceBot is
+an independent project and is not affiliated with, sponsored by, or endorsed by
+Circle. These marks are used only descriptively to indicate the network and
+asset the software interoperates with.
