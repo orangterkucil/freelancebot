@@ -431,16 +431,30 @@ export function OrderActions({
       )}
 
       {role === "client" && order.status === "delivered" && (
-        <button
-          disabled={busy}
-          onClick={() => run(releaseAuto)}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-emerald-500/30 transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
-        >
-          <CheckCircle2 className="h-4 w-4" />
-          {busy ? "Sending…" : hasOnchain
-            ? `Approve & release ${order.amount_usdc} USDC`
-            : `Approve & release ${order.amount_usdc} USDC (simulated)`}
-        </button>
+        <div className="space-y-2">
+          {/* Non-custodial by design: the agent verifies autonomously, but only
+              the client's signature moves the USDC. Framed as a trust feature. */}
+          <div className="rounded-xl border border-violet-200 bg-violet-50 p-3">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-violet-700">
+              🤖 AI-verified · you keep the keys
+            </p>
+            <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600">
+              The agent already ran the checks (reachability, deadline, brief match) — verdict below.
+              Non-custodial: no one moves your USDC until <span className="font-semibold">you</span> approve.
+              One click settles it on-chain to the freelancer.
+            </p>
+          </div>
+          <button
+            disabled={busy}
+            onClick={() => run(releaseAuto)}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 font-display text-sm uppercase tracking-wider text-white shadow-sm shadow-emerald-500/30 transition-transform hover:scale-[1.01] disabled:opacity-50 disabled:hover:scale-100"
+          >
+            <CheckCircle2 className="h-4 w-4" />
+            {busy ? "Sending…" : hasOnchain
+              ? `Approve & release ${order.amount_usdc} USDC`
+              : `Approve & release ${order.amount_usdc} USDC (simulated)`}
+          </button>
+        </div>
       )}
 
       {lastTxHash && (
