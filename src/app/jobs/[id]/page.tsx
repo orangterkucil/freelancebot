@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { ArrowLeft, Send } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { AttachmentsList } from "@/components/AttachmentsList";
-import { UserBadge } from "@/components/UserBadge";
+import { RatingStars } from "@/components/RatingStars";
 import { getOrder, applyToJob } from "@/lib/api";
 import type { Order } from "@/lib/orders";
 import { Twitter, Github, Globe, Linkedin } from "lucide-react";
@@ -138,8 +138,21 @@ export default function JobDetailPage() {
 
           <div className="mt-4 border-t border-slate-100 pt-4">
             <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Posted by</p>
-            <div className="mt-1">
-              <UserBadge email={job.client_email} links={job.client_links} />
+            <div className="mt-1 flex items-center gap-2">
+              <span className="font-mono text-xs text-slate-700">{job.poster_label ?? "anonymous"}</span>
+              {job.poster_rating && job.poster_rating.count > 0 ? (
+                <span className="inline-flex items-center gap-1">
+                  <RatingStars value={job.poster_rating.average} size={12} />
+                  <span className="font-mono text-[10px] tabular-nums text-slate-500">
+                    {job.poster_rating.average.toFixed(1)}
+                    <span className="ml-0.5 text-slate-400">({job.poster_rating.count})</span>
+                  </span>
+                </span>
+              ) : (
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-500">
+                  new · verified via magic-link
+                </span>
+              )}
             </div>
 
             {job.client_links && Object.keys(job.client_links).length > 0 && (

@@ -187,6 +187,11 @@ export function listJobs(opts: {
   );
 }
 
+/** Public market activity/history feed — funded/delivered/released/refunded orders. */
+export function listActivity(limit = 30) {
+  return jsonFetch<{ activity: Order[] }>(`/api/activity?limit=${limit}`);
+}
+
 export function applyToJob(body: {
   order_id: number;
   freelancer_email: string;

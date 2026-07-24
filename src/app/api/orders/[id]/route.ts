@@ -5,7 +5,7 @@ import {
   setOrderOnchainId,
   setOrderStatus,
   assertActorIsParty,
-  scrubOrderForPublic,
+  enrichPublicOrder,
   updateOrderFields,
   setFreelancerWallet,
 } from "@/lib/orders";
@@ -42,7 +42,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     // Public jobs are readable but the full record (emails, deliverable,
     // attachments, private links) and the chat thread are for parties only.
     const messages = isParty ? await listMessages(orderId) : [];
-    const view = isParty ? order : scrubOrderForPublic(order);
+    // Non-parties get the scrubbed record + the poster's public label/rating so
+    // the job detail can show "posted by <handle> ⭐" without leaking the email.
+    const view = isParty ? order : await enrichPublicOrder(order);
 
     return NextResponse.json({ order: view, messages });
   } catch (err: any) {

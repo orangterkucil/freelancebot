@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { listOpenJobs, scrubOrderForPublic, FIELDS, type Field } from "@/lib/orders";
+import { listOpenJobs, enrichPublicOrders, FIELDS, type Field } from "@/lib/orders";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -28,13 +28,15 @@ export async function GET(req: Request) {
     const q     = url.searchParams.get("q")?.trim() || null;
     const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit") ?? 50)));
 
-    const jobs = (await listOpenJobs({
+    const open = await listOpenJobs({
       field,
       minBudget: min,
       maxBudget: max,
       search:    q,
       limit,
-    })).map(scrubOrderForPublic);   // public feed — never leak PII/attachments/deliverable
+    });
+    // public feed — never leak PII/attachments/deliverable; attach poster label + rating
+    const jobs = await enrichPublicOrders(open);
 
     return NextResponse.json({ jobs, fields: FIELDS });
   } catch (err: any) {

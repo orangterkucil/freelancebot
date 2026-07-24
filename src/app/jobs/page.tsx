@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Filter, Briefcase, Clock, ArrowUpRight, Paperclip } from "lucide-react";
+import { Search, Filter, Briefcase, Clock, ArrowUpRight, Paperclip, Activity } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { listJobs } from "@/lib/api";
+import { RatingStars } from "@/components/RatingStars";
+import { listJobs, listActivity } from "@/lib/api";
 import { FIELDS, type Order, type Field } from "@/lib/orders";
 
 const FIELD_LABELS: Record<Field | "all", string> = {
@@ -36,6 +37,7 @@ export default function JobsPage() {
   const [search, setSearch] = useState("");
   const [minBudget, setMinBudget] = useState<number | "">("");
   const [maxBudget, setMaxBudget] = useState<number | "">("");
+  const [activity, setActivity] = useState<Order[]>([]);
 
   const load = async () => {
     setLoading(true);
@@ -61,6 +63,11 @@ export default function JobsPage() {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [field, search, minBudget, maxBudget]);
+
+  // Market activity / history — recent orders past "open" (funded → paid).
+  useEffect(() => {
+    listActivity(20).then((r) => setActivity(r.activity)).catch(() => {});
+  }, []);
 
   return (
     <AppShell
@@ -127,7 +134,79 @@ export default function JobsPage() {
       </div>
 
       {!loading && jobs.length === 0 && !error && <EmptyState />}
+
+      <MarketActivity activity={activity} />
     </AppShell>
+  );
+}
+
+/** Poster reputation chip — stars + score, or a "new" pill. */
+function PosterRating({ rating }: { rating?: { average: number; count: number } | null }) {
+  if (rating && rating.count > 0) {
+    return (
+      <span className="inline-flex items-center gap-1">
+        <RatingStars value={rating.average} size={11} />
+        <span className="tabular-nums text-slate-400">
+          {rating.average.toFixed(1)} ({rating.count})
+        </span>
+      </span>
+    );
+  }
+  return (
+    <span className="rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-slate-500">
+      new
+    </span>
+  );
+}
+
+const ACTIVITY_META: Record<string, { label: string; cls: string }> = {
+  funded:    { label: "Escrow funded",    cls: "bg-amber-100 text-amber-800 ring-amber-200" },
+  delivered: { label: "Delivered · review", cls: "bg-sky-100 text-sky-800 ring-sky-200" },
+  released:  { label: "Paid ✓",           cls: "bg-emerald-100 text-emerald-800 ring-emerald-200" },
+  refunded:  { label: "Refunded",         cls: "bg-rose-100 text-rose-800 ring-rose-200" },
+};
+
+/** Market history — what's moved past "open": accepted → funded → paid. */
+function MarketActivity({ activity }: { activity: Order[] }) {
+  if (!activity || activity.length === 0) return null;
+  return (
+    <div className="mt-12">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+        <Activity className="h-4 w-4 text-brand" />
+        <p className="font-display text-sm uppercase tracking-wider text-slate-900">Market activity</p>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
+          recent escrows · funded → paid
+        </span>
+      </div>
+      <ul className="mt-3 divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white">
+        {activity.map((o) => {
+          const meta = ACTIVITY_META[o.status] ?? { label: o.status, cls: "bg-slate-100 text-slate-700 ring-slate-200" };
+          return (
+            <li key={o.id} className="flex items-center gap-3 px-4 py-3">
+              <span className="shrink-0">{FIELD_EMOJI[o.field]}</span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-mono text-xs text-slate-800">
+                  {o.title ?? o.brief.slice(0, 50)}
+                </p>
+                <div className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] text-slate-500">
+                  <span className="truncate">{o.poster_label ?? "anonymous"}</span>
+                  <PosterRating rating={o.poster_rating} />
+                </div>
+              </div>
+              <span className="shrink-0 font-display text-sm text-brand">
+                ${o.amount_usdc.toLocaleString()}
+              </span>
+              <span className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest ring-1 ${meta.cls}`}>
+                {meta.label}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-2 font-mono text-[10px] text-slate-400">
+        Real escrow orders on Arc testnet. Released = USDC settled on-chain to the freelancer.
+      </p>
+    </div>
   );
 }
 
@@ -180,6 +259,13 @@ function JobCard({ job }: { job: Order }) {
       <p className="mt-2 line-clamp-3 font-mono text-[11px] leading-relaxed text-slate-600">
         {job.brief}
       </p>
+
+      {/* Poster identity (privacy-safe handle/masked email) + reputation — the
+          legitimacy signal so applicants know who they're dealing with. */}
+      <div className="mt-3 flex items-center gap-1.5 font-mono text-[10px] text-slate-500">
+        <span className="truncate">{job.poster_label ?? "anonymous"}</span>
+        <PosterRating rating={job.poster_rating} />
+      </div>
 
       <div className="mt-5 flex items-end justify-between border-t border-slate-100 pt-3">
         <div>

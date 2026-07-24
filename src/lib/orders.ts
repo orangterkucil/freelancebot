@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "./supabase";
+import { displayName } from "./privacy";
 
 /**
  * Order + message + application DB helpers.
@@ -67,6 +68,13 @@ export type Order = {
   client_links: ClientLinks;
   poster_role: PosterRole;   // v0.13.0 — bilateral marketplace
   created_at: string;
+
+  // Computed, PUBLIC-SAFE fields (only set by enrichPublicOrder for public feeds).
+  // They let job cards / activity show WHO posted + their reputation without ever
+  // exposing the raw email: a privacy-safe handle/masked-email label + a rating
+  // summary derived server-side from the real email.
+  poster_label?: string;
+  poster_rating?: { average: number; count: number } | null;
 };
 
 /**
@@ -93,6 +101,50 @@ export function scrubOrderForPublic(o: Order): Order {
     attachments: [],
     client_links: {},
   };
+}
+
+/**
+ * Scrub an order for public display AND attach the poster's privacy-safe label
+ * + reputation. The raw email is used only server-side to look up the rating and
+ * derive a masked/handle label — it is never returned. This is how public job
+ * cards / the activity feed show "who posted + how trusted" without leaking PII.
+ */
+export async function enrichPublicOrder(o: Order): Promise<Order> {
+  const posterEmail = o.poster_role === "freelancer" ? o.freelancer_email : o.client_email;
+  const scrubbed = scrubOrderForPublic(o);
+  let poster_rating: { average: number; count: number } | null = null;
+  try {
+    if (posterEmail) {
+      const s = await getRatingSummary(posterEmail);
+      poster_rating = { average: s.average, count: s.count };
+    }
+  } catch { /* rating is best-effort */ }
+  return {
+    ...scrubbed,
+    poster_label: displayName(posterEmail, o.client_links),
+    poster_rating,
+  };
+}
+
+export function enrichPublicOrders(list: Order[]): Promise<Order[]> {
+  return Promise.all(list.map(enrichPublicOrder));
+}
+
+/**
+ * Market activity / history: recent orders that have moved past "open" — funded
+ * (escrow locked), delivered (in review), released (paid on-chain), or refunded.
+ * Public + scrubbed + enriched. Powers the marketplace's live activity feed.
+ */
+export async function listMarketActivity(limit = 30): Promise<Order[]> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("orders")
+    .select("*")
+    .in("status", ["funded", "delivered", "released", "refunded"])
+    .order("created_at", { ascending: false })
+    .limit(Math.min(60, Math.max(1, limit)));
+  if (error) throw error;
+  return enrichPublicOrders((data ?? []) as Order[]);
 }
 
 /** Record the freelancer's on-chain payout wallet (their connected address). */

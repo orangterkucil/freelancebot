@@ -26,6 +26,7 @@ const SECTIONS = [
   { id: "lifecycle",  label: "Order lifecycle", Icon: ArrowRight },
   { id: "marketplace",label: "Marketplace",     Icon: Briefcase },
   { id: "trust",      label: "Trust & ratings", Icon: Star },
+  { id: "fees",       label: "Fees",            Icon: Coins },
   { id: "agent",      label: "AI agent",        Icon: Cpu },
   { id: "contract",   label: "Smart contract",  Icon: Coins },
   { id: "privacy",    label: "Privacy",         Icon: ShieldCheck },
@@ -372,6 +373,19 @@ export default function DocsPage() {
               Ratings are stored per email and aggregated to a <code>UserBadge</code> that appears next to client/freelancer everywhere their name shows.</p>
               <p>New users with zero ratings show a small <strong>new</strong> badge. Ratings are immutable once submitted — no editing, no deleting.</p>
               <p>Clients can also enrich their listing with X / GitHub / website / LinkedIn links so freelancers can verify identity before applying. Set defaults in <Link href="/settings" className="text-brand hover:underline">Settings</Link>.</p>
+            </Section>
+
+            <Section id="fees" title="Fees & sustainability" emoji="🪙">
+              <p>FreelanceBot charges a <strong>flat 1% protocol fee</strong> on each released escrow (on-chain: <code>agentFeeBps = 100</code>, hard-capped at 1% in the contract so it can never be raised on you). The freelancer receives 99% of the agreed amount; the 1% is what keeps the service running.</p>
+              <p>Concretely, the fee covers the platform&apos;s operational costs:</p>
+              <ul className="ml-4 list-disc space-y-1">
+                <li><strong>AI verification compute</strong> — every deliverable is checked by an LLM (Groq / Llama 3.3 70B); inference isn&apos;t free.</li>
+                <li><strong>Infrastructure</strong> — hosting, the database, storage for uploaded deliverables, and the magic-link email delivery.</li>
+                <li><strong>On-chain agent</strong> — gas for the permissioned agent address when autonomous settlement is enabled, plus RPC/indexing.</li>
+                <li><strong>Maintenance</strong> — keeping the contract, integrations, and app secure and up to date.</li>
+              </ul>
+              <p>The fee is transparent and predictable: 1% in USDC, deducted at release, denominated in the same stablecoin as the job — no FX spread, no hidden withdrawal fees, no monthly subscription. Compare that to the 5–20%+ typical of legacy freelance + payment stacks (see <a href="#comparison" className="text-brand hover:underline">the comparison</a>).</p>
+              <p className="text-slate-500">On <strong>testnet</strong> the fee moves testnet USDC only (no monetary value). Nothing here is a solicitation or a promise of returns — see the project&apos;s <a href="https://github.com/orangterkucil/freelancebot/blob/main/docs/RISKS-AND-SECURITY.md" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">Risks &amp; Security</a>.</p>
             </Section>
 
             <Section id="agent" title="AI agent" emoji="🤖">
