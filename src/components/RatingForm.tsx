@@ -12,11 +12,13 @@ export function RatingForm({
   orderId,
   rateeEmail,
   rateeLabel,
+  actorEmail,
   onSubmitted,
 }: {
   orderId: number;
   rateeEmail: string;
   rateeLabel: string;
+  actorEmail?: string;
   onSubmitted: () => void;
 }) {
   const [stars, setStars] = useState(0);
@@ -39,7 +41,7 @@ export function RatingForm({
         ratee_email: rateeEmail,
         stars,
         comment: comment.trim() || undefined,
-      });
+      }, actorEmail);
       onSubmitted();
     } catch (e: any) {
       setError(e?.message ?? "Failed to submit rating");

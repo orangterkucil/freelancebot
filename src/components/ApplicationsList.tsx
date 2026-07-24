@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Check, X, Inbox, Coins } from "lucide-react";
 import { listApplicationsForOrder, decideApplication } from "@/lib/api";
+import { UserBadge } from "./UserBadge";
 import type { Application } from "@/lib/orders";
 
 export function ApplicationsList({
@@ -137,7 +138,8 @@ function ApplicationCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="font-mono text-xs text-slate-900 truncate">{app.freelancer_email}</p>
+          {/* Applicant identity + portable trust score (stars/count, or "new") */}
+          <UserBadge email={app.freelancer_email} raw />
           <p className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-slate-400">
             {new Date(app.created_at).toLocaleString()}
           </p>

@@ -11,6 +11,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { ApplicationsList } from "@/components/ApplicationsList";
 import { AttachmentsList } from "@/components/AttachmentsList";
 import { RatingForm } from "@/components/RatingForm";
+import { RatingStars } from "@/components/RatingStars";
 import { UserBadge } from "@/components/UserBadge";
 import { getOrder, listRatingsForOrder } from "@/lib/api";
 import type { Order, Rating } from "@/lib/orders";
@@ -192,6 +193,55 @@ export default function OrderDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Reputation — after release, each party rates the other once. Both the
+          client and the freelancer build a portable trust score. */}
+      {order.status === "released" && role && (() => {
+        const counterpartyEmail = role === "client" ? order.freelancer_email : order.client_email;
+        const alreadyRated = ratings.some((r) => r.rater_role === role);
+        return (
+          <div className="mt-8 space-y-4">
+            {alreadyRated ? (
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 font-mono text-xs uppercase tracking-wider text-emerald-700">
+                ✓ You rated {counterpartyEmail} for this order.
+              </div>
+            ) : (
+              <RatingForm
+                orderId={order.id}
+                rateeEmail={counterpartyEmail}
+                rateeLabel={counterpartyEmail}
+                actorEmail={role === "client" ? order.client_email : order.freelancer_email}
+                onSubmitted={reloadAll}
+              />
+            )}
+
+            {ratings.length > 0 && (
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                  Feedback on this order
+                </p>
+                <ul className="space-y-3">
+                  {ratings.map((r) => (
+                    <li key={r.id} className="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                          {r.rater_role === "client" ? "Client → Freelancer" : "Freelancer → Client"}
+                        </span>
+                        <RatingStars value={r.stars} size={12} />
+                      </div>
+                      {r.comment && (
+                        <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-700">
+                          {r.comment}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        );
+      })()}
     </AppShell>
   );
 }
