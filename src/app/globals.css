@@ -379,6 +379,8 @@ html.dark .bg-rose-50\/60,
 html.dark .bg-rose-50 { background-color: rgba(244, 114, 182, 0.08) !important; }
 html.dark .bg-sky-50\/60,
 html.dark .bg-sky-50 { background-color: rgba(56, 189, 248, 0.08) !important; }
+html.dark .bg-violet-50\/60,
+html.dark .bg-violet-50 { background-color: rgba(139, 92, 246, 0.08) !important; }
 
 /* Liquid glass on dark — bright surface, no glossy white */
 html.dark :where(.liquid-glass) {
