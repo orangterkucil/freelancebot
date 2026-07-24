@@ -142,9 +142,23 @@ export async function listMarketActivity(limit = 30): Promise<Order[]> {
     .select("*")
     .in("status", ["funded", "delivered", "released", "refunded"])
     .order("created_at", { ascending: false })
-    .limit(Math.min(60, Math.max(1, limit)));
+    .limit(60);
   if (error) throw error;
-  return enrichPublicOrders((data ?? []) as Order[]);
+  const orders = (data ?? []) as Order[];
+
+  // PRIVACY: only show PUBLIC-ORIGIN orders. A marketplace job always has ≥1
+  // application (someone applied → was accepted → funded); a private DIRECT
+  // order (client hires a specific person, never listed) has none. Filtering on
+  // "is_public now OR ever had an application" keeps private deals — their
+  // brief/title/amount — out of the public activity feed.
+  const ids = orders.map((o) => o.id);
+  let hadApps = new Set<number>();
+  if (ids.length) {
+    const { data: apps } = await sb.from("applications").select("order_id").in("order_id", ids);
+    hadApps = new Set((apps ?? []).map((a: any) => a.order_id));
+  }
+  const publicOrigin = orders.filter((o) => o.is_public || hadApps.has(o.id));
+  return enrichPublicOrders(publicOrigin.slice(0, Math.min(60, Math.max(1, limit))));
 }
 
 /** Record the freelancer's on-chain payout wallet (their connected address). */
@@ -447,7 +461,14 @@ export async function setOrderDeliverable(
     // work — a real file/photo — not just a link. No new column needed.
     const { data: cur } = await sb.from("orders").select("attachments").eq("id", orderId).single();
     const existing: Attachment[] = ((cur?.attachments as Attachment[]) ?? []).filter(Boolean);
-    update.attachments = [...existing, ...files];
+    // Dedup by URL so a resubmit (after a "hold" verdict) doesn't pile up the
+    // same files again.
+    const seen = new Set<string>();
+    update.attachments = [...existing, ...files].filter((a) => {
+      if (!a?.url || seen.has(a.url)) return false;
+      seen.add(a.url);
+      return true;
+    });
   }
   const { error } = await sb.from("orders").update(update).eq("id", orderId);
   if (error) throw error;

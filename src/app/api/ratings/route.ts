@@ -14,6 +14,24 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /**
+ * Strip PII from a rating before it goes out over a PUBLIC (unauthenticated) GET.
+ * Ratings are shown as "Client → Freelancer · ⭐ · comment" — the raw rater/ratee
+ * emails are never needed client-side, and returning them let anyone enumerate
+ * the user graph via /api/ratings?order_id / ?email. Keep only non-identifying
+ * fields.
+ */
+function publicRating(r: any) {
+  return {
+    id: r.id,
+    order_id: r.order_id,
+    rater_role: r.rater_role,
+    stars: r.stars,
+    comment: r.comment,
+    created_at: r.created_at,
+  };
+}
+
+/**
  * POST /api/ratings
  *   Body: { order_id, ratee_email, stars (1..5), comment?, actor_email }
  *   Guard: actor must be a party to the order; order status must be 'released'.
@@ -80,14 +98,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "You have already rated this order." }, { status: 409 });
     }
 
-    const rating = await createRating({
-      order_id,
-      rater_email: actor_email,
-      ratee_email,
-      rater_role:  role,
-      stars,
-      comment,
-    });
+    let rating;
+    try {
+      rating = await createRating({
+        order_id,
+        rater_email: actor_email,
+        ratee_email,
+        rater_role:  role,
+        stars,
+        comment,
+      });
+    } catch (e: any) {
+      // DB unique index uq_ratings_unique is the hard guarantee (survives the
+      // race the pre-check above can't). Turn its violation into a clean 409.
+      if (e?.code === "23505") {
+        return NextResponse.json({ error: "You have already rated this order." }, { status: 409 });
+      }
+      throw e;
+    }
     return NextResponse.json({ rating }, { status: 201 });
   } catch (err: any) {
     logger.error("api.ratings.post.failed", { err: err?.message ?? String(err) });
@@ -108,7 +136,7 @@ export async function GET(req: Request) {
     if (orderIdRaw) {
       const orderId = Number(orderIdRaw);
       if (!orderId) return NextResponse.json({ error: "bad order_id" }, { status: 400 });
-      const ratings = await listRatingsForOrder(orderId);
+      const ratings = (await listRatingsForOrder(orderId)).map(publicRating);
       return NextResponse.json({ ratings });
     }
     if (email && summary) {
@@ -116,7 +144,7 @@ export async function GET(req: Request) {
       return NextResponse.json(s);
     }
     if (email) {
-      const ratings = await listRatingsForRatee(email);
+      const ratings = (await listRatingsForRatee(email)).map(publicRating);
       return NextResponse.json({ ratings });
     }
     return NextResponse.json({ error: "specify order_id or email" }, { status: 400 });

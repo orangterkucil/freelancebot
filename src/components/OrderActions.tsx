@@ -248,11 +248,21 @@ export function OrderActions({
       throw new Error("Upload your work (file/photo) or paste a link before submitting.");
     }
     const onchainId = order.onchain_id ?? order.id;
-    if (hasOnchain && (await onChainStatus(onchainId)) === 1) {
-      const { signer } = await connectWallet();
-      const escrow = getEscrowWithSigner(signer);
-      const receipt = await (await escrow.submitDelivery(onchainId, url)).wait();
-      setLastTxHash(receipt.hash);
+    if (hasOnchain) {
+      const st = await onChainStatus(onchainId);
+      // Don't persist "delivered" off-chain if we couldn't record it on-chain —
+      // that would deadlock release (DB says delivered, chain still Funded).
+      if (st === -1) {
+        throw new Error("Couldn't reach the escrow on-chain to record delivery. Nothing was submitted — please try again in a moment.");
+      }
+      if (st === 1) {
+        const { signer } = await connectWallet();
+        const escrow = getEscrowWithSigner(signer);
+        const receipt = await (await escrow.submitDelivery(onchainId, url)).wait();
+        setLastTxHash(receipt.hash);
+      }
+      // st === 2: already Delivered on-chain (idempotent). st === 0: demo order
+      // (never on-chain) — fine to record the deliverable off-chain.
     }
     const v = await verifyDeliverable(order.id, url, order.freelancer_email, deliverableFiles);
     setVerdict(v);
