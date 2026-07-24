@@ -8,6 +8,7 @@ import {
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
 import { getIdentity } from "@/lib/auth";
+import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -24,6 +25,15 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
+    // Anti-abuse: blunt bot floods before doing any work (per IP).
+    const ipRl = rateLimit(`ratings:ip:${clientIp(req)}`, 15, 60_000);
+    if (!ipRl.ok) {
+      return NextResponse.json(
+        { error: "rate_limited", detail: "Too many rating requests. Slow down." },
+        { status: 429, headers: { "Retry-After": String(ipRl.retryAfter) } }
+      );
+    }
+
     const body = await req.json();
     const order_id    = Number(body.order_id);
     const ratee_email = String(body.ratee_email ?? "").trim().toLowerCase();
@@ -33,6 +43,14 @@ export async function POST(req: Request) {
     const { email: actor_email } = await getIdentity(req, body.actor_email);
     if (!actor_email) {
       return NextResponse.json({ error: "Unauthorized — sign in required" }, { status: 401 });
+    }
+    // Per-account throttle (a signed-in bot can't spam-rate across many orders).
+    const acctRl = rateLimit(`ratings:acct:${actor_email}`, 10, 60_000);
+    if (!acctRl.ok) {
+      return NextResponse.json(
+        { error: "rate_limited", detail: "Too many ratings from this account. Slow down." },
+        { status: 429, headers: { "Retry-After": String(acctRl.retryAfter) } }
+      );
     }
     if (!order_id || !ratee_email || !Number.isFinite(stars)) {
       return NextResponse.json({ error: "missing or invalid fields" }, { status: 400 });
@@ -52,6 +70,14 @@ export async function POST(req: Request) {
     const counterparty = role === "client" ? order.freelancer_email : order.client_email;
     if (ratee_email !== counterparty.toLowerCase()) {
       return NextResponse.json({ error: "ratee must be the counterparty" }, { status: 400 });
+    }
+
+    // Anti-abuse: ONE rating per rater per order. The UI hides the form after
+    // rating, but the API must enforce it too — otherwise a script could POST
+    // repeatedly and inflate/spam a counterparty's score.
+    const existing = await listRatingsForOrder(order_id);
+    if (existing.some((r) => r.rater_email.toLowerCase() === actor_email.toLowerCase())) {
+      return NextResponse.json({ error: "You have already rated this order." }, { status: 409 });
     }
 
     const rating = await createRating({

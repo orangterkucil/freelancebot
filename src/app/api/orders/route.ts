@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createOrder, listOrdersForEmail } from "@/lib/orders";
 import { getIdentity } from "@/lib/auth";
+import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -35,6 +36,16 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    // Anti-abuse: cap order creation per IP so a bot can't flood the marketplace
+    // with junk listings. (Per-account cap is applied below, once we know who.)
+    const ipRl = rateLimit(`orders:create:ip:${clientIp(req)}`, 10, 60_000);
+    if (!ipRl.ok) {
+      return NextResponse.json(
+        { error: "rate_limited", detail: "Too many new orders. Slow down." },
+        { status: 429, headers: { "Retry-After": String(ipRl.retryAfter) } }
+      );
+    }
+
     const body = await req.json();
     const client_email     = String(body.client_email ?? "").trim().toLowerCase();
     const freelancer_email = String(body.freelancer_email ?? "").trim().toLowerCase();
@@ -72,6 +83,15 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "Forbidden — you must be the client or freelancer on the order you create" },
         { status: 403 }
+      );
+    }
+
+    // Per-account cap: even a signed-in account can't drip-spam listings.
+    const acctRl = rateLimit(`orders:create:acct:${actorEmail}`, 12, 60_000);
+    if (!acctRl.ok) {
+      return NextResponse.json(
+        { error: "rate_limited", detail: "You're creating orders too quickly. Slow down." },
+        { status: 429, headers: { "Retry-After": String(acctRl.retryAfter) } }
       );
     }
 
