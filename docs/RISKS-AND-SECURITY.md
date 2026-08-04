@@ -54,6 +54,10 @@ the brief. Be clear-eyed about its limits:
   (the agent releasing on a passing verdict) is enabled only when the operator
   explicitly turns it on — because verification is not yet strong enough to trust
   with money unattended. Treat auto-release as experimental.
+  The reasoning behind this is documented in
+  [DESIGN-DECISIONS.md](./DESIGN-DECISIONS.md): no LLM defense is provably
+  complete, so rather than only hardening the prompt we removed the agent's
+  authority to move funds — even a fully successful injection gains nothing.
 
 ## What FreelanceBot does **not** guarantee
 

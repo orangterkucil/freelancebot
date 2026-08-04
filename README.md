@@ -286,6 +286,7 @@ Or use Remix in the browser — no local Node install required. See [`contracts/
 - [**submission_narrative.md**](./submission_narrative.md) — one-page pitch.
 - [**video_demo_script.md**](./video_demo_script.md) — 7-section storyboard + compression instructions.
 - [**docs/RISKS-AND-SECURITY.md**](./docs/RISKS-AND-SECURITY.md) — honest risk & security disclosure (testnet status, unaudited-contract risk, AI-verification limits, opsec). Read this before trusting the system with anything.
+- [**docs/DESIGN-DECISIONS.md**](./docs/DESIGN-DECISIONS.md) — why the architecture is the way it is: why a human approves the release (and why that's the *stronger* security position), why public views never expose raw identity, why terms lock on funding.
 
 ## License & attribution
 
