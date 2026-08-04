@@ -1550,7 +1550,7 @@
   // ============================================================
   // Scene definitions
   // ============================================================
-  const SCENES = [
+  const ALL_SCENES = [
     { id: 1, dur: 5,  tts: "FreelanceBot. Payouts on Arc.", label: "OPENING" },
     { id: 2, dur: 7,  tts: "300 dollar job. 220 arrives. 80 dollars lost.", label: "PROBLEM" },
     { id: 3, dur: 6,  tts: "USDC on Arc. Verified. Released in under one second.", label: "SOLUTION" },
@@ -1559,6 +1559,20 @@
     { id: 6, dur: 5,  tts: "Source verified. Open source, MIT.", label: "TECH" },
     { id: 7, dur: 6,  tts: "FreelanceBot. Try it live.", label: "CLOSE" },
   ];
+
+  // ------------------------------------------------------------
+  // Role cuts — ?role=client / ?role=freelancer play a focused, single
+  // perspective; no param plays the full reel (both sides). The engine is
+  // entirely driven off this array (duration, progress, scene elements are
+  // resolved by scene id), so filtering here is all that's needed.
+  // ------------------------------------------------------------
+  const ROLE_CUTS = {
+    client:     { ids: [1, 2, 3, 4, 6, 7], title: "The Client Journey",     sub: "Post · fund escrow · verify · release" },
+    freelancer: { ids: [1, 2, 3, 5, 6, 7], title: "The Freelancer Journey", sub: "Browse · apply · deliver · get paid" },
+  };
+  const roleParam = (new URLSearchParams(location.search).get('role') || '').toLowerCase();
+  const cut = ROLE_CUTS[roleParam] || null;
+  const SCENES = cut ? ALL_SCENES.filter(s => cut.ids.includes(s.id)) : ALL_SCENES;
 
   // Frame timing per tutorial scene (offsets within scene)
   const CLIENT_STEPS = [
@@ -1579,6 +1593,24 @@
   ];
 
   const totalDuration = SCENES.reduce((s, x) => s + x.dur, 0);
+
+  // Sync the gate + tab title + clock to whichever cut is playing, so a role
+  // demo never advertises the full reel's runtime.
+  (() => {
+    const mmss = (s) => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+    const dur = mmss(totalDuration);
+    const gateH2 = document.querySelector('#gate h2');
+    const gateP  = document.querySelector('#gate p');
+    if (cut) {
+      document.title = 'FreelanceBot — ' + cut.title;
+      if (gateH2) gateH2.textContent = cut.title;
+      if (gateP)  gateP.textContent = dur + ' · ' + cut.sub;
+    } else if (gateP) {
+      gateP.textContent = dur + ' · voice · auto-play';
+    }
+    const t = document.getElementById('time');
+    if (t) t.textContent = '0:00 / ' + dur;
+  })();
 
   // ============================================================
   // Logo particles

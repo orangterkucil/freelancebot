@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FreelanceBot — Demos</title>
+<meta name="description" content="Watch FreelanceBot from both sides: the client journey and the freelancer journey. USDC escrow on Arc, verified by an AI agent.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #020617;
+    --bg-1: #0b1220;
+    --cyan: #22d3ee;
+    --blue: #3b82f6;
+    --violet: #a855f7;
+    --emerald: #10b981;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --line: rgba(148, 163, 184, 0.18);
+    --font-display: 'Anton', 'Arial Black', sans-serif;
+    --font-mono: 'JetBrains Mono', Menlo, monospace;
+    --font-sans: 'Inter', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    color: var(--text);
+    background:
+      radial-gradient(ellipse 90% 60% at 50% -10%, #14304d 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% 50%, #0f172a 0%, var(--bg-0) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6vh 20px 40px;
+  }
+  /* subtle grain, same texture language as the reel */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; opacity: 0.25; z-index: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/></svg>");
+  }
+  .wrap { position: relative; z-index: 1; width: 100%; max-width: 980px; }
+
+  header { text-align: center; margin-bottom: 44px; }
+  .mark {
+    width: 68px; height: 68px; margin: 0 auto 22px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    display: grid; place-items: center;
+    font-family: var(--font-display); font-size: 36px; color: #fff;
+    box-shadow: 0 0 50px rgba(34, 211, 238, 0.35);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(34px, 6vw, 60px);
+    letter-spacing: 0.5px; line-height: 1.02; text-transform: uppercase;
+  }
+  h1 span { background: linear-gradient(90deg, var(--cyan), var(--blue)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  header p {
+    margin-top: 14px; color: var(--muted);
+    font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.06em;
+  }
+
+  .grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+  @media (min-width: 780px) { .grid { grid-template-columns: 1fr 1fr; } }
+
+  .card {
+    position: relative; display: block; overflow: hidden;
+    padding: 30px 26px 26px;
+    border: 1px solid var(--line); border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    text-decoration: none; color: inherit;
+    transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 0 0 auto; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 18px 50px rgba(0,0,0,0.45); }
+  .card.client     { --accent: var(--blue); }
+  .card.freelancer { --accent: var(--emerald); }
+
+  .role {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 11px; border-radius: 999px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .card h2 {
+    margin-top: 16px;
+    font-family: var(--font-display); font-size: 29px; text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .card .lede { margin-top: 9px; color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+  ol { margin: 18px 0 0; padding: 0; list-style: none; counter-reset: s; }
+  ol li {
+    counter-increment: s; position: relative;
+    padding: 6px 0 6px 30px;
+    font-family: var(--font-mono); font-size: 11.5px; color: #cbd5e1;
+  }
+  ol li::before {
+    content: counter(s, decimal-leading-zero);
+    position: absolute; left: 0; top: 6px;
+    color: var(--accent); font-size: 10px; opacity: 0.85;
+  }
+  .foot {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line);
+  }
+  .play {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 18px; border-radius: 12px;
+    background: var(--accent); color: #04121f;
+    font-weight: 800; font-size: 12.5px; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .meta { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); letter-spacing: 0.08em; }
+
+  .extra { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 18px; border-radius: 12px;
+    border: 1px solid var(--line); color: var(--text); text-decoration: none;
+    font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.06em;
+    transition: border-color .2s ease, color .2s ease;
+  }
+  .ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+  footer { margin-top: 34px; text-align: center; color: var(--muted); font-family: var(--font-mono); font-size: 10.5px; line-height: 1.9; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark">F</div>
+    <h1>Two sides.<br><span>One escrow.</span></h1>
+    <p>USDC ESCROW ON ARC · VERIFIED BY AN AI AGENT · PICK A PERSPECTIVE</p>
+  </header>
+
+  <div class="grid">
+    <a class="card client" href="/demo-reel.html?role=client">
+      <span class="role">◆ For clients</span>
+      <h2>The Client Journey</h2>
+      <p class="lede">You need work done and you want your money protected until it is. Watch a job go from brief to settled payment.</p>
+      <ol>
+        <li>Post a job — brief, budget, deadline</li>
+        <li>Pick an applicant, trust score inline</li>
+        <li>Fund the USDC escrow on Arc</li>
+        <li>The AI agent verifies the delivery</li>
+        <li>Approve — released in under a second</li>
+      </ol>
+      <div class="foot">
+        <span class="play">▶ Watch</span>
+        <span class="meta">0:59 · VOICE</span>
+      </div>
+    </a>
+
+    <a class="card freelancer" href="/demo-reel.html?role=freelancer">
+      <span class="role">◆ For freelancers</span>
+      <h2>The Freelancer Journey</h2>
+      <p class="lede">You did the work and you want to be paid — not in 14 days, minus fees. Watch a gig go from apply to USDC in your wallet.</p>
+      <ol>
+        <li>Browse the open marketplace</li>
+        <li>Apply with a quick pitch</li>
+        <li>Deliver — upload files or a link</li>
+        <li>The agent verifies it in seconds</li>
+        <li>Get paid in USDC, self-custody</li>
+      </ol>
+      <div class="foot">
+        <span class="play">▶ Watch</span>
+        <span class="meta">0:59 · VOICE</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="extra">
+    <a class="ghost" href="/demo-reel.html">▶ Full reel — both sides · 1:29</a>
+    <a class="ghost" href="/">↗ Try the live app</a>
+    <a class="ghost" href="https://github.com/orangterkucil/freelancebot" target="_blank" rel="noopener noreferrer">↗ Source on GitHub</a>
+  </div>
+
+  <footer>
+    Running on Arc testnet · testnet USDC has no monetary value<br>
+    <a href="https://github.com/orangterkucil/freelancebot/blob/main/docs/RISKS-AND-SECURITY.md" target="_blank" rel="noopener noreferrer">Risks &amp; Security</a>
+  </footer>
+</div>
+</body>
+</html>
