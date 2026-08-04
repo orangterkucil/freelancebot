@@ -30,10 +30,19 @@ export async function GET() {
     });
   } catch (err: any) {
     // Surface it loudly — if this fails, the project is probably paused again.
-    logger.error("api.keepalive.failed", { err: err?.message ?? String(err) });
-    return NextResponse.json(
-      { ok: false, db: "unreachable", detail: err?.message ?? String(err) },
-      { status: 503 }
-    );
+    const raw = err?.message ?? String(err);
+    logger.error("api.keepalive.failed", { err: raw });
+
+    // A paused/restoring Supabase answers through Cloudflare with a full HTML
+    // error page. Don't echo kilobytes of markup back as "detail" — classify it.
+    const isHtml = /<!DOCTYPE html|<html/i.test(raw);
+    const paused = isHtml && /\b52[0-9]\b|web server is down/i.test(raw);
+    const detail = paused
+      ? "Supabase is unreachable (paused or restoring). Restore the project in the Supabase dashboard."
+      : isHtml
+        ? "Upstream returned an HTML error page instead of a database response."
+        : raw.slice(0, 300);
+
+    return NextResponse.json({ ok: false, db: "unreachable", detail }, { status: 503 });
   }
 }
