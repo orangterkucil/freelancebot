@@ -1,225 +1,160 @@
-# FreelanceBot — Video Demo Script
+# FreelanceBot — Demo Video Recording Plan
 
-> Target length: **3:30 – 4:00 minutes**. Submission rubric asks for "video demonstration succinctly outlining core functions and effective use of Circle's Developer tools." Aim for that — not a polished marketing reel.
-
-> Style: screen-record with face-cam in corner is optional. **Voiceover in English** (judges include international Circle/Arc team). Pace: slightly faster than normal speech, but clear.
-
-> Tools: OBS Studio (free, record screen + mic + webcam) → CapCut or DaVinci Resolve Free (cut + add captions).
+> **Target: 3:00–3:30.** One take per section, cut later. The goal is **proof**, not polish:
+> a judge must see the real app, a real MetaMask signature, and a real transaction on Arcscan.
+>
+> An animated reel cannot prove that. Use `/demos.html` only as a ~5-second intro sting if you want.
 
 ---
 
-## Storyboard at a glance
+## 0. Prep — do this BEFORE you hit record
 
-| Section | Duration | What's on screen |
+| # | Item | Why it matters |
 |---|---|---|
-| 1. Hook + problem | 0:00 – 0:30 | Talking head OR landing page hero |
-| 2. Solution one-liner | 0:30 – 0:45 | Landing page full view |
-| 3. Live demo: client flow | 0:45 – 1:45 | Client dashboard, create + fund order |
-| 4. Live demo: freelancer flow | 1:45 – 2:30 | Freelancer dashboard, submit + agent verify |
-| 5. Live demo: release | 2:30 – 2:50 | Client side, approve & release |
-| 6. Under the hood | 2:50 – 3:30 | arcscan contract page, GitHub repo |
-| 7. Close | 3:30 – 3:50 | Differentiators + CTA |
+| 1 | **Restore the Supabase project** (dashboard → Restore) | It auto-paused; the app is down until you do. Nothing works without this. |
+| 2 | Two browser profiles: **Client** and **Freelancer** | The whole point is a cross-party payment. One profile each. |
+| 3 | Two wallets, both funded with **Arc testnet USDC** | Client pays escrow + gas; freelancer needs an address to receive. |
+| 4 | Pre-create one job so the marketplace isn't empty | An empty marketplace looks dead on camera. |
+| 5 | Tabs open and ready: app, `testnet.arcscan.app`, GitHub repo | No fumbling for URLs mid-take. |
+| 6 | Zoom to ~110%, hide bookmarks bar, silence notifications | Text must stay readable at 1080p after compression. |
+| 7 | One **full dry run** without recording | You will hit one snag. Better now than in take 4. |
+
+**Record with:** OBS Studio (screen + mic). **Edit with:** CapCut / DaVinci Resolve (free).
+Speak slightly faster than normal, in English. Add captions — many judges watch muted.
 
 ---
 
-## Section 1 — Hook + problem (0:00 – 0:30)
+## 1. Hook + the problem — 0:00–0:25
 
-**On screen:** Either your talking head, or scroll through landing page hero.
+**Screen:** landing hero (`freelancebot-alpha.vercel.app`), slow scroll.
 
-**Voiceover:**
-> "A freelance designer in Jakarta accepts a three-hundred-dollar logo job from a US client. Today, by the time the money lands in her bank account, two weeks have passed and the payment is down to two-twenty after PayPal fees, FX spread, and SWIFT charges. Multiply that by every freelancer in emerging markets and it's a twenty-billion-dollar annual tax on global digital work."
+> "A designer in Jakarta finishes a $300 job for a client in New York. Two weeks later the money lands — minus PayPal fees, FX spread, and a SWIFT charge. That's the tax on global freelance work today: slow, opaque, expensive.
 >
-> "I'm tarjo, a builder from Indonesia. I built FreelanceBot for the Stablecoins Commerce Stack Challenge to fix exactly this — with USDC on Arc and an AI agent that handles the boring parts of getting paid."
+> FreelanceBot replaces it with a USDC escrow on Arc that an AI agent verifies — and settles in under a second."
+
+**Do:** pause briefly on the "Built on Arc" badge and the live contract chip.
 
 ---
 
-## Section 2 — Solution one-liner (0:30 – 0:45)
+## 2. The marketplace + trust — 0:25–0:50
 
-**On screen:** Landing page at `freelancebot-alpha.vercel.app`, full view. Hover/highlight the deployed contract address in the footer briefly.
+**Screen:** `/jobs`.
 
-**Voiceover:**
-> "FreelanceBot is an AI payment agent. Clients fund USDC escrow on Arc, the agent verifies the deliverable, and payment releases in under a second. No PayPal fees, no SWIFT wait, no Upwork hold."
+> "This is the open marketplace. Every job shows who posted it and their reputation — a portable trust score, without exposing anyone's identity. Below is live market activity: real escrows moving from funded, to delivered, to paid."
+
+**Do:** hover a job card (poster + stars visible), then scroll to **Market activity**.
+**Why it lands:** proves this is a working market, not one hardcoded demo order.
+
+---
+
+## 3. Client: post + fund the escrow — 0:50–1:40
+
+**Screen:** Client profile.
+
+> "As the client I post a job — brief, budget, deadline. A freelancer applies, and I see their trust score inline before I accept."
+
+**Do:** post job → switch to freelancer tab → apply → back to client → **Accept**.
+
+> "Now I fund the escrow. This is a real transaction on Arc: USDC is locked in the contract, and the payout address is the freelancer's own wallet — I can't reroute it, and neither can the platform."
+
+**Do:** **Fund** → let **MetaMask open fully on camera** → confirm → show the tx hash appear.
+
+> ⚠️ **Keep MetaMask fully in frame.** That popup is the single most convincing frame in the video.
+
+---
+
+## 4. Freelancer: deliver + AI verification — 1:40–2:25
+
+**Screen:** Freelancer profile, same order.
+
+> "As the freelancer I deliver the actual work — I can upload the files or photos directly, not just paste a link."
+
+**Do:** **drag a real image file** into the upload box; let it finish.
+
+> "When I submit, I sign an on-chain delivery, and the AI agent verifies it — checking the deliverable is reachable, that it met the deadline, and that it matches the brief. The verdict is computed on the server, so a prompt injected into the deliverable can't talk the agent into approving it."
+
+**Do:** Submit → MetaMask signature → **let the agent verdict render**. Read it aloud.
+
+---
+
+## 5. Release + on-chain proof — 2:25–3:00
+
+**Screen:** Client profile.
+
+> "The agent verified it — but it does not move my money. That's deliberate. The agent is autonomous where it's safe: verification. The signature that releases funds is mine."
+
+**Do:** show the **"AI-verified · you keep the keys"** panel → **Approve & release** → MetaMask → confirm.
+
+> "Released. Sub-second finality on Arc, settled in USDC, one percent protocol fee — versus the five to twenty percent a legacy freelance and payment stack charges."
+
+**Do:** ⭐ **Click the tx link → open Arcscan → show the USDC transfer to the freelancer's address.**
+
+> ⚠️ **This is the money shot.** Do not skip it. Hold on Arcscan for 4–5 seconds.
+
+**Then:** switch to the freelancer tab — released status + the rating prompt.
+
+> "Both sides rate each other, and that reputation follows them to the next job."
+
+---
+
+## 6. Under the hood + close — 3:00–3:30
+
+**Screen:** Arcscan contract page, then GitHub.
+
+> "The escrow contract is live on Arc testnet and verified. The fee is capped in the contract itself, so it can never be raised on a user. It's open source, MIT licensed, and ships with an honest risks-and-security disclosure — because this moves money, and pretending otherwise would be dishonest.
 >
-> "Smart contract is already deployed and verified on Arc Testnet — link in the description."
+> FreelanceBot. Get paid the moment you deliver."
+
+**Do:** contract `0xA8CA…3ae4` on Arcscan → GitHub repo → end on the landing page.
 
 ---
 
-## Section 3 — Live demo: client flow (0:45 – 1:45)
+## Mistakes that cost points
 
-**On screen:** Click "I'm a client →". Sign in with `client@demo.com`.
+- ❌ Cutting away before a transaction confirms — judges assume it failed.
+- ❌ MetaMask cropped out of frame — leaves "is this real?" unanswered.
+- ❌ Never showing Arcscan — without it, everything could be a mockup.
+- ❌ Reciting the script robotically — talk, don't read.
+- ❌ Dead silence while a tx mines — narrate it ("this is settling on Arc now").
+- ❌ Running past 4 minutes — judges watch dozens of these.
 
-**Voiceover (as you click):**
-> "Let me walk through the full flow. I'm the client — say I'm hiring a freelance designer."
+## If something breaks mid-recording
 
-Click "+ New order". Fill the form on camera:
-- Freelancer email: `freelancer@demo.com`
-- Brief: `Brand logo + 3 variations, deliver via Figma link`
-- Amount: `300`
-- Deadline: 7 days from today
-
-**Voiceover:**
-> "I describe the job, set the amount in USDC, pick a deadline."
-
-Click **Create order**. Then click into the order.
-
-**Voiceover:**
-> "Now I fund the escrow. In the production version this calls our deployed contract on Arc directly — `createAndFund` pulls the USDC from my wallet into escrow. For this demo I'll simulate it with one click."
-
-Click **"Fund 300 USDC (simulated)"**. Status flips to Funded.
-
-**Voiceover:**
-> "Done. Funds are locked in escrow. The freelancer can now see the job."
+The app has a simulated path for demo orders that were never funded on-chain.
+**Do not use it for the video** — an off-chain "release" moves no money and produces
+no tx hash, and a sharp judge will notice. If a real transaction fails: stop, fix, re-record.
+One honest take beats a polished fake.
 
 ---
 
-## Section 4 — Live demo: freelancer flow + agent verify (1:45 – 2:30)
-
-**On screen:** Open new tab → `/freelancer`. Sign in as `freelancer@demo.com`. Open order #X.
-
-**Voiceover:**
-> "Switching to the freelancer side. Same order, different view. I do the work, then submit the deliverable."
-
-Paste a real GitHub or Figma URL in the deliverable field. Click **Submit deliverable**.
-
-**Voiceover:**
-> "The moment I submit, the AI agent — Groq Llama 3.3, running serverless — does three things. One: checks the URL is actually reachable. Two: checks the deadline hasn't passed. Three: uses an LLM judgment call to decide whether the contents plausibly match the original brief."
-
-Wait for the verdict bubble to appear.
-
-**Voiceover (as verdict appears):**
-> "Verdict comes back in a few seconds. The agent never auto-releases — that would be irresponsible for real money — but it tells the client clearly: ready to release, or hold for review, with full reasoning."
-
-(Optionally show the chat panel below — agent has been responding to messages contextually in the conversation.)
-
-**Voiceover:**
-> "And throughout the order's life, both parties can chat with the agent for clarification. The agent sees the order context — brief, amount, deadline, status — so its answers are always grounded."
-
----
-
-## Section 5 — Live demo: release (2:30 – 2:50)
-
-**On screen:** Switch back to client tab. Reload order page. Click green **"Approve & release"** button.
-
-**Voiceover:**
-> "I'm the client again. The agent recommended release. I click approve."
-
-Click. Status flips to Released.
-
-**Voiceover:**
-> "Released. In the on-chain version, this calls `approveAndRelease` on the contract. USDC settles to the freelancer's wallet at Arc finality — sub-second — minus a one-percent platform fee that routes through Circle Gateway."
-
----
-
-## Section 6 — Under the hood (2:50 – 3:30)
-
-**On screen:** Open `https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4`. Show the green "Source code verified (exact match)" badge.
-
-**Voiceover:**
-> "Quick look at the on-chain side. The escrow contract is deployed on Arc Testnet, and arcscan auto-verified the source code. Anyone — judges, freelancers, clients — can read exactly what the contract does. No magic."
-
-Scroll to the Read/Write contract tab. Highlight `createAndFund`, `submitDelivery`, `approveAndRelease`, `refund`.
-
-**Voiceover:**
-> "Four state-changing functions, all guarded. Custom errors for gas efficiency. SafeERC20 for token handling. Ownable for the agent address. Eighteen unit tests in the repo cover happy path, edge cases, and the full Jakarta-to-NYC lifecycle."
-
-Switch to the GitHub repo at `github.com/orangterkucil/freelancebot`. Scroll the README briefly.
-
-**Voiceover:**
-> "Everything is open source. Live demo URL, contract address, GitHub link — all in the README. Built solo, in public, on free-tier everything."
-
----
-
-## Section 7 — Close (3:30 – 3:50)
-
-**On screen:** Back to landing page, or talking head.
-
-**Voiceover:**
-> "Why this submission, in three lines."
->
-> "One — built on Arc, first-mover advantage on a stack that didn't exist last year."
->
-> "Two — agentic, not just payment rails. The AI agent is the differentiator that fits Track 4."
->
-> "Three — emerging-market POV. I'm building for the freelancers I know in Indonesia, not a US thought experiment."
->
-> "Thanks for watching. Try it at `freelancebot-alpha.vercel.app`."
-
-(Optional end card: project name, contract address, GitHub link.)
-
----
-
-## Pre-record checklist
-
-- [ ] Site is live and the latest build is deployed
-- [ ] Two demo email accounts work (`client@demo.com` + `freelancer@demo.com`)
-- [ ] Create a clean order beforehand for the recording — or do it on camera
-- [ ] Have arcscan tab pre-loaded
-- [ ] Have GitHub repo tab pre-loaded
-- [ ] Mic gain tested (do a 10-second test record)
-- [ ] Browser zoom at ~110% so text is readable on smaller screens
-- [ ] Close unrelated tabs (especially anything with crypto wallets in the bookmark bar — looks messy)
-- [ ] Quiet 30-minute window booked
-
-## Editing notes
-
-- Cut hard between sections — pauses kill momentum
-- Add captions throughout — many judges watch muted
-- Burn the live URL into the bottom-right corner from 0:45 onward as a sticky overlay
-- End card holds for 2 full seconds so people can read it
-- Export 1080p, MP4, under 100 MB (Ignyte upload limit safe)
-
----
-
-## Compress + upload (target: under 25 MB if possible)
-
-Submission platforms behave best with ≤ 25 MB files. Raw screen recordings often
-come out at 200–800 MB at 1080p. Compress before uploading.
-
-### Easiest: HandBrake (free GUI)
-
-1. Download HandBrake from https://handbrake.fr
-2. Open your raw recording
-3. Preset: **"Web → Gmail Large 3 Minutes 720p30"** (good default) or **"Vimeo YouTube HQ 1080p60"** for higher quality
-4. Codec: **H.264 (x264)** — universal compatibility
-5. Quality slider: **RF 23** for balanced, **RF 26** for smaller file
-6. Click **Start Encode** → wait 2–5 minutes
-7. Output is typically 5–20 MB for a 4-min demo
-
-### Power user: FFmpeg one-liner
+## Compress before uploading
 
 ```bash
-ffmpeg -i raw.mov \\
-  -c:v libx264 -crf 25 -preset slow \\
-  -c:a aac -b:a 96k -ac 1 \\
-  -vf "scale=1280:-2,fps=30" \\
-  -movflags +faststart \\
+ffmpeg -i raw.mov \
+  -c:v libx264 -crf 25 -preset slow \
+  -c:a aac -b:a 96k -ac 1 \
+  -vf "scale=1280:-2,fps=30" \
+  -movflags +faststart \
   freelancebot-demo.mp4
 ```
 
-What this does:
-- `-crf 25` — quality 25 (lower = bigger + better, 18–28 is the useful range)
-- `-preset slow` — encoder spends more time = smaller file
-- `scale=1280:-2` — downscale to 720p width (height auto)
-- `fps=30` — drop to 30fps if you recorded 60fps (halves bitrate need)
-- `-c:a aac -b:a 96k -ac 1` — mono 96 kbps audio is plenty for voiceover
-- `-movflags +faststart` — moves the index to the front so video starts playing before fully downloaded
+- `-crf 25` — quality (lower = bigger + better; 18–28 is the useful range)
+- `-preset slow` — encoder works harder = smaller file
+- `scale=1280:-2` — downscale to 720p width, height auto
+- `fps=30` — halve the bitrate need if you recorded 60fps
+- `-b:a 96k -ac 1` — mono 96 kbps is plenty for voiceover
+- `+faststart` — starts playing before it finishes downloading
 
-For a 4-minute demo recorded at 1080p60 with mic, this typically produces a **15–25 MB MP4**. Good enough for Ignyte upload, YouTube, and a GitHub Release asset.
+A 3–4 minute 1080p60 recording typically lands at **15–25 MB**.
 
-### Upload locations (in priority order)
+### Where to upload (priority order)
 
-1. **YouTube unlisted** — paste link in Ignyte submission form + add to README. Most judges prefer this — no download, plays in-page.
-2. **GitHub Release asset** — `gh release create v1.0-demo freelancebot-demo.mp4 --notes "Demo video for hackathon submission"` — gives a permanent direct-download link, max 2 GB per file.
-3. **Direct upload to Ignyte** — only if the form accepts ≥ 25 MB files (check the upload limit first).
+1. **YouTube unlisted** — paste the link in the submission form + README. Most judges prefer this: no download, plays in-page.
+2. **GitHub Release asset** — `gh release create v1.0-demo freelancebot-demo.mp4 --notes "Hackathon demo video"` — permanent direct link, 2 GB max.
+3. **Direct upload to the submission form** — only if it accepts files that large.
 
-If video > 25 MB, do (1) + (2) only. Never bloat the GitHub repo with a video file committed to git (use Releases).
+Never commit the video file to git; use Releases.
 
-## Quick-cut version (90 seconds, for social)
+## 90-second social cut
 
-If you also want a Twitter/LinkedIn cut, take Sections 2 + 3 + 5 + 7 only:
-- 0:00 — what it does (Section 2)
-- 0:15 — client funds order
-- 0:45 — agent verifies + client releases
-- 1:15 — contract address on Arc + close
-
-Same recording, just trim.
+Same recording, just trim: Section 2 (what it does) → client funds → agent verifies + release → Arcscan + close.
