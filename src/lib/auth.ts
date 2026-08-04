@@ -10,21 +10,27 @@
  *   We validate that JWT with Supabase (auth.getUser) and take the email from
  *   the validated token. This cannot be spoofed.
  *
- * Demo fallback (INSECURE — off in production):
- *   Unless ALLOW_DEMO_AUTH=0 is set, we fall back to the caller-supplied email
- *   so the no-inbox demo flow (?demo=1) keeps working. While this is on, real
- *   tokens ARE still verified when present, but a request without a token can
- *   pass any email — impersonation protection is BUILT but NOT ENFORCED.
+ * Demo fallback (INSECURE — OFF unless explicitly enabled):
+ *   When enabled, we fall back to the caller-supplied email so the no-inbox demo
+ *   flow (?demo=1) works without an inbox. While it is on, a request with NO
+ *   token can pass ANY email and be treated as that person — full impersonation.
  *
- * Lock it down (e.g. approaching mainnet): set env ALLOW_DEMO_AUTH=0. Every
- * request then MUST carry a valid session token — no code change, no source
- * redeploy needed. Confirm magic-link login works end-to-end first.
+ *   This defaults to OFF and must be turned on deliberately with
+ *   ALLOW_DEMO_AUTH=1. It previously defaulted to ON ("unless =0"), which is
+ *   fail-open: forgetting to set an env var left production wide open. A
+ *   verified probe against production returned another account's orders, emails,
+ *   and payout wallet with no token attached. Security defaults must fail
+ *   CLOSED, so the polarity is inverted here.
+ *
+ * To run an open demo anyway (local, or a throwaway environment with no real
+ * data): set ALLOW_DEMO_AUTH=1. Never set it on an environment holding data you
+ * care about.
  */
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-// Demo is ON unless explicitly disabled with ALLOW_DEMO_AUTH=0 (still testnet).
-const DEMO_ALLOWED = process.env.ALLOW_DEMO_AUTH !== "0";
+// Fail CLOSED: demo impersonation is OFF unless explicitly enabled with =1.
+const DEMO_ALLOWED = process.env.ALLOW_DEMO_AUTH === "1";
 
 let _authClient: SupabaseClient | null = null;
 function authClient(): SupabaseClient {
