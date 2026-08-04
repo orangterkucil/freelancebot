@@ -1,0 +1,116 @@
+<!--
+  FreelanceBot — Magic link sign-in email
+  ---------------------------------------
+  Paste into: Supabase Dashboard → Authentication → Emails → Magic Link
+  Subject line to use:  Your FreelanceBot sign-in link
+
+  Supabase template variables available here:
+    {{ .ConfirmationURL }}  the sign-in link
+    {{ .Email }}            the recipient's address
+    {{ .Token }}            6-digit OTP (unused below)
+    {{ .SiteURL }}          your site root
+
+  Written for email clients, not browsers: tables for layout, inline styles,
+  no flexbox/grid, no web fonts, no external images. Renders in Gmail, Outlook,
+  Apple Mail, and mobile without falling apart.
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0;padding:0;background-color:#eef2f7;">
+  <tr>
+    <td align="center" style="padding:32px 12px;">
+
+      <!-- card -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background-color:#0c1222;border-radius:16px;overflow:hidden;">
+
+        <!-- accent bar -->
+        <tr>
+          <td style="height:4px;background-color:#22d3ee;font-size:0;line-height:0;">&nbsp;</td>
+        </tr>
+
+        <!-- brand -->
+        <tr>
+          <td style="padding:34px 36px 0 36px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="40" style="width:40px;height:40px;background-color:#3b82f6;border-radius:10px;text-align:center;vertical-align:middle;font-family:Arial,Helvetica,sans-serif;font-size:22px;font-weight:bold;color:#ffffff;line-height:40px;">F</td>
+                <td style="padding-left:12px;font-family:Arial,Helvetica,sans-serif;font-size:17px;font-weight:bold;color:#ffffff;letter-spacing:0.2px;">
+                  FreelanceBot
+                  <div style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:normal;color:#7f8ea8;letter-spacing:1.6px;padding-top:3px;">PAYOUTS &middot; ON ARC</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- headline -->
+        <tr>
+          <td style="padding:30px 36px 0 36px;font-family:Arial,Helvetica,sans-serif;font-size:25px;line-height:1.25;font-weight:bold;color:#ffffff;">
+            Your sign-in link
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:12px 36px 0 36px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:#a9b7ce;">
+            Tap the button below to sign in to FreelanceBot. This link works once and expires in about an hour.
+          </td>
+        </tr>
+
+        <!-- button -->
+        <tr>
+          <td align="center" style="padding:28px 36px 0 36px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td align="center" style="background-color:#3b82f6;border-radius:10px;">
+                  <a href="{{ .ConfirmationURL }}"
+                     style="display:inline-block;padding:15px 42px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;letter-spacing:0.4px;">
+                    Sign in to FreelanceBot
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- fallback url -->
+        <tr>
+          <td style="padding:24px 36px 0 36px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#7f8ea8;">
+            Button not working? Paste this into your browser:
+            <div style="padding-top:7px;font-family:'Courier New',Courier,monospace;font-size:11px;line-height:1.55;color:#8fd7f0;word-break:break-all;">
+              {{ .ConfirmationURL }}
+            </div>
+          </td>
+        </tr>
+
+        <!-- security note -->
+        <tr>
+          <td style="padding:26px 36px 0 36px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#16203a;border-radius:10px;">
+              <tr>
+                <td style="padding:15px 18px;font-family:Arial,Helvetica,sans-serif;font-size:12.5px;line-height:1.65;color:#a9b7ce;">
+                  <strong style="color:#34d399;">Didn&rsquo;t request this?</strong> Ignore this email &mdash; nothing happens without the link being opened.
+                  <br><br>
+                  FreelanceBot will <strong style="color:#ffffff;">never</strong> ask for your seed phrase, private key, or wallet password. Anyone who does is trying to steal from you.
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- footer -->
+        <tr>
+          <td style="padding:26px 36px 34px 36px;border-top:1px solid #1e2a44;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.7;color:#66748f;">
+            Sent to {{ .Email }} because a sign-in was requested for FreelanceBot.
+            <br>
+            Running on Arc testnet &mdash; testnet USDC carries no monetary value.
+          </td>
+        </tr>
+
+      </table>
+      <!-- /card -->
+
+      <div style="padding-top:16px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#8a97ad;">
+        FreelanceBot &middot; AI-verified USDC escrow on Arc
+      </div>
+
+    </td>
+  </tr>
+</table>
