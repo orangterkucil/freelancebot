@@ -8,6 +8,7 @@ import {
   enrichPublicOrder,
   updateOrderFields,
   setFreelancerWallet,
+  unassignFreelancer,
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
 import { getIdentity } from "@/lib/auth";
@@ -100,6 +101,30 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         field:       e.field,
         is_public:   typeof e.is_public === "boolean" ? e.is_public : undefined,
       });
+      const updated = await getOrder(orderId);
+      return NextResponse.json({ order: updated });
+    }
+
+    // ---- Client takes the freelancer off a draft order ----
+    // Lets a client undo a wrong accept instead of abandoning the order and
+    // reposting the job. Blocked once funded — the counterparty is part of the
+    // escrow terms by then.
+    if (body.unassign_freelancer === true) {
+      const current = await getOrder(orderId);
+      if (!current) return NextResponse.json({ error: "not found" }, { status: 404 });
+      if (current.client_email.toLowerCase() !== actorEmail.toLowerCase()) {
+        return NextResponse.json(
+          { error: "Only the client can change the freelancer on this order" },
+          { status: 403 }
+        );
+      }
+      if (current.status !== "draft") {
+        return NextResponse.json(
+          { error: "This order is already funded — the freelancer is locked into the escrow terms." },
+          { status: 400 }
+        );
+      }
+      await unassignFreelancer(orderId);
       const updated = await getOrder(orderId);
       return NextResponse.json({ order: updated });
     }

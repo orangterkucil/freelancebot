@@ -122,6 +122,15 @@ export function editOrder(
 }
 
 /** Freelancer records their on-chain payout wallet on the order. */
+/** Client: take the freelancer off a draft order and re-open it to applicants. */
+export function unassignFreelancer(orderId: number, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail("client");
+  return jsonFetch<{ order: Order }>(`/api/orders/${orderId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ unassign_freelancer: true, actor_email: actor }),
+  });
+}
+
 export function setFreelancerWallet(orderId: number, wallet: string, actorEmail?: string) {
   const actor = actorEmail ?? readActorEmail("freelancer");
   return jsonFetch<{ order: Order }>(`/api/orders/${orderId}`, {

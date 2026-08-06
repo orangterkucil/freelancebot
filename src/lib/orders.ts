@@ -411,6 +411,44 @@ export async function setOrderStatus(orderId: number, status: OrderStatus): Prom
  * The status change (draft → funded, etc.) is what indicates a job is no
  * longer accepting applications.
  */
+/**
+ * Undo an accept: take the freelancer off a DRAFT order and re-open it.
+ *
+ * Without this, a client who accepted the wrong applicant had no way back —
+ * they had to abandon the order and post the whole job again. Only valid before
+ * funding; once USDC is locked the counterparty is part of the escrow terms and
+ * is deliberately immutable.
+ *
+ * The freelancer's payout wallet is cleared too — leaving a stale address on the
+ * order would mean the next freelancer's escrow could be funded to the wrong
+ * wallet. Any accepted application returns to pending so it stays a candidate.
+ */
+export async function unassignFreelancer(orderId: number): Promise<void> {
+  const sb = supabaseAdmin();
+  const order = await getOrder(orderId);
+  if (!order) throw new Error("order not found");
+  if (order.status !== "draft") {
+    throw new Error("This order is already funded — the freelancer is locked into the escrow terms.");
+  }
+
+  // Placeholder convention: an unassigned public job carries the client's own
+  // email in freelancer_email until an applicant is accepted.
+  const { error } = await sb
+    .from("orders")
+    .update({
+      freelancer_email: order.client_email,
+      freelancer_wallet: null,
+      is_public: true,
+    })
+    .eq("id", orderId);
+  if (error) throw error;
+
+  const apps = await listApplicationsForOrder(orderId);
+  await Promise.all(
+    apps.filter((a) => a.status === "accepted").map((a) => setApplicationStatus(a.id, "pending"))
+  );
+}
+
 export async function setOrderFreelancer(orderId: number, freelancer_email: string): Promise<void> {
   const sb = supabaseAdmin();
   // Assigning a freelancer means the public job is now taken — flip is_public

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CheckCircle2, ArrowRightCircle, Coins, ExternalLink, ShieldAlert, RotateCcw, Wallet } from "lucide-react";
 import type { Order, Attachment } from "@/lib/orders";
-import { patchOrder, verifyDeliverable, setFreelancerWallet } from "@/lib/api";
+import { patchOrder, verifyDeliverable, setFreelancerWallet, unassignFreelancer } from "@/lib/api";
 import { FileDropzone } from "./FileDropzone";
 import {
   connectWallet,
@@ -105,6 +105,7 @@ export function OrderActions({
   }>(null);
   const [deliverable, setDeliverable] = useState(order.deliverable_url ?? "");
   const [deliverableFiles, setDeliverableFiles] = useState<Attachment[]>([]);
+  const [confirmUnassign, setConfirmUnassign] = useState(false);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
 
   const hasOnchain = !!ESCROW_ADDRESS;
@@ -374,6 +375,50 @@ export function OrderActions({
       {order.freelancer_wallet && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-2.5 font-mono text-[10px] text-emerald-800">
           Freelancer payout wallet set: {order.freelancer_wallet.slice(0, 6)}…{order.freelancer_wallet.slice(-4)} ✓
+        </div>
+      )}
+
+      {/* Undo a wrong accept — only before funding, since the counterparty is
+          part of the escrow terms once USDC is locked. */}
+      {role === "client" && order.status === "draft" && !order.is_public &&
+        order.freelancer_email && order.freelancer_email !== order.client_email && (
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+          {!confirmUnassign ? (
+            <button
+              onClick={() => setConfirmUnassign(true)}
+              disabled={busy}
+              className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-rose-700 disabled:opacity-50"
+            >
+              <RotateCcw className="h-3 w-3" />
+              Change freelancer
+            </button>
+          ) : (
+            <>
+              <p className="font-mono text-[11px] leading-relaxed text-slate-700">
+                Remove <span className="font-semibold">{order.freelancer_email}</span> from this order?
+                The job goes back on the marketplace, their payout wallet is cleared, and their
+                application returns to pending so you can pick someone else.
+              </p>
+              <div className="mt-2 flex gap-2">
+                <button
+                  disabled={busy}
+                  onClick={() => run(async () => {
+                    await unassignFreelancer(order.id, order.client_email);
+                    setConfirmUnassign(false);
+                  })}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-rose-300 bg-white px-3 py-1.5 font-display text-[11px] uppercase tracking-wider text-rose-700 hover:bg-rose-50 disabled:opacity-50"
+                >
+                  {busy ? "Removing…" : "Yes, remove them"}
+                </button>
+                <button
+                  onClick={() => setConfirmUnassign(false)}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-display text-[11px] uppercase tracking-wider text-slate-600"
+                >
+                  Keep
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
 
