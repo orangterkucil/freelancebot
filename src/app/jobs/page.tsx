@@ -239,7 +239,18 @@ function JobCard({ job }: { job: Order }) {
       className="group relative block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+          {/* Who posted this, and what they want — a client hiring reads very
+              differently from a freelancer offering, and the cards were identical. */}
+          {job.poster_role === "freelancer" ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-emerald-800">
+              🧑‍💻 Offering
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-full border border-sky-300 bg-sky-50 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-sky-800">
+              💼 Hiring
+            </span>
+          )}
           <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-600">
             <span>{FIELD_EMOJI[job.field]}</span> {FIELD_LABELS[job.field]}
           </span>
@@ -263,6 +274,9 @@ function JobCard({ job }: { job: Order }) {
       {/* Poster identity (privacy-safe handle/masked email) + reputation — the
           legitimacy signal so applicants know who they're dealing with. */}
       <div className="mt-3 flex items-center gap-1.5 font-mono text-[10px] text-slate-500">
+        <span className="shrink-0 text-slate-400">
+          {job.poster_role === "freelancer" ? "Freelancer:" : "Client:"}
+        </span>
         <span className="truncate">{job.poster_label ?? "anonymous"}</span>
         <PosterRating rating={job.poster_rating} />
       </div>

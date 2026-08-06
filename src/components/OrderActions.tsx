@@ -20,6 +20,32 @@ import {
 const STATUS_NAMES = ["none", "funded", "delivered", "released", "refunded"];
 const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
 
+/**
+ * Estimate gas against our own RPC instead of through the injected wallet.
+ *
+ * ethers asks the wallet to estimate before sending, and that step is where
+ * injected providers fall over — MetaMask can return an error shape ethers
+ * can't parse, surfacing as the opaque "could not coalesce error" even when the
+ * contract call itself is perfectly valid. Estimating on a plain JSON-RPC
+ * provider is reliable, so we do that and pass an explicit limit.
+ *
+ * Returns undefined if estimation fails, in which case the wallet estimates as
+ * before — this is a fallback, never a hard requirement.
+ */
+async function gasLimitFor(
+  method: "submitDelivery" | "approveAndRelease" | "refund",
+  args: unknown[],
+  from: string
+): Promise<bigint | undefined> {
+  try {
+    const ro: any = getEscrowReadonly();
+    const est: bigint = await ro[method].estimateGas(...args, { from });
+    return (est * 3n) / 2n; // 50% headroom
+  } catch {
+    return undefined;
+  }
+}
+
 /** Does this URL point at an image we can preview inline? */
 function isImageUrl(url: string): boolean {
   return /\.(png|jpe?g|webp|gif|svg|avif)(\?|#|$)/i.test(url);
@@ -61,6 +87,12 @@ async function onChainStatus(onchainId: number): Promise<number> {
 function friendlyChainError(e: any): string {
   if (e?.code === "ACTION_REJECTED" || /user rejected|denied|4001/i.test(String(e?.message))) {
     return "You rejected the transaction in your wallet.";
+  }
+  // ethers can't parse what the wallet returned. The contract call is usually
+  // fine — this is the injected provider misbehaving, most often when more than
+  // one wallet extension is fighting over window.ethereum.
+  if (/coalesce/i.test(String(e?.message))) {
+    return "Your wallet returned an unreadable error. Try again — if it repeats, make sure MetaMask is on Arc Testnet and disable any other wallet extensions competing with it.";
   }
   const name: string | undefined = e?.revert?.name ?? e?.reason;
   switch (name) {
@@ -177,12 +209,13 @@ export function OrderActions({
   };
 
   const releaseOnChain = async () => {
-    const { signer } = await connectWallet();
+    const { signer, address } = await connectWallet();
     const escrow = getEscrowWithSigner(signer);
     const onchainId = order.onchain_id ?? order.id;
+    const gasLimit = await gasLimitFor("approveAndRelease", [onchainId], address);
     const receipt = USE_MEMO
       ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "approveAndRelease", [onchainId], `FB-${order.id}`, `release;order=${order.id}`)
-      : await (await escrow.approveAndRelease(onchainId)).wait();
+      : await (await escrow.approveAndRelease(onchainId, gasLimit ? { gasLimit } : {})).wait();
     setLastTxHash(receipt.hash);
     await patchOrder(order.id, { status: "released" });
   };
@@ -257,9 +290,11 @@ export function OrderActions({
         throw new Error("Couldn't reach the escrow on-chain to record delivery. Nothing was submitted — please try again in a moment.");
       }
       if (st === 1) {
-        const { signer } = await connectWallet();
+        const { signer, address } = await connectWallet();
         const escrow = getEscrowWithSigner(signer);
-        const receipt = await (await escrow.submitDelivery(onchainId, url)).wait();
+        const gasLimit = await gasLimitFor("submitDelivery", [onchainId, url], address);
+        const tx = await escrow.submitDelivery(onchainId, url, gasLimit ? { gasLimit } : {});
+        const receipt = await tx.wait();
         setLastTxHash(receipt.hash);
       }
       // st === 2: already Delivered on-chain (idempotent). st === 0: demo order
