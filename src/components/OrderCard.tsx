@@ -10,10 +10,13 @@ import { deleteOrder } from "@/lib/api";
 export function OrderCard({
   order,
   perspective,
+  viewerEmail,
   onDeleted,
 }: {
   order: Order;
   perspective: "client" | "freelancer";
+  /** Signed-in user, used to decide whether this order is theirs to delete. */
+  viewerEmail?: string;
   onDeleted?: (id: number) => void;
 }) {
   const counterparty = perspective === "client" ? order.freelancer_email : order.client_email;
@@ -23,9 +26,18 @@ export function OrderCard({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Deleting is offered only where it is safe: the client's own draft, which has
-  // never been funded and so has no on-chain counterpart to fall out of sync with.
-  const canDelete = perspective === "client" && order.status === "draft" && order.onchain_id == null;
+  // Deleting is offered only where it is safe: a draft, which has never been
+  // funded and so has no on-chain counterpart to fall out of sync with, and only
+  // to the order's client — which the server enforces regardless.
+  //
+  // Keyed on the viewer, not on which dashboard this is: a freelancer's own
+  // service listings store their address as client_email, so their drafts pile
+  // up on the freelancer dashboard with no way to clear them.
+  const canDelete =
+    order.status === "draft" &&
+    order.onchain_id == null &&
+    !!viewerEmail &&
+    viewerEmail.toLowerCase() === order.client_email.toLowerCase();
 
   const remove = async () => {
     setBusy(true);

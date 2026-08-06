@@ -238,7 +238,13 @@ function FreelancerDashboard({ email, signOut }: { email: string; signOut: () =>
 
         <div className="space-y-3">
           {filtered.map((o) => (
-            <OrderCard key={o.id} order={o} perspective="freelancer" />
+            <OrderCard
+              key={o.id}
+              order={o}
+              perspective="freelancer"
+              viewerEmail={email}
+              onDeleted={(id) => setOrders((prev) => prev.filter((x) => x.id !== id))}
+            />
           ))}
         </div>
       </section>

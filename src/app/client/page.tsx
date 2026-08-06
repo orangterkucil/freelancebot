@@ -192,6 +192,7 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
               key={o.id}
               order={o}
               perspective="client"
+              viewerEmail={email}
               onDeleted={(id) => setOrders((prev) => prev.filter((x) => x.id !== id))}
             />
           ))}
