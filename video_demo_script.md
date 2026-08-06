@@ -24,6 +24,65 @@ Speak slightly faster than normal, in English. Add captions — many judges watc
 
 ---
 
+## 0b. How to stage two people when you're one person
+
+This is a cross-party payment, so the video has to show both sides. The trap is
+letting the viewer lose track of *whose screen am I looking at right now*.
+
+### Setup
+
+Use **two separate Chrome profiles** (not two tabs). Each profile gets its own
+MetaMask, its own session, and its own look — so they read as two different
+people on camera.
+
+1. Chrome → profile menu → **Add** → create `CLIENT` and `FREELANCER`.
+2. Give each a **different profile colour and avatar** (Chrome colours the title
+   bar) — this is the cheapest way for a viewer to tell them apart instantly.
+3. Install MetaMask in each profile, import a different wallet into each.
+4. Sign in to the app as the matching role in each profile.
+5. Optional but effective: keep the CLIENT window on the **left**, FREELANCER on
+   the **right**, always. Consistent geography helps more than labels.
+
+### Camera layout — hybrid, and why
+
+| Approach | Use it for | Why |
+|---|---|---|
+| **Full screen, one role at a time** | Most of the video | Text stays large and readable after compression |
+| **Split screen (both windows)** | The release moment only | Proves the two sides are really connected |
+
+Do **not** split-screen the whole video — at 1080p the text becomes unreadable.
+
+### The one shot that sells it
+
+The order page live-polls every ~5 seconds. So at the release moment, put both
+windows on screen side by side, then click **Approve & release** in the CLIENT
+window and **do not touch anything else**. Within a few seconds the FREELANCER
+window updates itself to released — on camera, untouched.
+
+That single unedited shot answers "is this real or staged?" better than any
+amount of narration. Hold it. Don't cut early.
+
+### Keep the viewer oriented
+
+- Add a text overlay in editing — `CLIENT` / `FREELANCER` — in a corner whenever
+  the role changes. Two seconds is enough.
+- Say it out loud too: *"switching to the freelancer side now."* Judges often
+  half-watch; the audio cue catches them up.
+- Never switch roles silently mid-sentence.
+
+### Which role is on screen, section by section
+
+| Section | On screen |
+|---|---|
+| 1. Hook + problem | Landing page (no role) |
+| 2. Marketplace + trust | Public marketplace (no role, logged out is fine) |
+| 3. Post + fund | **CLIENT** — with one quick cut to FREELANCER to apply |
+| 4. Deliver + AI verification | **FREELANCER** |
+| 5. Release | **SPLIT SCREEN**, then Arcscan full screen |
+| 6. Under the hood + close | Arcscan + GitHub (no role) |
+
+---
+
 ## 1. Hook + the problem — 0:00–0:25
 
 **Screen:** landing hero (`freelancebot-alpha.vercel.app`), slow scroll.
