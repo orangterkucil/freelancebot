@@ -72,12 +72,19 @@ export async function GET(req: Request) {
   try {
     // Vercel signs cron requests. When CRON_SECRET is configured, require it so
     // this can't be triggered by strangers to burn writes.
+    // Fail closed. This endpoint scans orders and writes messages, so leaving it
+    // open when no secret happens to be configured is the same fail-open bug the
+    // auth layer was fixed for.
     const secret = process.env.CRON_SECRET;
-    if (secret) {
-      const auth = req.headers.get("authorization");
-      if (auth !== `Bearer ${secret}`) {
-        return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-      }
+    if (!secret) {
+      logger.warn("agent.sweep.no_secret");
+      return NextResponse.json(
+        { error: "unconfigured", detail: "CRON_SECRET is not set; refusing to run." },
+        { status: 503 }
+      );
+    }
+    if (req.headers.get("authorization") !== `Bearer ${secret}`) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
 
     const sb = supabaseAdmin();
@@ -100,9 +107,13 @@ export async function GET(req: Request) {
 
         // When did the delivery actually land? The verify step posts the agent's
         // verdict at submit time, so that message is the delivery timestamp.
+        // Match anywhere in the message, not just at the start: the verification
+        // report is written as a checklist now and "Verdict:" sits partway down
+        // it. A startsWith check silently stopped resolving deliveredAt, which
+        // disabled the unreviewed-delivery nudge entirely.
         const verdictMsg = [...msgs]
           .reverse()
-          .find((m) => m.role === "agent" && m.content.startsWith("Verdict:"));
+          .find((m) => m.role === "agent" && /(^|\n)Verdict:/.test(m.content));
         const deliveredAt = verdictMsg ? new Date(verdictMsg.created_at).getTime() : null;
 
         const nudge = nudgeFor(o, now, deliveredAt);

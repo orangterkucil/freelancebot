@@ -232,8 +232,8 @@ export function reviewBrief(body: {
 }, actorEmail?: string) {
   const actor = actorEmail ?? readActorEmail("client");
   return jsonFetch<{
-    verifiable: boolean;
-    clarity: "clear" | "vague" | "unusable";
+    verifiable: boolean | null;
+    clarity: "clear" | "vague" | "unusable" | "unknown";
     issues: string[];
     suggestion: string;
   }>(`/api/brief-review`, {

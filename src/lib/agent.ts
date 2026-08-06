@@ -159,9 +159,12 @@ export async function chatTurn(history: ChatMessage[], userMessage: string): Pro
 // ---------------------------------------------------------------------------
 
 export type BriefReview = {
-  /** Server-derived: can this brief actually be verified later? */
-  verifiable: boolean;
-  clarity: "clear" | "vague" | "unusable";
+  /**
+   * Server-derived: can this brief actually be verified later?
+   * `null` means the review could not run — never treat that as a pass.
+   */
+  verifiable: boolean | null;
+  clarity: "clear" | "vague" | "unusable" | "unknown";
   /** Concrete things the brief is missing, in the client's language. */
   issues: string[];
   /** A rewritten brief the client can accept with one click. */
@@ -206,13 +209,9 @@ export async function reviewBrief(input: {
   }
 
   if (!groq) {
-    // No LLM configured — fail open, but never claim it was reviewed.
-    return {
-      verifiable: true,
-      clarity: "clear",
-      issues: [],
-      suggestion: "",
-    };
+    // Never report an unreviewed brief as reviewed — that green tick is exactly
+    // the false assurance this feature exists to prevent.
+    return { verifiable: null, clarity: "unknown", issues: [], suggestion: "" };
   }
 
   const safeBrief = sanitizeForLLM(brief);
@@ -267,8 +266,8 @@ Rules:
     suggestion = typeof parsed.suggestion === "string" ? parsed.suggestion.slice(0, 600) : "";
   } catch (e) {
     logger.error("agent.brief.failed", { err: String(e) });
-    // Never block posting because the reviewer failed.
-    return { verifiable: true, clarity: "clear", issues: [], suggestion: "" };
+    // Posting is never blocked by a failed review, but it is not endorsed either.
+    return { verifiable: null, clarity: "unknown", issues: [], suggestion: "" };
   }
 
   // SERVER-DERIVED — not taken from the model's own say-so.
@@ -435,6 +434,10 @@ async function inspectImage(url: string, brief: string): Promise<ImageInspection
           temperature: 0,
           response_format: { type: "json_object" },
           messages: [
+            // The image is fully attacker-controlled content, so this call needs
+            // the injection defenses at least as much as the text calls do —
+            // it was the only one omitting them.
+            { role: "system", content: SYSTEM_PROMPT },
             {
               role: "user",
               content: [
@@ -464,8 +467,14 @@ async function inspectImage(url: string, brief: string): Promise<ImageInspection
     const parsed = JSON.parse(completion.choices[0]?.message?.content ?? "{}");
     const alignment = ["matches", "partial", "mismatch"].includes(parsed.alignment)
       ? parsed.alignment : "partial";
-    const confidence = ["low", "medium", "high"].includes(parsed.confidence)
+    // Cap at "medium". Seeing the file is a genuine upgrade over guessing from a
+    // filename, but this is still one model's read of content the freelancer
+    // supplied — text rendered inside an image is an injection surface. The
+    // agent may say "this looks right"; it may not say "I'm certain".
+    const rawConfidence = ["low", "medium", "high"].includes(parsed.confidence)
       ? parsed.confidence : "low";
+    const confidence: ImageInspection["confidence"] =
+      rawConfidence === "high" ? "medium" : rawConfidence;
     const description = typeof parsed.description === "string"
       ? parsed.description.slice(0, 400) : "";
     if (!description) return none;

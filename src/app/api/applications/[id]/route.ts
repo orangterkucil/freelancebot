@@ -4,7 +4,7 @@ import {
   setApplicationStatus,
   setOrderFreelancer,
   setFreelancerWallet,
-  listApplicationsForOrder,
+  getApplication,
   getLastKnownWallet,
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
@@ -49,6 +49,20 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     const order = await getOrder(orderId);
     if (!order) return NextResponse.json({ error: "order not found" }, { status: 404 });
 
+    // The application being mutated MUST belong to the order we just authorized
+    // against. Without this, authorization is checked on one object and the
+    // write lands on another: pass your own order id with a stranger's
+    // application id and you could reject or withdraw their application.
+    const application = await getApplication(id);
+    if (!application) return NextResponse.json({ error: "application not found" }, { status: 404 });
+    if (application.order_id !== orderId) {
+      logger.warn("api.applications.order_mismatch", { id, orderId, actual: application.order_id });
+      return NextResponse.json({ error: "This application does not belong to that order" }, { status: 403 });
+    }
+
+    // Identity comes from the stored row, never from the request body.
+    const applicantEmail = application.freelancer_email.toLowerCase();
+
     // ---- AUTH GUARD ----
     if (status === "accepted" || status === "rejected") {
       // Only client of the order can decide
@@ -60,8 +74,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         );
       }
     } else if (status === "withdrawn") {
-      // Only the applicant freelancer can withdraw their own app
-      if (freelancerEmail !== actorEmail) {
+      // Only the applicant may withdraw — compared against the row, since a
+      // body-supplied email is just the caller's own claim.
+      if (applicantEmail !== actorEmail) {
         return NextResponse.json(
           { error: "Forbidden — only the applicant can withdraw" },
           { status: 403 }
@@ -70,23 +85,31 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
 
     if (status === "accepted") {
-      if (!freelancerEmail) {
-        return NextResponse.json({ error: "accept needs freelancer_email" }, { status: 400 });
+      // Accepting rewrites the order's counterparty. Once the escrow is funded
+      // that counterparty is baked into the on-chain order, so changing it here
+      // would leave the app pointing at someone who cannot be paid — and would
+      // lock the real freelancer out of the order mid-job.
+      if (order.status !== "draft") {
+        return NextResponse.json(
+          { error: "This order is already funded — its freelancer is locked into the escrow terms." },
+          { status: 400 }
+        );
       }
-      await setOrderFreelancer(orderId, freelancerEmail);
+
+      await setOrderFreelancer(orderId, applicantEmail);
 
       // Carry the payout address over so accepting is enough to fund. Without
       // this the client had to wait for the freelancer to come back and connect
       // a wallet — while the freelancer had no idea they'd been accepted.
       // Prefer the address given when applying; fall back to the one they used
-      // on a previous job.
+      // on a previous job. setOrderFreelancer has already cleared any address
+      // belonging to a previously accepted applicant.
       try {
-        const apps = await listApplicationsForOrder(orderId);
-        const thisApp = apps.find((a) => a.id === id);
-        const wallet =
-          (thisApp?.wallet_address && /^0x[a-fA-F0-9]{40}$/.test(thisApp.wallet_address)
-            ? thisApp.wallet_address
-            : null) ?? (await getLastKnownWallet(freelancerEmail));
+        const fromApplication =
+          application.wallet_address && /^0x[a-fA-F0-9]{40}$/.test(application.wallet_address)
+            ? application.wallet_address
+            : null;
+        const wallet = fromApplication ?? (await getLastKnownWallet(applicantEmail));
         if (wallet) await setFreelancerWallet(orderId, wallet);
       } catch (e) {
         // Non-fatal: the freelancer can still connect manually on the order.

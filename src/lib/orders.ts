@@ -502,9 +502,14 @@ export async function setOrderFreelancer(orderId: number, freelancer_email: stri
   const sb = supabaseAdmin();
   // Assigning a freelancer means the public job is now taken — flip is_public
   // off so it leaves the marketplace (which lists is_public && status=draft).
+  //
+  // freelancer_wallet is cleared in the same write. Leaving the previous
+  // applicant's address behind meant that accepting someone new who had no
+  // wallet of their own would silently keep the old one — and the escrow would
+  // then be funded to the wrong person, irreversibly.
   const { error } = await sb
     .from("orders")
-    .update({ freelancer_email, is_public: false })
+    .update({ freelancer_email, is_public: false, freelancer_wallet: null })
     .eq("id", orderId);
   if (error) throw error;
 }
@@ -639,6 +644,21 @@ export async function createApplication(input: {
     }
     throw error;
   }
+  return data as Application;
+}
+
+/**
+ * Fetch a single application by id.
+ *
+ * Needed so a mutation can prove the application actually belongs to the order
+ * whose authorization was just checked — otherwise the id in the URL and the
+ * order in the body are unrelated, and passing your own order lets you act on a
+ * stranger's application.
+ */
+export async function getApplication(id: number): Promise<Application | null> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb.from("applications").select("*").eq("id", id).single();
+  if (error) return null;
   return data as Application;
 }
 

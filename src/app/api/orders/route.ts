@@ -57,10 +57,10 @@ export async function POST(req: Request) {
     const client_links     = typeof body.client_links === "object" && body.client_links ? body.client_links : {};
     const amount_usdc      = Number(body.amount_usdc);
     const deadline         = body.deadline ? String(body.deadline) : null;
-    // Who is posting: a client hiring, or a freelancer offering their services.
-    // This was never read, so every listing was stored as "client" and the
-    // marketplace could not tell the two apart.
-    const poster_role      = body.poster_role === "freelancer" ? "freelancer" : "client";
+    // poster_role is derived from the verified actor below, never taken from the
+    // body: the public feed shows the poster's handle and star rating, so a
+    // self-declared role would let anyone list a job under a stranger's
+    // reputation by naming them as the counterparty.
 
     // v0.11.0: allow $0 orders (microtasks / pro-bono). Only reject negative + invalid.
     if (!client_email || !freelancer_email || !brief || !Number.isFinite(amount_usdc) || amount_usdc < 0) {
@@ -89,6 +89,12 @@ export async function POST(req: Request) {
         { status: 403 }
       );
     }
+
+    // Whoever is actually signed in is the poster — a client hiring, or a
+    // freelancer offering their services.
+    const poster_role = actorEmail === freelancer_email && actorEmail !== client_email
+      ? "freelancer"
+      : "client";
 
     // Per-account cap: even a signed-in account can't drip-spam listings.
     const acctRl = rateLimit(`orders:create:acct:${actorEmail}`, 12, 60_000);

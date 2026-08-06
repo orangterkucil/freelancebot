@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createApplication, listApplicationsByFreelancer, listApplicationsForOrder, getOrder } from "@/lib/orders";
 import { getIdentity } from "@/lib/auth";
+import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,6 +16,16 @@ export const runtime = "nodejs";
  */
 export async function POST(req: Request) {
   try {
+    // The only write path that had no cap — a single account could flood one job
+    // with applications, which also inflates the agent's ranking prompt.
+    const rl = rateLimit(`apply:${clientIp(req)}`, 12, 60_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "rate_limited", detail: "Too many applications. Slow down." },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfter) } }
+      );
+    }
+
     const body = await req.json();
     const order_id         = Number(body.order_id);
     const pitch            = body.pitch ? String(body.pitch).trim() : undefined;

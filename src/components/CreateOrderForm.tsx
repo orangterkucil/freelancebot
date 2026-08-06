@@ -40,8 +40,8 @@ export function CreateOrderForm({
   // Agent brief review (advisory — never blocks posting)
   const [reviewing, setReviewing] = useState(false);
   const [review, setReview] = useState<{
-    verifiable: boolean;
-    clarity: "clear" | "vague" | "unusable";
+    verifiable: boolean | null;
+    clarity: "clear" | "vague" | "unusable" | "unknown";
     issues: string[];
     suggestion: string;
   } | null>(null);
@@ -253,14 +253,17 @@ export function CreateOrderForm({
             {review && (
               <span className={
                 "font-mono text-[10px] uppercase tracking-widest " +
-                (review.verifiable ? "text-emerald-700" : "text-amber-700")
+                (review.verifiable === true ? "text-emerald-700"
+                  : review.verifiable === null ? "text-slate-500" : "text-amber-700")
               }>
-                {review.verifiable ? "✓ verifiable" : "⚠ " + review.clarity}
+                {review.verifiable === true ? "✓ verifiable"
+                  : review.verifiable === null ? "— not reviewed"
+                  : "⚠ " + review.clarity}
               </span>
             )}
           </div>
 
-          {review && !review.verifiable && (
+          {review && review.verifiable === false && (
             <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3">
               <p className="font-mono text-[10px] uppercase tracking-widest text-amber-800">
                 Agent · this brief can&apos;t be verified later
@@ -288,7 +291,7 @@ export function CreateOrderForm({
             </div>
           )}
 
-          {review && review.verifiable && (
+          {review && review.verifiable === true && (
             <p className="mt-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 font-mono text-[11px] leading-relaxed text-emerald-800">
               Agent: this brief is specific enough to check the delivery against.
             </p>
