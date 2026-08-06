@@ -243,12 +243,14 @@ function JobCard({ job }: { job: Order }) {
           {/* Who posted this, and what they want — a client hiring reads very
               differently from a freelancer offering, and the cards were identical. */}
           {job.poster_role === "freelancer" ? (
+            // A freelancer listing their services is available to be hired.
             <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-emerald-800">
-              🧑‍💻 Offering
+              🧑‍💻 Hiring
             </span>
           ) : (
+            // A client posting a job is putting work on offer.
             <span className="inline-flex items-center gap-1 rounded-full border border-sky-300 bg-sky-50 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-sky-800">
-              💼 Hiring
+              💼 Offering
             </span>
           )}
           <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-600">
