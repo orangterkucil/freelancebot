@@ -72,6 +72,10 @@ export default function JobDetailPage() {
   }
 
   const isOpen = job.is_public && job.status === "draft";
+  // A listing posted BY a freelancer is an offer of services, so the person
+  // reading it is a client looking to hire — not another freelancer applying.
+  // Same form, opposite direction, so the wording has to flip with it.
+  const isOffer = job.poster_role === "freelancer";
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,9 +208,11 @@ export default function JobDetailPage() {
           ) : (
             <form onSubmit={submit} className="space-y-4">
               <div>
-                <p className="font-mono text-[11px] uppercase tracking-widest text-brand">Apply to this job</p>
+                <p className="font-mono text-[11px] uppercase tracking-widest text-brand">{isOffer ? "Hire this freelancer" : "Apply to this job"}</p>
                 <p className="mt-1 font-mono text-[10px] leading-relaxed text-slate-500">
-                  Quick pitch + bid. Client picks one applicant, then escrow flow starts.
+                  {isOffer
+                    ? "Tell them what you need and your budget. If they accept, you fund the escrow and the work starts."
+                    : "Quick pitch + bid. Client picks one applicant, then escrow flow starts."}
                 </p>
               </div>
 
@@ -249,7 +255,7 @@ export default function JobDetailPage() {
               {/* Capture the payout address now. If we wait until after the
                   client accepts, the client can't fund and the freelancer often
                   doesn't know they're expected to come back and connect. */}
-              <FormField label="Payout wallet (optional)" hint="Connect now and the client can fund the escrow the moment they accept you.">
+              <FormField label={isOffer ? "Your wallet (optional)" : "Payout wallet (optional)"} hint={isOffer ? "Optional — as the client you fund the escrow; the freelancer is paid to their own wallet." : "Connect now and the client can fund the escrow the moment they accept you."}>
                 {wallet ? (
                   <div className="flex items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2">
                     <span className="font-mono text-[11px] text-emerald-800">
@@ -298,7 +304,7 @@ export default function JobDetailPage() {
                 className="btn-gradient inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-display text-sm uppercase tracking-wider"
               >
                 <Send className="h-4 w-4" />
-                {submitting ? "Sending…" : "Send application"}
+                {submitting ? "Sending…" : isOffer ? "Send hire request" : "Send application"}
               </button>
             </form>
           )}

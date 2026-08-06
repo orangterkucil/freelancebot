@@ -3,6 +3,7 @@ import { getOrder, assertActorIsParty } from "@/lib/orders";
 import {
   setApplicationStatus,
   setOrderFreelancer,
+  setOrderClient,
   setFreelancerWallet,
   getApplication,
   getLastKnownWallet,
@@ -94,6 +95,21 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
           { error: "This order is already funded — its freelancer is locked into the escrow terms." },
           { status: 400 }
         );
+      }
+
+      if (order.poster_role === "freelancer") {
+        // Service offer: the poster does the work, the responder is hiring.
+        // Install the responder as the client and keep the poster as the
+        // freelancer — the escrow must pay the poster, not the person hiring.
+        await setOrderClient(orderId, applicantEmail);
+        try {
+          const posterWallet = await getLastKnownWallet(order.freelancer_email);
+          if (posterWallet) await setFreelancerWallet(orderId, posterWallet);
+        } catch (e) {
+          logger.warn("api.applications.offer_wallet_failed", { orderId, err: String(e) });
+        }
+        await setApplicationStatus(id, status);
+        return NextResponse.json({ ok: true });
       }
 
       await setOrderFreelancer(orderId, applicantEmail);

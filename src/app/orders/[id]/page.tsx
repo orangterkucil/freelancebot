@@ -59,8 +59,19 @@ export default function OrderDetailPage() {
       if (!order) order = (await getOrder(orderId)).order;
       setOrder(order);
 
-      const isClient     = !!clientEmail && clientEmail === order.client_email;
-      const isFreelancer = !!freelancerEmail && freelancerEmail === order.freelancer_email;
+      // An unassigned public job carries the poster's own email in
+      // freelancer_email as a placeholder. On such an order the poster is the
+      // client, whichever identity slot they happen to be signed in with —
+      // otherwise they open their own listing and are told they're its
+      // freelancer, waiting for themselves to fund it.
+      const unassignedPublic =
+        order.is_public && order.freelancer_email === order.client_email;
+
+      const isClient = unassignedPublic
+        ? clientEmail === order.client_email || freelancerEmail === order.client_email
+        : !!clientEmail && clientEmail === order.client_email;
+      const isFreelancer =
+        !unassignedPublic && !!freelancerEmail && freelancerEmail === order.freelancer_email;
 
       if (isClient && isFreelancer) {
         if (order.status === "funded") setRole("freelancer");

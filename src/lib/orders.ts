@@ -515,6 +515,25 @@ export async function setOrderFreelancer(orderId: number, freelancer_email: stri
 }
 
 /**
+ * Accept on a listing a FREELANCER posted (an offer of services).
+ *
+ * These run in the opposite direction: the poster is the one who will do the
+ * work and be paid, and the responder is the one hiring. Both emails start out
+ * as the poster's (the placeholder a public listing uses), so accepting has to
+ * install the responder as the CLIENT and leave the poster as the freelancer —
+ * the mirror image of setOrderFreelancer. Running the normal path here would
+ * make the hirer the freelancer and pay the wrong side.
+ */
+export async function setOrderClient(orderId: number, client_email: string): Promise<void> {
+  const sb = supabaseAdmin();
+  const { error } = await sb
+    .from("orders")
+    .update({ client_email, is_public: false })
+    .eq("id", orderId);
+  if (error) throw error;
+}
+
+/**
  * Edit an order's editable fields. Callers must enforce that this only happens
  * while the order is a DRAFT (before funding) and by the client — the escrow
  * terms must be immutable once USDC is locked.
