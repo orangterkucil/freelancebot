@@ -89,6 +89,9 @@ export async function POST(req: Request) {
     const inspected = verdict.checks.contentsInspected === true;
     const summary =
       `Deliverable received. Here's what I checked:\n\n` +
+      `${tick(order.onchain_id != null)} Escrow funded on Arc${order.onchain_id != null ? ` (order #${order.onchain_id})` : ""}\n` +
+      `${tick(!!order.freelancer_wallet)} Payout wallet on file${order.freelancer_wallet ? ` (${order.freelancer_wallet.slice(0, 6)}…${order.freelancer_wallet.slice(-4)})` : ""}\n` +
+      `${tick(true)} Amount held: ${order.amount_usdc} USDC\n` +
       `${tick(verdict.checks.urlReachable)} Deliverable is reachable\n` +
       `${tick(verdict.checks.deadlineMet)} Submitted before the deadline\n` +
       `${tick(verdict.checks.briefAlignment === "matches")} Matches the brief — ${verdict.checks.briefAlignment}\n` +

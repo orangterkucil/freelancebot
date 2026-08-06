@@ -72,7 +72,12 @@ export async function POST(req: Request) {
           `- Amount:     ${order.amount_usdc} USDC\n` +
           `- Deadline:   ${order.deadline ?? "none"}\n` +
           `- Status:     ${order.status}\n` +
-          (order.deliverable_url ? `- Deliverable: ${order.deliverable_url}\n` : ""),
+          // Escrow facts — this is a payment agent, so the state of the money is
+          // part of its working context, not an afterthought.
+          `- Escrow on Arc: ${order.onchain_id != null ? `funded, on-chain order #${order.onchain_id}` : "not funded on-chain yet"}\n` +
+          `- Payout wallet: ${order.freelancer_wallet ?? "not connected yet"}\n` +
+          (order.deliverable_url ? `- Deliverable: ${order.deliverable_url}\n` : "") +
+          (order.agent_notes ? `- Your last verification report:\n${order.agent_notes.split("\n---\n").pop()}\n` : ""),
       },
       ...recent.map((m) => ({
         role: (m.role === "agent" ? "assistant" : "user") as ChatMessage["role"],

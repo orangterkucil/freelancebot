@@ -142,6 +142,10 @@ export function OrderActions({
 
   const hasOnchain = !!ESCROW_ADDRESS;
 
+  // agent_notes accumulates one analysis per verification, separated by "---".
+  // The client cares about the most recent one.
+  const latestAgentNote = (order.agent_notes ?? "").split("\n---\n").pop()?.trim() || null;
+
   const run = async (fn: () => Promise<unknown>) => {
     setBusy(true);
     setError(null);
@@ -524,14 +528,27 @@ export function OrderActions({
         <div className="space-y-2">
           {/* Non-custodial by design: the agent verifies autonomously, but only
               the client's signature moves the USDC. Framed as a trust feature. */}
+          {/* The agent's actual analysis, persisted at verification time. The
+              client used to see a bare Approve button with the reasoning buried
+              in the chat thread — so the release read as an unrelated action
+              rather than the consequence of the agent's audit. */}
           <div className="rounded-xl border border-violet-200 bg-violet-50 p-3">
             <p className="font-mono text-[10px] uppercase tracking-widest text-violet-700">
-              🤖 AI-verified · you keep the keys
+              🤖 Agent escrow analysis
             </p>
-            <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600">
-              The agent already ran the checks (reachability, deadline, brief match) — verdict below.
-              Non-custodial: no one moves your USDC until <span className="font-semibold">you</span> approve.
-              One click settles it on-chain to the freelancer.
+            {latestAgentNote ? (
+              <p className="mt-1.5 whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-slate-700">
+                {latestAgentNote}
+              </p>
+            ) : (
+              <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-600">
+                The agent checked reachability, the deadline, and the brief match. Its full
+                report is in the thread on the left.
+              </p>
+            )}
+            <p className="mt-2.5 border-t border-violet-200 pt-2 font-mono text-[10px] leading-relaxed text-violet-800">
+              This is a recommendation. Non-custodial: no one moves your USDC until
+              <span className="font-semibold"> you</span> approve — one click settles it on-chain.
             </p>
           </div>
           <button
