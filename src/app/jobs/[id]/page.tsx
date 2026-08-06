@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Wallet } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { AttachmentsList } from "@/components/AttachmentsList";
 import { RatingStars } from "@/components/RatingStars";
 import { getOrder, applyToJob } from "@/lib/api";
+import { connectWallet } from "@/lib/contracts";
 import type { Order } from "@/lib/orders";
 import { Twitter, Github, Globe, Linkedin } from "lucide-react";
 
@@ -27,6 +28,8 @@ export default function JobDetailPage() {
   const [freelancerEmail, setFreelancerEmail] = useState("");
   const [pitch, setPitch] = useState("");
   const [bid, setBid] = useState<number | "">("");
+  const [wallet, setWallet] = useState("");
+  const [walletBusy, setWalletBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -79,6 +82,7 @@ export default function JobDetailPage() {
         freelancer_email: freelancerEmail.trim().toLowerCase(),
         pitch: pitch.trim() || undefined,
         bid_amount_usdc: bid === "" ? undefined : Number(bid),
+        wallet_address: wallet || null,
       });
       try { window.localStorage.setItem("fb_freelancer_email", freelancerEmail.trim().toLowerCase()); } catch {}
       setSubmitted(true);
@@ -240,6 +244,46 @@ export default function JobDetailPage() {
                   />
                   <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] uppercase tracking-widest text-slate-400">USDC</span>
                 </div>
+              </FormField>
+
+              {/* Capture the payout address now. If we wait until after the
+                  client accepts, the client can't fund and the freelancer often
+                  doesn't know they're expected to come back and connect. */}
+              <FormField label="Payout wallet (optional)" hint="Connect now and the client can fund the escrow the moment they accept you.">
+                {wallet ? (
+                  <div className="flex items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2">
+                    <span className="font-mono text-[11px] text-emerald-800">
+                      {wallet.slice(0, 6)}…{wallet.slice(-4)} ✓
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setWallet("")}
+                      className="font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-rose-700"
+                    >
+                      change
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={walletBusy}
+                    onClick={async () => {
+                      setWalletBusy(true);
+                      try {
+                        const { address } = await connectWallet();
+                        setWallet(address);
+                      } catch {
+                        /* declining the wallet prompt must not block applying */
+                      } finally {
+                        setWalletBusy(false);
+                      }
+                    }}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 font-display text-xs uppercase tracking-wider text-slate-700 hover:border-brand hover:text-brand disabled:opacity-50"
+                  >
+                    <Wallet className="h-3.5 w-3.5" />
+                    {walletBusy ? "Connecting…" : "Connect payout wallet"}
+                  </button>
+                )}
               </FormField>
 
               {submitError && (

@@ -19,6 +19,9 @@ export async function POST(req: Request) {
     const order_id         = Number(body.order_id);
     const pitch            = body.pitch ? String(body.pitch).trim() : undefined;
     const bid_amount_usdc  = body.bid_amount_usdc !== undefined ? Number(body.bid_amount_usdc) : undefined;
+    // Optional payout address, captured now so accepting is enough to fund.
+    const rawWallet        = String(body.wallet_address ?? "").trim();
+    const wallet_address   = /^0x[a-fA-F0-9]{40}$/.test(rawWallet) ? rawWallet : null;
 
     // The applicant is whoever is signed in — you can't apply as someone else.
     const { email: freelancer_email } = await getIdentity(req, body.freelancer_email);
@@ -35,6 +38,7 @@ export async function POST(req: Request) {
       freelancer_email,
       pitch,
       bid_amount_usdc,
+      wallet_address,
     });
 
     return NextResponse.json({ application }, { status: 201 });

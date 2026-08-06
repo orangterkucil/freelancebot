@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { getOrder, assertActorIsParty } from "@/lib/orders";
-import { setApplicationStatus, setOrderFreelancer } from "@/lib/orders";
+import {
+  setApplicationStatus,
+  setOrderFreelancer,
+  setFreelancerWallet,
+  listApplicationsForOrder,
+  getLastKnownWallet,
+} from "@/lib/orders";
 import { logger } from "@/lib/logger";
 import { getIdentity } from "@/lib/auth";
 
@@ -68,6 +74,24 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         return NextResponse.json({ error: "accept needs freelancer_email" }, { status: 400 });
       }
       await setOrderFreelancer(orderId, freelancerEmail);
+
+      // Carry the payout address over so accepting is enough to fund. Without
+      // this the client had to wait for the freelancer to come back and connect
+      // a wallet — while the freelancer had no idea they'd been accepted.
+      // Prefer the address given when applying; fall back to the one they used
+      // on a previous job.
+      try {
+        const apps = await listApplicationsForOrder(orderId);
+        const thisApp = apps.find((a) => a.id === id);
+        const wallet =
+          (thisApp?.wallet_address && /^0x[a-fA-F0-9]{40}$/.test(thisApp.wallet_address)
+            ? thisApp.wallet_address
+            : null) ?? (await getLastKnownWallet(freelancerEmail));
+        if (wallet) await setFreelancerWallet(orderId, wallet);
+      } catch (e) {
+        // Non-fatal: the freelancer can still connect manually on the order.
+        logger.warn("api.applications.wallet_carryover_failed", { orderId, err: String(e) });
+      }
     }
 
     await setApplicationStatus(id, status);

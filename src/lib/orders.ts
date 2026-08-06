@@ -199,6 +199,8 @@ export type Application = {
   freelancer_email: string;
   pitch: string | null;
   bid_amount_usdc: number | null;
+  /** Payout address given at apply time (removes the connect-then-wait step). */
+  wallet_address?: string | null;
   status: "pending" | "accepted" | "rejected" | "withdrawn";
   created_at: string;
 };
@@ -412,6 +414,26 @@ export async function setOrderStatus(orderId: number, status: OrderStatus): Prom
  * longer accepting applications.
  */
 /**
+ * The payout address this freelancer used most recently, if any.
+ *
+ * Lets a returning freelancer skip the connect step entirely: the client can
+ * fund the moment they accept, instead of both sides waiting on each other.
+ */
+export async function getLastKnownWallet(email: string): Promise<string | null> {
+  if (!email) return null;
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("orders")
+    .select("freelancer_wallet")
+    .eq("freelancer_email", email.toLowerCase().trim())
+    .not("freelancer_wallet", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  if (error) return null;
+  return (data?.[0]?.freelancer_wallet as string) ?? null;
+}
+
+/**
  * Undo an accept: take the freelancer off a DRAFT order and re-open it.
  *
  * Without this, a client who accepted the wrong applicant had no way back —
@@ -560,20 +582,36 @@ export async function createApplication(input: {
   freelancer_email: string;
   pitch?: string;
   bid_amount_usdc?: number;
+  /** Payout address captured while applying, so accepting is enough to fund. */
+  wallet_address?: string | null;
 }): Promise<Application> {
   const sb = supabaseAdmin();
+  const base = {
+    order_id:         input.order_id,
+    freelancer_email: input.freelancer_email,
+    pitch:            input.pitch ?? null,
+    bid_amount_usdc:  input.bid_amount_usdc ?? null,
+    status:           "pending",
+  };
+
   const { data, error } = await sb
     .from("applications")
-    .insert({
-      order_id:         input.order_id,
-      freelancer_email: input.freelancer_email,
-      pitch:            input.pitch ?? null,
-      bid_amount_usdc:  input.bid_amount_usdc ?? null,
-      status:           "pending",
-    })
+    .insert({ ...base, wallet_address: input.wallet_address ?? null })
     .select()
     .single();
-  if (error) throw error;
+
+  if (error) {
+    // 42703 = undefined_column. The wallet_address column is a later addition;
+    // if the migration hasn't been applied yet, applying to a job must still
+    // work rather than failing outright — the freelancer just connects their
+    // payout wallet on the order instead.
+    if ((error as any)?.code === "42703") {
+      const retry = await sb.from("applications").insert(base).select().single();
+      if (retry.error) throw retry.error;
+      return retry.data as Application;
+    }
+    throw error;
+  }
   return data as Application;
 }
 

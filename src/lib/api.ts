@@ -238,6 +238,7 @@ export function applyToJob(body: {
   freelancer_email: string;
   pitch?: string;
   bid_amount_usdc?: number;
+  wallet_address?: string | null;
 }) {
   return jsonFetch<{ application: Application }>(`/api/applications`, {
     method: "POST",
