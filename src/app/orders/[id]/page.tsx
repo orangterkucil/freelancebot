@@ -69,7 +69,11 @@ export default function OrderDetailPage() {
         else setRole("client");
       } else if (isClient) setRole("client");
       else if (isFreelancer) setRole("freelancer");
-      else setRole(null);
+      else if (!silent) setRole(null);
+      // On a SILENT poll, never downgrade a known role to null. A single
+      // transient fetch that comes back scrubbed would otherwise unmount
+      // OrderActions mid-interaction — which wiped in-progress UI state like the
+      // "change freelancer" confirmation before the user could confirm it.
 
       // load ratings (silent fail)
       try {
