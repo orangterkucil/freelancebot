@@ -83,13 +83,21 @@ export async function POST(req: Request) {
     });
 
     // 3) log
+    // Written as the agent reporting its own work, not as a raw dump — this is
+    // the moment both parties actually see the agent do something.
+    const tick = (ok: boolean) => (ok ? "✔" : "✘");
+    const inspected = verdict.checks.contentsInspected === true;
     const summary =
-      `Verdict: ${verdict.verified ? "READY TO RELEASE" : "HOLD"}\n` +
-      `Confidence: ${verdict.confidence}\n` +
-      `URL reachable: ${verdict.checks.urlReachable}\n` +
-      `Deadline met:  ${verdict.checks.deadlineMet}\n` +
-      `Brief alignment: ${verdict.checks.briefAlignment}\n` +
-      `Reasoning: ${verdict.reasoning}`;
+      `Deliverable received. Here's what I checked:\n\n` +
+      `${tick(verdict.checks.urlReachable)} Deliverable is reachable\n` +
+      `${tick(verdict.checks.deadlineMet)} Submitted before the deadline\n` +
+      `${tick(verdict.checks.briefAlignment === "matches")} Matches the brief — ${verdict.checks.briefAlignment}\n` +
+      `${inspected ? "✔ I opened the file and looked at it" : "• I could only check the link, not the file contents"}\n\n` +
+      (verdict.observed ? `What I see: ${verdict.observed}\n\n` : "") +
+      `Verdict: ${verdict.verified ? "READY TO RELEASE" : "HOLD"} (${verdict.confidence} confidence)\n` +
+      (verdict.verified
+        ? `Recommendation: the client can release the payment.`
+        : `Recommendation: the client should review this before releasing.`);
 
     await appendAgentNotes(orderId, summary);
     await appendMessage(orderId, "agent", summary);

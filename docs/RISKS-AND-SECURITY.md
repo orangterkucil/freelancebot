@@ -39,10 +39,16 @@ itself is not yet on mainnet. That means:
 The AI agent's job is to judge whether a submitted deliverable plausibly matches
 the brief. Be clear-eyed about its limits:
 
-- The agent primarily checks **deterministic facts** (is the deliverable URL
-  reachable? was it submitted before the deadline?) plus a **plausibility
-  judgment** from an LLM. It does **not** deeply inspect file contents today — it
-  sees the deliverable's URL, not necessarily its full contents.
+- The agent checks **deterministic facts** (is the deliverable URL reachable? was
+  it submitted before the deadline?) plus a judgment on whether the work matches
+  the brief.
+- For **image deliverables the agent now looks at the actual file** using a
+  vision model, and its verdict quotes what it saw. For everything else — links,
+  PDFs, repositories — it still reasons from the URL only and says so explicitly
+  in the verdict. Never assume a passing verdict means the contents were read;
+  the verdict states which of the two happened.
+- A vision judgment is still a model's opinion. It can miss subtleties, misread
+  intent, and be wrong about quality. It is a filter, not an auditor.
 - The `verified` decision is **computed on the server** from the deterministic
   checks and the model's structured output — it is **not** a value the model can
   assert directly. A prompt injection that tries to output `verified: true`
