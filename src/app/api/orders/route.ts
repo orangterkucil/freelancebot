@@ -57,6 +57,10 @@ export async function POST(req: Request) {
     const client_links     = typeof body.client_links === "object" && body.client_links ? body.client_links : {};
     const amount_usdc      = Number(body.amount_usdc);
     const deadline         = body.deadline ? String(body.deadline) : null;
+    // Who is posting: a client hiring, or a freelancer offering their services.
+    // This was never read, so every listing was stored as "client" and the
+    // marketplace could not tell the two apart.
+    const poster_role      = body.poster_role === "freelancer" ? "freelancer" : "client";
 
     // v0.11.0: allow $0 orders (microtasks / pro-bono). Only reject negative + invalid.
     if (!client_email || !freelancer_email || !brief || !Number.isFinite(amount_usdc) || amount_usdc < 0) {
@@ -106,6 +110,7 @@ export async function POST(req: Request) {
       client_links,
       amount_usdc,
       deadline,
+      poster_role,
     });
 
     return NextResponse.json({ order }, { status: 201 });
