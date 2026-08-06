@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, X, Inbox, Coins } from "lucide-react";
-import { listApplicationsForOrder, decideApplication } from "@/lib/api";
+import { Check, X, Inbox, Coins, Sparkles } from "lucide-react";
+import { listApplicationsForOrder, decideApplication, rankApplicants } from "@/lib/api";
 import { UserBadge } from "./UserBadge";
 import type { Application } from "@/lib/orders";
 
@@ -17,6 +17,25 @@ export function ApplicationsList({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
+
+  // Agent ranking — advisory; the client still accepts manually.
+  const [ranking, setRanking] = useState<{
+    recommendedId: number | null;
+    reasoning: string;
+    notes: Record<number, string>;
+  } | null>(null);
+  const [rankBusy, setRankBusy] = useState(false);
+
+  const runRanking = async () => {
+    setRankBusy(true);
+    try {
+      setRanking(await rankApplicants(orderId));
+    } catch {
+      /* advisory only — never block the client on a failed ranking */
+    } finally {
+      setRankBusy(false);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -94,6 +113,31 @@ export function ApplicationsList({
         </div>
       )}
 
+      {/* Agent picks a candidate — real hiring judgment, still the client's call */}
+      {apps.some((a) => a.status === "pending") && (
+        <div className="mt-3">
+          <button
+            onClick={runRanking}
+            disabled={rankBusy}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-violet-50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-violet-800 transition-colors hover:border-violet-500 disabled:opacity-40"
+          >
+            <Sparkles className="h-3 w-3" />
+            {rankBusy ? "Agent comparing…" : "Ask the agent who fits this brief"}
+          </button>
+
+          {ranking && ranking.reasoning && (
+            <div className="mt-2 rounded-xl border border-violet-200 bg-violet-50 p-3">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-violet-700">
+                Agent recommendation
+              </p>
+              <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-700">
+                {ranking.reasoning}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="mt-3 space-y-3">
         {apps.map((app) => (
           <ApplicationCard
@@ -101,6 +145,8 @@ export function ApplicationsList({
             app={app}
             busy={busyId === app.id}
             disabled={apps.some((a) => a.status === "accepted")}
+            recommended={ranking?.recommendedId === app.id}
+            agentNote={ranking?.notes?.[app.id]}
             onAccept={() => decide(app, "accepted")}
             onReject={() => decide(app, "rejected")}
           />
@@ -114,12 +160,16 @@ function ApplicationCard({
   app,
   busy,
   disabled,
+  recommended,
+  agentNote,
   onAccept,
   onReject,
 }: {
   app: Application;
   busy: boolean;
   disabled: boolean;
+  recommended?: boolean;
+  agentNote?: string;
   onAccept: () => void;
   onReject: () => void;
 }) {
@@ -133,9 +183,15 @@ function ApplicationCard({
         "rounded-xl border p-3 transition-colors " +
         (isAccepted ? "border-emerald-200 bg-emerald-50"
           : isRejected ? "border-rose-200 bg-rose-50 opacity-70"
+          : recommended ? "border-violet-400 bg-violet-50 ring-1 ring-violet-300"
           : "border-slate-200 bg-slate-50")
       }
     >
+      {recommended && (
+        <p className="mb-2 inline-flex items-center gap-1 rounded-full bg-violet-600 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-white">
+          <Sparkles className="h-2.5 w-2.5" /> Agent&apos;s pick
+        </p>
+      )}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           {/* Applicant identity + portable trust score (stars/count, or "new") */}
@@ -150,6 +206,12 @@ function ApplicationCard({
       {app.pitch && (
         <p className="mt-2 whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-slate-700">
           {app.pitch}
+        </p>
+      )}
+
+      {agentNote && (
+        <p className="mt-2 border-l-2 border-violet-300 pl-2 font-mono text-[10px] italic leading-relaxed text-violet-800">
+          Agent: {agentNote}
         </p>
       )}
 

@@ -192,6 +192,19 @@ export function listActivity(limit = 30) {
   return jsonFetch<{ activity: Order[] }>(`/api/activity?limit=${limit}`);
 }
 
+/** Ask the agent to rank the applicants on a job. Client only. */
+export function rankApplicants(orderId: number, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail("client");
+  return jsonFetch<{
+    recommendedId: number | null;
+    reasoning: string;
+    notes: Record<number, string>;
+  }>(`/api/applications/rank`, {
+    method: "POST",
+    body: JSON.stringify({ order_id: orderId, actor_email: actor }),
+  });
+}
+
 /** Ask the agent to review a job brief before the order is created. */
 export function reviewBrief(body: {
   brief: string;
