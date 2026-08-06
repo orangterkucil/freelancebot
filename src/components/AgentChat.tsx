@@ -131,13 +131,22 @@ function Bubble({ message, viewer }: { message: Message; viewer: "client" | "fre
 
   const label = isAgent ? "FreelanceBot" : isSystem ? "system" : message.role;
 
+  /**
+   * The scheduled sweep tags each nudge with a hidden marker like `[n:overdue]`
+   * so it only ever posts once per order per condition. That marker is
+   * bookkeeping, not something a user should read — strip it from the bubble.
+   */
+  function displayContent(content: string): string {
+    return content.replace(/\s*\[n:[a-z-]+\]\s*$/i, "").trimEnd();
+  }
+
   return (
     <div className={`flex flex-col ${align}`}>
       <span className="mb-0.5 font-mono text-[9px] uppercase tracking-widest text-slate-400">
         {label}
       </span>
       <div className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2 font-mono text-xs leading-relaxed ${bubble}`}>
-        {message.content}
+        {displayContent(message.content)}
       </div>
     </div>
   );
