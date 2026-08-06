@@ -72,7 +72,15 @@ export function EmailGate({
       if (error) throw error;
       setState("sent");
     } catch (e: any) {
-      setErrorMsg(e?.message ?? "Failed to send magic link. Try demo mode below.");
+      // Supabase's built-in SMTP is heavily rate-limited (a couple of mails an
+      // hour), and its raw "email rate limit exceeded" tells the user nothing
+      // about what to do next. Translate it into the actual way out.
+      const raw = String(e?.message ?? "");
+      setErrorMsg(
+        /rate limit|too many/i.test(raw)
+          ? "Too many sign-in emails were just sent from this app. Wait a few minutes — or use demo mode below to continue right now."
+          : raw || "Failed to send magic link. Try demo mode below."
+      );
       setState("error");
     }
   }
