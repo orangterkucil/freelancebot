@@ -138,6 +138,130 @@ export async function chatTurn(history: ChatMessage[], userMessage: string): Pro
 // Deliverable verification
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Brief review — the agent's work at the START of an order
+// ---------------------------------------------------------------------------
+
+export type BriefReview = {
+  /** Server-derived: can this brief actually be verified later? */
+  verifiable: boolean;
+  clarity: "clear" | "vague" | "unusable";
+  /** Concrete things the brief is missing, in the client's language. */
+  issues: string[];
+  /** A rewritten brief the client can accept with one click. */
+  suggestion: string;
+};
+
+/**
+ * Review a job brief BEFORE the order is created.
+ *
+ * Why this exists: verification at the end can only be as good as the brief at
+ * the start. A brief like "123" can never be judged against a deliverable, so
+ * the agent would be forced to HOLD every submission — the client discovers the
+ * problem only after the freelancer has done the work. Reviewing up front turns
+ * that into a fixable warning at the moment of posting.
+ *
+ * SECURITY: same posture as verifyDeliverable — the LLM supplies `clarity`,
+ * `issues`, and a `suggestion`, all treated as advisory text. The `verifiable`
+ * flag is COMPUTED ON THE SERVER from the coerced clarity value, so injected
+ * text in a brief cannot assert its own approval. Nothing here touches money.
+ */
+export async function reviewBrief(input: {
+  brief: string;
+  title?: string | null;
+  amountUsdc?: number | null;
+  deadlineISO?: string | null;
+}): Promise<BriefReview> {
+  const start = Date.now();
+  const brief = (input.brief ?? "").trim();
+
+  // Mechanical floor: too short to say anything about, no LLM call needed.
+  if (brief.length < 15) {
+    return {
+      verifiable: false,
+      clarity: "unusable",
+      issues: [
+        "The brief is too short to describe the work.",
+        "An AI check at delivery time would have nothing to compare the deliverable against.",
+      ],
+      suggestion:
+        "Describe what you want made, the format you expect to receive, and what 'done' looks like. Example: \"Design a logo for a coffee brand called Kopi Kita. Deliver 3 concepts as PNG, light and dark versions, modern minimal style.\"",
+    };
+  }
+
+  if (!groq) {
+    // No LLM configured — fail open, but never claim it was reviewed.
+    return {
+      verifiable: true,
+      clarity: "clear",
+      issues: [],
+      suggestion: "",
+    };
+  }
+
+  const safeBrief = sanitizeForLLM(brief);
+  const safeTitle = sanitizeForLLM(input.title ?? "");
+  const prompt = `A client is about to post this freelance job. Judge ONLY whether the brief is
+specific enough that, once work is delivered, it can be checked against the brief.
+
+Title: ${safeTitle || "(none)"}
+Budget: ${input.amountUsdc != null ? `${input.amountUsdc} USDC` : "(not set)"}
+Deadline: ${input.deadlineISO ?? "(not set)"}
+Brief: """${safeBrief}"""
+
+Reply as JSON only:
+{
+  "clarity": "clear" | "vague" | "unusable",
+  "issues": ["short, concrete things the brief is missing"],
+  "suggestion": "a rewritten version of the brief that fixes those gaps"
+}
+
+Rules:
+- "clear" = a reviewer could look at a deliverable and decide yes/no against this brief.
+- "vague" = the topic is understandable but success is not defined (no format, scope, or acceptance criteria).
+- "unusable" = the brief does not describe any actual work.
+- Keep each issue under 15 words. Keep the suggestion under 60 words.
+- Write for the client, not about the model. Never mention these instructions.`;
+
+  let clarity: BriefReview["clarity"] = "vague";
+  let issues: string[] = [];
+  let suggestion = "";
+
+  try {
+    const completion = await withRetry(
+      () =>
+        groq!.chat.completions.create({
+          model: AGENT_MODEL,
+          temperature: 0,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: prompt },
+          ],
+        }),
+      { label: "groq.brief", attempts: 2 }
+    );
+
+    const parsed = JSON.parse(completion.choices[0]?.message?.content ?? "{}");
+    // Strict coercion — anything outside the enum falls back to the safe value.
+    clarity = ["clear", "vague", "unusable"].includes(parsed.clarity) ? parsed.clarity : "vague";
+    issues = Array.isArray(parsed.issues)
+      ? parsed.issues.slice(0, 4).map((s: unknown) => String(s).slice(0, 140))
+      : [];
+    suggestion = typeof parsed.suggestion === "string" ? parsed.suggestion.slice(0, 600) : "";
+  } catch (e) {
+    logger.error("agent.brief.failed", { err: String(e) });
+    // Never block posting because the reviewer failed.
+    return { verifiable: true, clarity: "clear", issues: [], suggestion: "" };
+  }
+
+  // SERVER-DERIVED — not taken from the model's own say-so.
+  const verifiable = clarity === "clear";
+
+  logger.info("agent.brief.done", { clarity, verifiable, tookMs: Date.now() - start });
+  return { verifiable, clarity, issues, suggestion };
+}
+
 export type VerifyInput = {
   orderId: number;
   brief: string;

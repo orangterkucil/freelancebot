@@ -192,6 +192,25 @@ export function listActivity(limit = 30) {
   return jsonFetch<{ activity: Order[] }>(`/api/activity?limit=${limit}`);
 }
 
+/** Ask the agent to review a job brief before the order is created. */
+export function reviewBrief(body: {
+  brief: string;
+  title?: string | null;
+  amount_usdc?: number | null;
+  deadline?: string | null;
+}, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail("client");
+  return jsonFetch<{
+    verifiable: boolean;
+    clarity: "clear" | "vague" | "unusable";
+    issues: string[];
+    suggestion: string;
+  }>(`/api/brief-review`, {
+    method: "POST",
+    body: JSON.stringify({ ...body, actor_email: actor }),
+  });
+}
+
 export function applyToJob(body: {
   order_id: number;
   freelancer_email: string;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Sparkles, Globe, Lock, Twitter, Github, Linkedin } from "lucide-react";
-import { createOrder } from "@/lib/api";
+import { createOrder, reviewBrief } from "@/lib/api";
 import { FIELDS, type Field, type Attachment, type ClientLinks } from "@/lib/orders";
 import { FileDropzone } from "./FileDropzone";
 
@@ -36,6 +36,33 @@ export function CreateOrderForm({
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Agent brief review (advisory — never blocks posting)
+  const [reviewing, setReviewing] = useState(false);
+  const [review, setReview] = useState<{
+    verifiable: boolean;
+    clarity: "clear" | "vague" | "unusable";
+    issues: string[];
+    suggestion: string;
+  } | null>(null);
+
+  const runBriefReview = async () => {
+    setReviewing(true);
+    setReview(null);
+    try {
+      const r = await reviewBrief({
+        brief,
+        title: title.trim() || null,
+        amount_usdc: amount === "" ? null : Number(amount),
+        deadline: deadline ? new Date(deadline).toISOString() : null,
+      }, clientEmail);
+      setReview(r);
+    } catch {
+      // Advisory only — a failed review must never get in the client's way.
+    } finally {
+      setReviewing(false);
+    }
+  };
 
   // Social links (pre-filled from /settings localStorage if available)
   const [showLinks, setShowLinks] = useState(false);
@@ -205,10 +232,67 @@ export function CreateOrderForm({
             required
             rows={4}
             value={brief}
-            onChange={(e) => setBrief(e.target.value)}
+            onChange={(e) => { setBrief(e.target.value); setReview(null); }}
             placeholder="e.g. Need a logo design with 3 color variations, delivered as SVG + PNG via Figma link. Modern style, fintech vibe..."
             className={inputClass}
           />
+
+          {/* The agent's work at the START of an order: a brief that can't be
+              judged later means the delivery check can never pass. Catch it here
+              instead of after the freelancer has already done the work. */}
+          <div className="mt-2 flex items-center gap-3">
+            <button
+              type="button"
+              disabled={reviewing || brief.trim().length < 3}
+              onClick={runBriefReview}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-violet-50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-violet-800 transition-colors hover:border-violet-500 disabled:opacity-40"
+            >
+              <Sparkles className="h-3 w-3" />
+              {reviewing ? "Agent reviewing…" : "Ask the agent to review this brief"}
+            </button>
+            {review && (
+              <span className={
+                "font-mono text-[10px] uppercase tracking-widest " +
+                (review.verifiable ? "text-emerald-700" : "text-amber-700")
+              }>
+                {review.verifiable ? "✓ verifiable" : "⚠ " + review.clarity}
+              </span>
+            )}
+          </div>
+
+          {review && !review.verifiable && (
+            <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-amber-800">
+                Agent · this brief can&apos;t be verified later
+              </p>
+              {review.issues.length > 0 && (
+                <ul className="mt-1.5 space-y-1">
+                  {review.issues.map((it, i) => (
+                    <li key={i} className="font-mono text-[11px] leading-relaxed text-slate-700">• {it}</li>
+                  ))}
+                </ul>
+              )}
+              {review.suggestion && (
+                <>
+                  <p className="mt-2.5 font-mono text-[10px] uppercase tracking-widest text-slate-500">Suggested brief</p>
+                  <p className="mt-1 font-mono text-[11px] leading-relaxed text-slate-700">{review.suggestion}</p>
+                  <button
+                    type="button"
+                    onClick={() => { setBrief(review.suggestion); setReview(null); }}
+                    className="mt-2 inline-flex rounded-lg bg-brand px-3 py-1.5 font-display text-[10px] uppercase tracking-wider text-white"
+                  >
+                    Use this brief
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          {review && review.verifiable && (
+            <p className="mt-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 font-mono text-[11px] leading-relaxed text-emerald-800">
+              Agent: this brief is specific enough to check the delivery against.
+            </p>
+          )}
         </FormField>
 
         <FormField label="Attachments (optional)" hint={mode === "public" ? "Visible to anyone in the marketplace." : "Only visible to you and the freelancer."}>
