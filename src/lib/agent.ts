@@ -1,4 +1,4 @@
-import { groq, AGENT_MODEL, AGENT_VISION_MODEL } from "./groq";
+import { groq, AGENT_MODEL, AGENT_VISION_MODEL, VISION_MODEL_CANDIDATES } from "./groq";
 import { withRetry } from "./retry";
 import { logger } from "./logger";
 
@@ -490,11 +490,16 @@ async function inspectImage(url: string, brief: string): Promise<ImageInspection
   if (!file) return none;
 
   const safeBrief = sanitizeForLLM(brief);
-  try {
+  // Try each candidate until one answers. A model that isn't enabled on this
+  // account throws immediately, and without this the whole feature degraded to
+  // "contents not inspected" with nothing explaining why.
+  let lastErr: unknown = null;
+  for (const model of VISION_MODEL_CANDIDATES) {
+   try {
     const completion = await withRetry(
       () =>
         groq!.chat.completions.create({
-          model: AGENT_VISION_MODEL,
+          model,
           temperature: 0,
           response_format: { type: "json_object" },
           messages: [
@@ -541,7 +546,7 @@ async function inspectImage(url: string, brief: string): Promise<ImageInspection
       rawConfidence === "high" ? "medium" : rawConfidence;
     const description = typeof parsed.description === "string"
       ? parsed.description.slice(0, 400) : "";
-    if (!description) return none;
+    if (!description) continue; // empty answer — try the next model
 
     const confidenceReason =
       typeof parsed.confidenceReason === "string" && parsed.confidenceReason.trim()
@@ -559,14 +564,21 @@ async function inspectImage(url: string, brief: string): Promise<ImageInspection
         sha256: file.sha256,
         bytes: file.bytes,
         contentType: file.contentType,
-        model: AGENT_VISION_MODEL,
+        model,
         checkedAt: new Date().toISOString(),
       },
     };
-  } catch (e) {
-    logger.warn("agent.vision.failed", { err: String(e) });
-    return none;
+   } catch (e) {
+    lastErr = e;
+    logger.warn("agent.vision.model_failed", { model, err: String(e) });
+    continue; // try the next candidate
+   }
   }
+  logger.warn("agent.vision.all_models_failed", {
+    tried: VISION_MODEL_CANDIDATES.join(","),
+    err: String(lastErr),
+  });
+  return none;
 }
 
 export type VerifyInput = {

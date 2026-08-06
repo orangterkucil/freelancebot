@@ -95,12 +95,19 @@ export async function POST(req: Request) {
     const summary =
       `Deliverable received. Escrow audit for order #${orderId}.\n\n` +
       `FACTS (verified)\n` +
-      `${tick(order.onchain_id != null)} Escrow funded on Arc${order.onchain_id != null ? ` — on-chain order #${order.onchain_id}` : ""}\n` +
-      `${tick(true)} Amount held: ${order.amount_usdc} USDC\n` +
-      `${tick(!!order.freelancer_wallet)} Payout wallet on file${order.freelancer_wallet ? ` — ${order.freelancer_wallet.slice(0, 6)}…${order.freelancer_wallet.slice(-4)}` : ""}\n` +
-      `${tick(verdict.checks.urlReachable)} Deliverable reachable\n` +
-      `${tick(verdict.checks.deadlineMet)} Submitted before the deadline\n` +
-      `${inspected ? "✔ File downloaded and opened" : "✘ File contents not inspected — link only"}\n\n` +
+      `ON-CHAIN\n` +
+      `  ${tick(order.onchain_id != null)} Escrow funded on Arc${order.onchain_id != null ? ` — on-chain order #${order.onchain_id}` : ""}\n` +
+      `  ${tick(true)} Amount held: ${order.amount_usdc} USDC\n` +
+      `  ${tick(!!order.freelancer_wallet)} Payout wallet on file${order.freelancer_wallet ? ` — ${order.freelancer_wallet.slice(0, 6)}…${order.freelancer_wallet.slice(-4)}` : ""}\n` +
+      `DELIVERY\n` +
+      `  ${tick(verdict.checks.urlReachable)} Deliverable reachable\n` +
+      `  ${tick(verdict.checks.deadlineMet)} Submitted before the deadline\n` +
+      `INSPECTION\n` +
+      (inspected
+        ? `  ✔ Visual contents inspected — file downloaded and opened\n` +
+          `  • Source files and craft quality are outside what an image can show\n`
+        : `  ✘ Visual contents NOT inspected — only the link was checked\n`) +
+      `\n` +
       `ASSESSMENT (my judgment, not fact)\n` +
       `• Brief alignment: ${verdict.checks.briefAlignment}\n` +
       (verdict.observed ? `• What I see: ${verdict.observed}\n` : "") +
@@ -108,8 +115,11 @@ export async function POST(req: Request) {
       (verdict.confidenceReason ? `• Why not higher: ${verdict.confidenceReason}\n` : "") +
       `\nRECOMMENDATION\n` +
       (verdict.verified
-        ? `Release the payment. The client makes the final call.\n`
-        : `Hold and review before releasing.\n`) +
+        ? `Do not treat this as approval. Open the deliverable, confirm it is what\n` +
+          `you agreed, then release the escrow — the signature is yours.\n`
+        : `Do not release yet. Open the deliverable and check it against the brief.\n` +
+          `If it is acceptable anyway you can still release, or raise it with the\n` +
+          `freelancer in the thread first.\n`) +
       (ev
         ? `\nEVIDENCE\n` +
           `• SHA-256: ${ev.sha256}\n` +
