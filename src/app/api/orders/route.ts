@@ -90,11 +90,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // Whoever is actually signed in is the poster — a client hiring, or a
-    // freelancer offering their services.
-    const poster_role = actorEmail === freelancer_email && actorEmail !== client_email
-      ? "freelancer"
-      : "client";
+    // A public listing carries the poster's own address in BOTH email fields, so
+    // the role can't be inferred from them — it has to come from the request.
+    // It's still not simply trusted: the claim is only honoured when the address
+    // it would publish under belongs to the caller. That keeps the useful case
+    // (a freelancer listing their own services) while refusing the abusive one
+    // (naming someone else as counterparty to list under their reputation).
+    const requestedRole = body.poster_role === "freelancer" ? "freelancer" : "client";
+    const posterEmail   = requestedRole === "freelancer" ? freelancer_email : client_email;
+    const poster_role   = posterEmail === actorEmail ? requestedRole : "client";
 
     // Per-account cap: even a signed-in account can't drip-spam listings.
     const acctRl = rateLimit(`orders:create:acct:${actorEmail}`, 12, 60_000);
