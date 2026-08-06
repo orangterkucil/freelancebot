@@ -229,6 +229,7 @@ export function reviewBrief(body: {
   title?: string | null;
   amount_usdc?: number | null;
   deadline?: string | null;
+  field?: string | null;
 }, actorEmail?: string) {
   const actor = actorEmail ?? readActorEmail("client");
   return jsonFetch<{

@@ -55,6 +55,7 @@ export function CreateOrderForm({
         title: title.trim() || null,
         amount_usdc: amount === "" ? null : Number(amount),
         deadline: deadline ? new Date(deadline).toISOString() : null,
+        field,
       }, clientEmail);
       setReview(r);
     } catch {

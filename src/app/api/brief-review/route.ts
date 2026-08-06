@@ -46,6 +46,7 @@ export async function POST(req: Request) {
       title: body.title ? String(body.title).slice(0, 200) : null,
       amountUsdc: Number.isFinite(Number(body.amount_usdc)) ? Number(body.amount_usdc) : null,
       deadlineISO: body.deadline ? String(body.deadline) : null,
+      field: body.field ? String(body.field).slice(0, 40) : null,
     });
 
     return NextResponse.json(review);

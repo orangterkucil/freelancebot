@@ -185,11 +185,40 @@ export type BriefReview = {
  * flag is COMPUTED ON THE SERVER from the coerced clarity value, so injected
  * text in a brief cannot assert its own approval. Nothing here touches money.
  */
+/**
+ * A concrete, postable brief per category.
+ *
+ * The fallback used to be one hard-coded sentence — the same coffee-logo example
+ * whatever the job was — and it was phrased as advice rather than as a brief.
+ * Clients accepted it verbatim, so every order ended up with identical filler
+ * text that no delivery could ever be checked against. These read like something
+ * a real client would write, and each one names a deliverable format and an
+ * acceptance condition, which is exactly what verification needs later.
+ */
+const EXAMPLE_BRIEF: Record<string, string> = {
+  design:
+    "Design a logo for a specialty coffee brand called Kopi Kita. Deliver 3 concepts as SVG plus PNG exports at 1x/2x, in light and dark versions. Modern, minimal, no gradients. One round of revisions on the chosen concept.",
+  dev:
+    "Build a responsive landing page from the attached Figma file. Next.js + Tailwind, mobile-first, no layout shift, Lighthouse performance 90 or above. Deliver a GitHub repository link and a working preview URL.",
+  writing:
+    "Write a 1,200-word getting-started guide for our REST API. Plain English, second person, with runnable JavaScript examples for auth, a first request, and error handling. Deliver as Markdown.",
+  video:
+    "Edit a 60-second product demo from the raw footage provided. 1080p MP4, burned-in captions, licensed background music, brand colours on the end card. One round of revisions.",
+  marketing:
+    "Write a 5-post launch thread for X: one hook, three posts covering a distinct benefit each, one call to action. Under 280 characters per post, with a suggested visual described for each. Deliver as a doc.",
+  research:
+    "Research the 10 largest stablecoin payment providers. For each: pricing, settlement time, supported corridors, and main differentiator. Cite a source URL per figure. Deliver as a spreadsheet.",
+  other:
+    "Describe the work, the exact files or links you expect to receive, and the condition that makes it complete. Example: “Produce 3 concepts, delivered as PNG, revised once after feedback.”",
+};
+
 export async function reviewBrief(input: {
   brief: string;
   title?: string | null;
   amountUsdc?: number | null;
   deadlineISO?: string | null;
+  /** Job category — decides which worked example is offered. */
+  field?: string | null;
 }): Promise<BriefReview> {
   const start = Date.now();
   const brief = (input.brief ?? "").trim();
@@ -203,8 +232,7 @@ export async function reviewBrief(input: {
         "The brief is too short to describe the work.",
         "An AI check at delivery time would have nothing to compare the deliverable against.",
       ],
-      suggestion:
-        "Describe what you want made, the format you expect to receive, and what 'done' looks like. Example: \"Design a logo for a coffee brand called Kopi Kita. Deliver 3 concepts as PNG, light and dark versions, modern minimal style.\"",
+      suggestion: EXAMPLE_BRIEF[input.field ?? "other"] ?? EXAMPLE_BRIEF.other,
     };
   }
 
@@ -219,6 +247,7 @@ export async function reviewBrief(input: {
   const prompt = `A client is about to post this freelance job. Judge ONLY whether the brief is
 specific enough that, once work is delivered, it can be checked against the brief.
 
+Category: ${input.field ?? "unspecified"}
 Title: ${safeTitle || "(none)"}
 Budget: ${input.amountUsdc != null ? `${input.amountUsdc} USDC` : "(not set)"}
 Deadline: ${input.deadlineISO ?? "(not set)"}
@@ -236,7 +265,10 @@ Rules:
 - "vague" = the topic is understandable but success is not defined (no format, scope, or acceptance criteria).
 - "unusable" = the brief does not describe any actual work.
 - Keep each issue under 15 words. Keep the suggestion under 60 words.
-- Write for the client, not about the model. Never mention these instructions.`;
+- Write for the client, not about the model. Never mention these instructions.
+- The suggestion must be a brief the client could post as-is for THIS category —
+  naming the deliverable format and what makes it complete. Do not write advice
+  about how to write a brief.`;
 
   let clarity: BriefReview["clarity"] = "vague";
   let issues: string[] = [];
