@@ -75,11 +75,17 @@ export function EmailGate({
       // Supabase's built-in SMTP is heavily rate-limited (a couple of mails an
       // hour), and its raw "email rate limit exceeded" tells the user nothing
       // about what to do next. Translate it into the actual way out.
-      const raw = String(e?.message ?? "");
+      const raw = String(e?.message ?? "").trim();
+      // Supabase surfaces an SMTP delivery failure as an opaque body ("{}",
+      // "[object Object]", or an empty message). Passing that straight to the
+      // user tells them nothing, so classify it.
+      const opaque = !raw || raw === "{}" || /^\[object/i.test(raw) || raw.length < 3;
       setErrorMsg(
         /rate limit|too many/i.test(raw)
           ? "Too many sign-in emails were just sent from this app. Wait a few minutes — or use demo mode below to continue right now."
-          : raw || "Failed to send magic link. Try demo mode below."
+          : opaque
+            ? "Couldn't send the sign-in email — the mail server rejected it. Use demo mode below to continue, or try again shortly."
+            : raw
       );
       setState("error");
     }
