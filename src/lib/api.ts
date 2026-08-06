@@ -122,6 +122,15 @@ export function editOrder(
 }
 
 /** Freelancer records their on-chain payout wallet on the order. */
+/** Client: delete a DRAFT order. Funded orders are never removable. */
+export function deleteOrder(orderId: number, actorEmail?: string) {
+  const actor = actorEmail ?? readActorEmail("client");
+  const qs = actor ? `?actor_email=${encodeURIComponent(actor)}` : "";
+  return jsonFetch<{ ok: boolean; deleted: number }>(`/api/orders/${orderId}${qs}`, {
+    method: "DELETE",
+  });
+}
+
 /** Client: take the freelancer off a draft order and re-open it to applicants. */
 export function unassignFreelancer(orderId: number, actorEmail?: string) {
   const actor = actorEmail ?? readActorEmail("client");

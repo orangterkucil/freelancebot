@@ -9,6 +9,7 @@ import {
   updateOrderFields,
   setFreelancerWallet,
   unassignFreelancer,
+  deleteOrder,
 } from "@/lib/orders";
 import { logger } from "@/lib/logger";
 import { getIdentity } from "@/lib/auth";
@@ -162,6 +163,51 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   } catch (err: any) {
     return NextResponse.json(
       { error: "patch_order_failed", detail: err?.message ?? String(err) },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * DELETE /api/orders/[id]
+ *
+ * Removes a DRAFT order so abandoned attempts don't pile up. Client-only, and
+ * only while the order is still a draft — nothing funded is ever removed, since
+ * a funded order has a counterpart on-chain and is part of the escrow's history.
+ */
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const orderId = Number(params.id);
+    if (!orderId) return NextResponse.json({ error: "bad id" }, { status: 400 });
+
+    // Identity may arrive as a header token or, in demo mode, as a query param.
+    const url = new URL(req.url);
+    const { email: actorEmail } = await getIdentity(req, url.searchParams.get("actor_email") ?? undefined);
+    if (!actorEmail) {
+      return NextResponse.json({ error: "Unauthorized — sign in required" }, { status: 401 });
+    }
+
+    const order = await getOrder(orderId);
+    if (!order) return NextResponse.json({ error: "not found" }, { status: 404 });
+
+    if (order.client_email.toLowerCase() !== actorEmail.toLowerCase()) {
+      logger.warn("api.orders.delete.forbidden", { orderId, actorEmail });
+      return NextResponse.json({ error: "Only the client can delete this order" }, { status: 403 });
+    }
+    if (order.status !== "draft") {
+      return NextResponse.json(
+        { error: "Only a draft can be deleted — this order has already been funded." },
+        { status: 400 }
+      );
+    }
+
+    await deleteOrder(orderId);
+    logger.info("api.orders.deleted", { orderId });
+    return NextResponse.json({ ok: true, deleted: orderId });
+  } catch (err: any) {
+    logger.error("api.orders.delete.failed", { err: err?.message ?? String(err) });
+    return NextResponse.json(
+      { error: "delete_order_failed", detail: err?.message ?? String(err) },
       { status: 500 }
     );
   }

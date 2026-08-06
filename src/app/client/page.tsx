@@ -188,7 +188,12 @@ function ClientDashboard({ email, signOut }: { email: string; signOut: () => voi
 
         <div className="space-y-3">
           {filtered.map((o) => (
-            <OrderCard key={o.id} order={o} perspective="client" />
+            <OrderCard
+              key={o.id}
+              order={o}
+              perspective="client"
+              onDeleted={(id) => setOrders((prev) => prev.filter((x) => x.id !== id))}
+            />
           ))}
         </div>
       </section>

@@ -414,6 +414,33 @@ export async function setOrderStatus(orderId: number, status: OrderStatus): Prom
  * longer accepting applications.
  */
 /**
+ * Delete a DRAFT order outright.
+ *
+ * Drafts pile up while experimenting — a wrong brief, a wrong amount, a test —
+ * and there was no way to clear them. Deleting is restricted to drafts because a
+ * draft has never been funded: no USDC has moved, so there is nothing on-chain
+ * that the database would fall out of sync with. Anything funded or beyond keeps
+ * its record permanently, which is what an escrow's history has to do.
+ *
+ * messages / applications / ratings are removed by ON DELETE CASCADE.
+ */
+export async function deleteOrder(orderId: number): Promise<void> {
+  const sb = supabaseAdmin();
+  const order = await getOrder(orderId);
+  if (!order) throw new Error("order not found");
+  if (order.status !== "draft") {
+    throw new Error("Only a draft can be deleted — this order has already been funded.");
+  }
+  // Belt and braces: a draft should never carry an on-chain id. If it somehow
+  // does, the escrow exists on Arc and the record must not disappear.
+  if (order.onchain_id != null) {
+    throw new Error("This order exists on-chain and can't be deleted.");
+  }
+  const { error } = await sb.from("orders").delete().eq("id", orderId);
+  if (error) throw error;
+}
+
+/**
  * The payout address this freelancer used most recently, if any.
  *
  * Lets a returning freelancer skip the connect step entirely: the client can
