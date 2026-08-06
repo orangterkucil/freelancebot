@@ -5,7 +5,7 @@
  *   - constants: addresses, chain id, RPC URL (all from env)
  *   - getEscrowContract / getUsdcContract: ethers Contract instances that
  *     auto-detect read-only (JsonRpcProvider) vs write-capable (BrowserProvider
- *     signing via MetaMask injected provider).
+ *     signing via the injected wallet provider).
  */
 
 import {
@@ -93,13 +93,48 @@ export async function sendWithMemo(
   args: unknown[],
   reference: string,
   memoText: string,
+  overrides: Record<string, unknown> = {},
 ) {
   const data = iface.encodeFunctionData(fn, args);
   const memoId = keccak256(toUtf8Bytes(reference));
   const memoData = toUtf8Bytes(memoText);
   const memo = new Contract(MEMO_ADDRESS, MEMO_ABI, signer);
-  const tx = await memo.memo(target, data, memoId, memoData);
+  const tx = await memo.memo(target, data, memoId, memoData, overrides);
   return tx.wait();
+}
+
+/**
+ * Gas + fee fields taken from our own RPC, to be passed with every wallet
+ * transaction.
+ *
+ * Wallets estimate gas and fees themselves, and on a freshly added custom chain
+ * those estimates are the least reliable part of the path — a rejected value
+ * surfaces through ethers as the opaque "could not coalesce error", which says
+ * nothing about fees. Supplying the values from our own RPC removes that guess.
+ *
+ * Every field is best-effort: whatever cannot be determined is simply omitted
+ * and the wallet fills it in as before.
+ */
+export async function txOverrides(estimateGas?: () => Promise<bigint>): Promise<Record<string, unknown>> {
+  const out: Record<string, unknown> = {};
+  try {
+    const fee = await getReadProvider().getFeeData();
+    if (fee.maxFeePerGas && fee.maxPriorityFeePerGas) {
+      // Headroom on the cap so a rising base fee between signing and inclusion
+      // doesn't strand the transaction.
+      out.maxFeePerGas = fee.maxFeePerGas * 2n;
+      out.maxPriorityFeePerGas = fee.maxPriorityFeePerGas;
+    } else if (fee.gasPrice) {
+      out.gasPrice = fee.gasPrice;
+    }
+  } catch { /* wallet decides */ }
+
+  if (estimateGas) {
+    try {
+      out.gasLimit = ((await estimateGas()) * 3n) / 2n;
+    } catch { /* wallet decides */ }
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------------------
@@ -111,14 +146,14 @@ export function getReadProvider() {
   return new JsonRpcProvider(ARC_RPC_URL, { chainId: ARC_CHAIN_ID, name: "arc-testnet" });
 }
 
-/** Browser provider that signs via MetaMask. Throws if no wallet injected. */
+/** Browser provider that signs via the injected wallet. Throws if none is present. */
 export function getBrowserProvider(): BrowserProvider {
   if (typeof window === "undefined") {
     throw new Error("Browser provider is only available in the browser");
   }
   const eth = (window as unknown as { ethereum?: Eip1193Provider }).ethereum;
   if (!eth) {
-    throw new Error("No injected wallet found. Install MetaMask and switch to Arc Testnet.");
+    throw new Error("No wallet extension found. Install one (MetaMask, Rabby, …) and switch it to Arc Testnet.");
   }
   // Do NOT pin the network here. If the wallet is on a different chain (e.g.
   // Ethereum mainnet, id 1), ethers v6 throws "network changed: 5042002 => 1"
@@ -130,7 +165,7 @@ export function getBrowserProvider(): BrowserProvider {
 /** Ask the user to connect their wallet and return a signer. */
 export async function connectWallet(): Promise<{ address: string; signer: Signer }> {
   let provider = getBrowserProvider();
-  // request account access (MetaMask popup)
+  // request account access (wallet popup)
   await provider.send("eth_requestAccounts", []);
   // make sure the user is on the right chain
   const net = await provider.getNetwork();
@@ -147,7 +182,16 @@ export async function connectWallet(): Promise<{ address: string; signer: Signer
             chainId: "0x" + ARC_CHAIN_ID.toString(16),
             chainName: "Arc Testnet",
             rpcUrls: [ARC_RPC_URL],
-            nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 6 },
+            // 18, not 6. Arc settles in USDC and the ERC-20 USDC token does use
+            // 6 decimals — but the NATIVE gas unit is standard 18-decimal wei,
+            // which the chain's own balances confirm (a faucet balance reads as
+            // ~187 at 18 decimals, and as ~187 trillion at 6).
+            //
+            // Declaring 6 here made every wallet that added the chain from these
+            // parameters compute balances and gas fees a trillion times off. The
+            // resulting transactions were rejected by the node, and the rejection
+            // reached the user as ethers' opaque "could not coalesce error".
+            nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 },
             blockExplorerUrls: ["https://testnet.arcscan.app"],
           },
         ]);

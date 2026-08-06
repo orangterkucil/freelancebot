@@ -23,10 +23,10 @@ import { connectWallet, getUsdcReadonly, fromUsdcUnits, addressUrl } from "@/lib
  *   - switch wallet (re-request accounts)
  *   - disconnect (clear local address state)
  *
- * Note: EIP-1193 has no way to force MetaMask to sign the user *out* of a
+ * Note: EIP-1193 has no way to force a wallet to sign the user *out* of a
  * dapp — the wallet extension owns that state. Our "Disconnect" clears the
  * displayed address in the app and returns to the Connect button. Users can
- * fully disconnect by revoking site access from MetaMask's own UI.
+ * fully disconnect by revoking site access from the wallet's own UI.
  */
 export function WalletStatus() {
   const [address, setAddress] = useState<string | null>(null);
@@ -122,7 +122,7 @@ export function WalletStatus() {
     setBusy(true);
     setError(null);
     try {
-      // Ask MetaMask for wallet permissions again — user can pick a different account
+      // Ask the wallet for permissions again — user can pick a different account
       const eth = (window as any).ethereum;
       if (eth?.request) {
         try {
@@ -160,7 +160,7 @@ export function WalletStatus() {
     }
   };
 
-  // No wallet installed — link to install MetaMask
+  // No wallet installed — point at a wallet to install
   if (!hasWallet) {
     return (
       <a
@@ -170,7 +170,7 @@ export function WalletStatus() {
         className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 shadow-sm hover:border-amber-400 hover:bg-amber-100"
       >
         <AlertCircle className="h-3 w-3" />
-        Install MetaMask
+        Install a wallet
       </a>
     );
   }

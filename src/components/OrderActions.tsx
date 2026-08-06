@@ -15,35 +15,30 @@ import {
   txUrl,
   USE_MEMO,
   sendWithMemo,
+  txOverrides,
 } from "@/lib/contracts";
 
 const STATUS_NAMES = ["none", "funded", "delivered", "released", "refunded"];
 const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
 
 /**
- * Estimate gas against our own RPC instead of through the injected wallet.
+ * Gas + fee fields for a wallet transaction, computed from our own RPC.
  *
- * ethers asks the wallet to estimate before sending, and that step is where
- * injected providers fall over — MetaMask can return an error shape ethers
- * can't parse, surfacing as the opaque "could not coalesce error" even when the
- * contract call itself is perfectly valid. Estimating on a plain JSON-RPC
- * provider is reliable, so we do that and pass an explicit limit.
- *
- * Returns undefined if estimation fails, in which case the wallet estimates as
- * before — this is a fallback, never a hard requirement.
+ * Wallets estimate both the gas limit and the fee fields themselves, and on a
+ * custom chain those estimates are the least reliable part of the path. A value
+ * the node rejects surfaces through ethers as the opaque "could not coalesce
+ * error". Computing them from our own RPC removes that guess. Wallet-agnostic:
+ * not specific to any one extension.
  */
-async function gasLimitFor(
-  method: "submitDelivery" | "approveAndRelease" | "refund",
+async function overridesFor(
+  method: "submitDelivery" | "approveAndRelease" | "refund" | "createAndFund",
   args: unknown[],
   from: string
-): Promise<bigint | undefined> {
-  try {
+): Promise<Record<string, unknown>> {
+  return txOverrides(async () => {
     const ro: any = getEscrowReadonly();
-    const est: bigint = await ro[method].estimateGas(...args, { from });
-    return (est * 3n) / 2n; // 50% headroom
-  } catch {
-    return undefined;
-  }
+    return await ro[method].estimateGas(...args, { from });
+  });
 }
 
 /** Does this URL point at an image we can preview inline? */
@@ -92,7 +87,7 @@ function friendlyChainError(e: any): string {
   // fine — this is the injected provider misbehaving, most often when more than
   // one wallet extension is fighting over window.ethereum.
   if (/coalesce/i.test(String(e?.message))) {
-    return "Your wallet returned an unreadable error. Try again — if it repeats, make sure MetaMask is on Arc Testnet and disable any other wallet extensions competing with it.";
+    return "Your wallet returned an unreadable error. Check that it is connected to Arc Testnet, and if you have more than one wallet extension installed, keep only one enabled — they fight over the same page connection.";
   }
   const name: string | undefined = e?.revert?.name ?? e?.reason;
   switch (name) {
@@ -182,13 +177,21 @@ export function OrderActions({
     const usdc = getUsdcWithSigner(signer);
     const escrow = getEscrowWithSigner(signer);
 
-    const approveTx = await usdc.approve(ESCROW_ADDRESS, amount);
+    const from = await signer.getAddress();
+
+    // ERC-20 approve goes through the wallet too, so it needs the same fee
+    // treatment as the escrow calls.
+    const approveOv = await txOverrides(async () =>
+      (getUsdcWithSigner(signer) as any).approve.estimateGas(ESCROW_ADDRESS, amount, { from })
+    );
+    const approveTx = await usdc.approve(ESCROW_ADDRESS, amount, approveOv);
     await approveTx.wait();
 
     const args = [order.freelancer_wallet, amount, order.brief, deadlineSec];
+    const fundOv = await overridesFor("createAndFund", args, from);
     const receipt = USE_MEMO
-      ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "createAndFund", args, `FB-${order.id}`, `fund;order=${order.id}`)
-      : await (await escrow.createAndFund(...args)).wait();
+      ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "createAndFund", args, `FB-${order.id}`, `fund;order=${order.id}`, fundOv)
+      : await (await escrow.createAndFund(...args, fundOv)).wait();
     setLastTxHash(receipt.hash);
 
     let onchainId: number | null = null;
@@ -216,10 +219,10 @@ export function OrderActions({
     const { signer, address } = await connectWallet();
     const escrow = getEscrowWithSigner(signer);
     const onchainId = order.onchain_id ?? order.id;
-    const gasLimit = await gasLimitFor("approveAndRelease", [onchainId], address);
+    const ov = await overridesFor("approveAndRelease", [onchainId], address);
     const receipt = USE_MEMO
-      ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "approveAndRelease", [onchainId], `FB-${order.id}`, `release;order=${order.id}`)
-      : await (await escrow.approveAndRelease(onchainId, gasLimit ? { gasLimit } : {})).wait();
+      ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "approveAndRelease", [onchainId], `FB-${order.id}`, `release;order=${order.id}`, ov)
+      : await (await escrow.approveAndRelease(onchainId, ov)).wait();
     setLastTxHash(receipt.hash);
     await patchOrder(order.id, { status: "released" });
   };
@@ -250,12 +253,13 @@ export function OrderActions({
   })();
 
   const refundOnChain = async () => {
-    const { signer } = await connectWallet();
+    const { signer, address } = await connectWallet();
     const escrow = getEscrowWithSigner(signer);
     const onchainId = order.onchain_id ?? order.id;
+    const ov = await overridesFor("refund", [onchainId], address);
     const receipt = USE_MEMO
-      ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "refund", [onchainId], `FB-${order.id}`, `refund;order=${order.id}`)
-      : await (await escrow.refund(onchainId)).wait();
+      ? await sendWithMemo(signer, ESCROW_ADDRESS, escrow.interface, "refund", [onchainId], `FB-${order.id}`, `refund;order=${order.id}`, ov)
+      : await (await escrow.refund(onchainId, ov)).wait();
     setLastTxHash(receipt.hash);
     await patchOrder(order.id, { status: "refunded" });
   };
@@ -296,8 +300,8 @@ export function OrderActions({
       if (st === 1) {
         const { signer, address } = await connectWallet();
         const escrow = getEscrowWithSigner(signer);
-        const gasLimit = await gasLimitFor("submitDelivery", [onchainId, url], address);
-        const tx = await escrow.submitDelivery(onchainId, url, gasLimit ? { gasLimit } : {});
+        const ov = await overridesFor("submitDelivery", [onchainId, url], address);
+        const tx = await escrow.submitDelivery(onchainId, url, ov);
         const receipt = await tx.wait();
         setLastTxHash(receipt.hash);
       }

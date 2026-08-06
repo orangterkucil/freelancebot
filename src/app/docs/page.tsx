@@ -451,7 +451,7 @@ export default function DocsPage() {
             <Section id="faq" title="FAQ" emoji="❓">
               <Q q="Do I need crypto experience to use this?">
                 For the live demo: no, the UI simulates fund/release if you don&apos;t connect a wallet. For real on-chain transactions:
-                yes, you need MetaMask connected to Arc Testnet with testnet USDC.
+                yes, you need a wallet (MetaMask, Rabby, or similar) connected to Arc Testnet with testnet USDC.
               </Q>
               <Q q="Is the contract audited?">
                 Not yet. v1.0.0 plans Code4rena / Sherlock review when the contract surface changes.
