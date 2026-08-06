@@ -69,7 +69,7 @@ export function AgentChat({
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-brand" />
           <p className="font-display text-sm uppercase tracking-wider text-slate-900">
-            Agent chat
+            Escrow agent
           </p>
         </div>
         <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">

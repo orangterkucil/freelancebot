@@ -85,22 +85,38 @@ export async function POST(req: Request) {
     // 3) log
     // Written as the agent reporting its own work, not as a raw dump — this is
     // the moment both parties actually see the agent do something.
+    // Facts are separated from judgment on purpose. "Escrow funded" is something
+    // the agent verified; "matches the brief" is its opinion. Presenting them in
+    // one list invites a reader to trust both equally.
     const tick = (ok: boolean) => (ok ? "✔" : "✘");
     const inspected = verdict.checks.contentsInspected === true;
+    const ev = verdict.evidence;
+
     const summary =
-      `Deliverable received. Here's what I checked:\n\n` +
-      `${tick(order.onchain_id != null)} Escrow funded on Arc${order.onchain_id != null ? ` (order #${order.onchain_id})` : ""}\n` +
-      `${tick(!!order.freelancer_wallet)} Payout wallet on file${order.freelancer_wallet ? ` (${order.freelancer_wallet.slice(0, 6)}…${order.freelancer_wallet.slice(-4)})` : ""}\n` +
+      `Deliverable received. Escrow audit for order #${orderId}.\n\n` +
+      `FACTS (verified)\n` +
+      `${tick(order.onchain_id != null)} Escrow funded on Arc${order.onchain_id != null ? ` — on-chain order #${order.onchain_id}` : ""}\n` +
       `${tick(true)} Amount held: ${order.amount_usdc} USDC\n` +
-      `${tick(verdict.checks.urlReachable)} Deliverable is reachable\n` +
+      `${tick(!!order.freelancer_wallet)} Payout wallet on file${order.freelancer_wallet ? ` — ${order.freelancer_wallet.slice(0, 6)}…${order.freelancer_wallet.slice(-4)}` : ""}\n` +
+      `${tick(verdict.checks.urlReachable)} Deliverable reachable\n` +
       `${tick(verdict.checks.deadlineMet)} Submitted before the deadline\n` +
-      `${tick(verdict.checks.briefAlignment === "matches")} Matches the brief — ${verdict.checks.briefAlignment}\n` +
-      `${inspected ? "✔ I opened the file and looked at it" : "• I could only check the link, not the file contents"}\n\n` +
-      (verdict.observed ? `What I see: ${verdict.observed}\n\n` : "") +
-      `Verdict: ${verdict.verified ? "READY TO RELEASE" : "HOLD"} (${verdict.confidence} confidence)\n` +
+      `${inspected ? "✔ File downloaded and opened" : "✘ File contents not inspected — link only"}\n\n` +
+      `ASSESSMENT (my judgment, not fact)\n` +
+      `• Brief alignment: ${verdict.checks.briefAlignment}\n` +
+      (verdict.observed ? `• What I see: ${verdict.observed}\n` : "") +
+      `• Confidence: ${verdict.confidence}\n` +
+      (verdict.confidenceReason ? `• Why not higher: ${verdict.confidenceReason}\n` : "") +
+      `\nRECOMMENDATION\n` +
       (verdict.verified
-        ? `Recommendation: the client can release the payment.`
-        : `Recommendation: the client should review this before releasing.`);
+        ? `Release the payment. The client makes the final call.\n`
+        : `Hold and review before releasing.\n`) +
+      (ev
+        ? `\nEVIDENCE\n` +
+          `• SHA-256: ${ev.sha256}\n` +
+          `• File: ${ev.contentType}, ${ev.bytes.toLocaleString()} bytes\n` +
+          `• Vision model: ${ev.model}\n` +
+          `• Checked at: ${ev.checkedAt}`
+        : "");
 
     await appendAgentNotes(orderId, summary);
     await appendMessage(orderId, "agent", summary);
