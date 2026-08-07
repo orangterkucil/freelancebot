@@ -41,6 +41,29 @@
   }
   body.pointer-visible, body.pointer-visible * { cursor: auto !important; }
 
+  /* Chapter markers. A viewer who can skip needs to know what they are skipping
+     to — a bare progress bar makes them guess. */
+  #controls .bar { position: relative; }
+  .chapter-mark {
+    position: absolute; top: -3px; width: 2px; height: calc(100% + 6px);
+    background: rgba(255,255,255,.55); cursor: pointer; z-index: 3;
+  }
+  .chapter-mark::after {
+    content: ''; position: absolute; left: -7px; top: -6px; width: 16px; height: 22px;
+  }
+  .chapter-mark:hover { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+  .chapter-tip {
+    position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
+    white-space: nowrap; background: #0b1220; border: 1px solid rgba(255,255,255,.16);
+    color: #fff; font-family: var(--font-mono); font-size: 11px; padding: 5px 9px;
+    border-radius: 7px; opacity: 0; pointer-events: none; transition: opacity .12s;
+  }
+  .chapter-mark:hover .chapter-tip { opacity: 1; }
+  #chapter-now {
+    font-family: var(--font-mono); font-size: 11px; color: var(--cyan);
+    letter-spacing: .08em; text-transform: uppercase; margin-left: 4px; white-space: nowrap;
+  }
+
   #stage {
     position: fixed; inset: 0;
     background:
@@ -1587,6 +1610,7 @@
   <button id="btn-restart">↺ Restart</button>
   <button id="btn-hide">Hide UI (H)</button>
   <span class="time" id="time">0:00 / 1:29</span>
+  <span id="chapter-now"></span>
   <div class="bar"><i id="progress"></i></div>
 </div>
 
@@ -2091,6 +2115,7 @@
       }
       timeEl.textContent = fmt(elapsed) + ' / ' + fmt(totalDuration);
       progressEl.style.width = (elapsed / totalDuration * 100) + '%';
+      updateChapterLabel();
     }
     requestAnimationFrame(tickPlayer);
   }
@@ -2146,6 +2171,7 @@
       sceneElapsed = dv.currentTime;
       timeEl.textContent = fmt(elapsed) + ' / ' + fmt(totalDuration);
       progressEl.style.width = (elapsed / totalDuration * 100) + '%';
+      updateChapterLabel();
       return;
     }
     seekTo(elapsed + delta);
@@ -2171,8 +2197,19 @@
       clearTutorialTimers();
       activateScene(targetIdx);
     }
+    // Landing inside the recording has to move the file too, or the timeline
+    // says one thing and the footage shows another.
+    if (SCENES[targetIdx] && SCENES[targetIdx].id === 8) {
+      const dv = currentDemoVideo();
+      if (dv) {
+        const apply = () => { try { dv.currentTime = offsetInScene; } catch (e) {} };
+        if (dv.readyState >= 1) apply(); else dv.addEventListener('loadedmetadata', apply, { once: true });
+        if (playing) dv.play().catch(() => {});
+      }
+    }
     timeEl.textContent = fmt(elapsed) + ' / ' + fmt(totalDuration);
     progressEl.style.width = (elapsed / totalDuration * 100) + '%';
+    updateChapterLabel();
   }
 
   const bar = document.querySelector('#controls .bar');
@@ -2286,6 +2323,49 @@
     clearTimeout(pointerTimer);
     pointerTimer = setTimeout(() => document.body.classList.remove('pointer-visible'), 2000);
   });
+
+  // ---------------------------------------------------------------
+  // Chapters
+  // ---------------------------------------------------------------
+  // Absolute positions on the reel timeline: 17s of intro, then the recording
+  // (its own internal beats offset by that 17), then the closing scenes.
+  const INTRO = 17;
+  const CHAPTERS = [
+    { at: 0,             label: 'The problem' },
+    { at: INTRO + 0,     label: 'Client · sign in + post job' },
+    { at: INTRO + 62,    label: 'Client · apply + match' },
+    { at: INTRO + 112,   label: 'Client · fund escrow' },
+    { at: INTRO + 162,   label: 'AI agent audit' },
+    { at: INTRO + 212,   label: 'Client · release + on-chain' },
+    { at: INTRO + 262,   label: 'Freelancer POV' },
+    { at: INTRO + 502,   label: 'Closing' },
+  ].filter(c => c.at < totalDuration);
+
+  (function renderChapters() {
+    const bar = document.querySelector('#controls .bar');
+    if (!bar) return;
+    CHAPTERS.forEach(c => {
+      const m = document.createElement('div');
+      m.className = 'chapter-mark';
+      m.style.left = (c.at / totalDuration * 100) + '%';
+      m.title = fmt(c.at) + ' · ' + c.label;
+      const tip = document.createElement('span');
+      tip.className = 'chapter-tip';
+      tip.textContent = fmt(c.at) + ' · ' + c.label;
+      m.appendChild(tip);
+      m.addEventListener('click', (e) => { e.stopPropagation(); seekTo(c.at + 0.05); });
+      bar.appendChild(m);
+    });
+  })();
+
+  const chapterNowEl = document.getElementById('chapter-now');
+  function updateChapterLabel() {
+    if (!chapterNowEl) return;
+    let cur = CHAPTERS[0];
+    for (const c of CHAPTERS) if (elapsed >= c.at) cur = c;
+    const next = cur ? cur.label : '';
+    if (chapterNowEl.textContent !== next) chapterNowEl.textContent = next;
+  }
 
   gate.addEventListener('click', startReel);
   document.addEventListener('keydown', (e) => {
