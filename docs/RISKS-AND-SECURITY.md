@@ -74,6 +74,41 @@ the brief. Be clear-eyed about its limits:
   refund after the deadline + grace period and (by design) a human in the loop.
 - It does **not** guarantee uptime, and it is **not** insured.
 
+## The fee is owner-controlled, and that is a real risk
+
+The protocol fee is `agentFeeBps`, set to `100` (1%) at deployment. Two things
+about it are easy to misread, so they are stated plainly here:
+
+- **The contract's cap is 10%, not 1%.** `setAgentFee` reverts above `1000` bps.
+  1% is the value we chose, not a value the contract enforces.
+- **The owner can change it at any time, and the change is retroactive.**
+  `release()` computes the fee from whatever `agentFeeBps` holds at the moment of
+  release (`FreelanceEscrow.sol:174`), not from a value snapshotted when the
+  escrow was funded. An escrow funded under a 1% fee could be released under a
+  higher one.
+
+The honest mitigation today is that `AgentFeeUpdated` is emitted on every change,
+so a raise is publicly visible on-chain. The real fix is to snapshot the fee into
+the order at funding time, which requires a contract redeploy — it is on the list,
+and until it ships this risk is live, not theoretical.
+
+## Known gaps
+
+Written down rather than left for someone else to find:
+
+- **No on-chain timeout on `claimDelivered`.** A freelancer who marks work
+  delivered and then disappears leaves the client waiting on the refund grace
+  period. Fixing it properly needs a redeploy.
+- **TOCTOU windows on draft delete and freelancer unassign.** Both re-read the
+  order after the authorisation check instead of taking a row lock, so a
+  concurrent funding transaction could interleave. The blast radius is a draft
+  order, not funds.
+- **DNS-blind SSRF check.** `isPrivateHost` validates the hostname and every
+  redirect hop against private address ranges, but does not pin the resolved IP,
+  so a DNS-rebinding attacker could still get one request out. It cannot read the
+  response into a verdict, but the request itself is not prevented.
+- **N+1 queries on rating summaries.** Correct, but it will not scale.
+
 ## Protecting yourself (opsec)
 
 FreelanceBot never asks for your seed phrase, private key, or password, and
