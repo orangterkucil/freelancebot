@@ -23,7 +23,10 @@ module.exports = {
     },
   },
   paths: {
-    sources:   "./",
+    // Sources live in ./src, not the package root. With "./" Hardhat walks into
+    // node_modules once dependencies are installed and tries to compile all of
+    // OpenZeppelin, which fails with HH1006.
+    sources:   "./src",
     tests:     "./test",
     cache:     "./cache",
     artifacts: "./artifacts",

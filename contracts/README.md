@@ -4,8 +4,8 @@ Solidity contracts for the FreelanceBot MVP, deployable to Arc testnet.
 
 ## Contracts
 
-- **FreelanceEscrow.sol** — Milestone escrow. Client funds in USDC, freelancer submits a deliverable, client or AI agent releases. Refund path for missed deadlines. Owner-controlled agent address + configurable fee (0–10%).
-- **MockUSDC.sol** — Test-only ERC-20 with 6 decimals. Not deployed to mainnet/testnet; used only in unit tests.
+- **src/FreelanceEscrow.sol** — Milestone escrow. Client funds in USDC, freelancer submits a deliverable, client or AI agent releases. Refund path for missed deadlines. Owner-controlled agent address + configurable fee (0–10%).
+- **src/MockUSDC.sol** — Test-only ERC-20 with 6 decimals. Not deployed to mainnet/testnet; used only in unit tests.
 
 ## Setup
 
