@@ -59,6 +59,8 @@
     border-radius: 7px; opacity: 0; pointer-events: none; transition: opacity .12s;
   }
   .chapter-mark:hover .chapter-tip { opacity: 1; }
+  #btn-sound.is-muted { border-color: #f59e0b; color: #f59e0b; animation: soundpulse 1.4s ease-in-out infinite; }
+  @keyframes soundpulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
   #chapter-now {
     font-family: var(--font-mono); font-size: 11px; color: var(--cyan);
     letter-spacing: .08em; text-transform: uppercase; margin-left: 4px; white-space: nowrap;
@@ -1608,6 +1610,7 @@
   <button id="btn-toggle">⏸ Pause</button>
   <button id="btn-fwd10">+10s ⏩</button>
   <button id="btn-restart">↺ Restart</button>
+  <button id="btn-sound">🔊 Sound</button>
   <button id="btn-hide">Hide UI (H)</button>
   <span class="time" id="time">0:00 / 1:29</span>
   <span id="chapter-now"></span>
@@ -2064,11 +2067,43 @@
     }, { once: true });
 
     v.currentTime = 0;
-    v.muted = false;
-    // The reel only ever starts from a click, so audio is allowed. If a browser
-    // still refuses, fall back to muted rather than leaving a frozen frame.
-    v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+    v.muted = !wantSound;
+    v.volume = 1;
+    // The reel only ever starts from a click, so audio should be allowed. Only an
+    // actual autoplay refusal justifies muting -- an AbortError from a play() that
+    // raced a seek used to mute the whole demo permanently and silently.
+    v.play().then(syncSoundBtn).catch((err) => {
+      if (err && err.name !== 'NotAllowedError') {
+        setTimeout(() => { v.play().then(syncSoundBtn).catch(() => {}); }, 120);
+        return;
+      }
+      v.muted = true;
+      v.play().catch(() => {});
+      syncSoundBtn(true);   // and say so on screen, rather than playing silently
+    });
   }
+
+  // Sound state lives outside the element so seeking and scene changes keep it.
+  let wantSound = true;
+  const soundBtn = document.getElementById('btn-sound');
+  function syncSoundBtn(blocked) {
+    if (!soundBtn) return;
+    const v = currentDemoVideo();
+    const muted = v ? v.muted : !wantSound;
+    soundBtn.textContent = muted ? (blocked ? '🔇 Click for sound' : '🔇 Muted')
+                                 : '🔊 Sound';
+    soundBtn.classList.toggle('is-muted', !!muted);
+  }
+  function toggleSound() {
+    wantSound = !wantSound;
+    const v = currentDemoVideo();
+    if (v) {
+      v.muted = !wantSound;
+      if (wantSound && v.paused && playing) v.play().catch(() => {});
+    }
+    syncSoundBtn(false);
+  }
+  if (soundBtn) soundBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleSound(); });
 
   function stopDemoVideo() {
     const v = currentDemoVideo();
@@ -2236,6 +2271,7 @@
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
     }
+    if (e.key === 'm' || e.key === 'M') { toggleSound(); return; }
     // While the recording is on screen the arrows scrub it by 10 seconds.
     // Jumping scenes there would skip the whole demo in one keypress.
     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
