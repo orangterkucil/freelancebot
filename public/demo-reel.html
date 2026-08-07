@@ -2066,6 +2066,7 @@
       }
     }, { once: true });
 
+    pendingSeek = null;
     v.currentTime = 0;
     v.muted = !wantSound;
     v.volume = 1;
@@ -2128,7 +2129,7 @@
         // is derived from the video, not accumulated alongside it. Computed
         // absolutely so that seeking inside the video lands the timeline exactly
         // where the footage is, instead of drifting and skipping the scene.
-        sceneElapsed = dv.currentTime;
+        sceneElapsed = demoPos(dv);
         let offset = 0;
         for (let i = 0; i < currentIdx; i++) offset += SCENES[i].dur;
         elapsed = offset + sceneElapsed;
@@ -2195,15 +2196,40 @@
    * reel timeline there would skip past the whole demo in one press, since the
    * footage is a single 8-minute scene. Everywhere else it moves the reel clock.
    */
+  // Where we asked the recording to go but have not landed on yet. currentTime
+  // lags a seek by several frames, and the timeline is derived from it -- so
+  // without this the clock snaps back to the old position and looks frozen, and
+  // three fast clicks on -10s only move ten seconds instead of thirty.
+  let pendingSeek = null;
+
+  function seekDemoVideo(v, target) {
+    const dur = v.duration || 0;
+    target = Math.max(0, Math.min(target, dur > 0 ? dur - 0.1 : target));
+    pendingSeek = target;
+    v.addEventListener('seeked', () => {
+      if (pendingSeek === target) pendingSeek = null;
+    }, { once: true });
+    // If the browser never lands the seek (an aborted range request will do it),
+    // release the clock rather than pinning it to a frame nobody is watching.
+    setTimeout(() => { if (pendingSeek === target) pendingSeek = null; }, 3000);
+    try { v.currentTime = target; } catch (e) { pendingSeek = null; }
+    return target;
+  }
+
+  /** The recording's true position: the seek we asked for, else where it is. */
+  function demoPos(v) {
+    return pendingSeek !== null ? pendingSeek : v.currentTime;
+  }
+
   function nudge(delta) {
     const onDemo = SCENES[currentIdx] && SCENES[currentIdx].id === 8;
     const dv = onDemo ? currentDemoVideo() : null;
     if (dv && dv.duration > 0) {
-      dv.currentTime = Math.min(Math.max(0, dv.currentTime + delta), dv.duration - 0.1);
+      seekDemoVideo(dv, demoPos(dv) + delta);
       let offset = 0;
       for (let i = 0; i < currentIdx; i++) offset += SCENES[i].dur;
-      elapsed = offset + dv.currentTime;
-      sceneElapsed = dv.currentTime;
+      elapsed = offset + demoPos(dv);
+      sceneElapsed = demoPos(dv);
       timeEl.textContent = fmt(elapsed) + ' / ' + fmt(totalDuration);
       progressEl.style.width = (elapsed / totalDuration * 100) + '%';
       updateChapterLabel();
@@ -2237,7 +2263,7 @@
     if (SCENES[targetIdx] && SCENES[targetIdx].id === 8) {
       const dv = currentDemoVideo();
       if (dv) {
-        const apply = () => { try { dv.currentTime = offsetInScene; } catch (e) {} };
+        const apply = () => seekDemoVideo(dv, offsetInScene);
         if (dv.readyState >= 1) apply(); else dv.addEventListener('loadedmetadata', apply, { once: true });
         if (playing) dv.play().catch(() => {});
       }
