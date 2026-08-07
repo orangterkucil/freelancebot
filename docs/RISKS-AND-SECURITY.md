@@ -87,10 +87,18 @@ about it are easy to misread, so they are stated plainly here:
   escrow was funded. An escrow funded under a 1% fee could be released under a
   higher one.
 
-The honest mitigation today is that `AgentFeeUpdated` is emitted on every change,
-so a raise is publicly visible on-chain. The real fix is to snapshot the fee into
-the order at funding time, which requires a contract redeploy — it is on the list,
-and until it ships this risk is live, not theoretical.
+**The fix is written and tested, but not deployed.** `FreelanceEscrow.sol` in this
+repo now stores `feeBps` on the order at funding time and both payout paths use
+it, with tests covering the release path, the refund-timeout path, and the case
+where the owner raises the fee mid-escrow. What is live on Arc testnet at
+`0xA8CA04560603951b0f0e803039B059432F673ae4` predates that change, because
+deploying it means a new address and re-verifying the source, and we would rather
+ship that with time to test it end-to-end than days before a deadline.
+
+So: on the deployed instance the risk is live, not theoretical, and the only
+mitigation is that `AgentFeeUpdated` is emitted on every change, making a raise
+publicly visible on-chain. Read the contract in this repo to see the intended
+behaviour; read the deployed bytecode to see what is actually running today.
 
 ## Known gaps
 
