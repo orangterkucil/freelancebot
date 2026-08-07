@@ -35,8 +35,11 @@
     background: #000;
     color: var(--ink);
     font-family: var(--font-sans);
+    /* Hidden for the cinematic look, but only while the mouse is still. A reel
+       the viewer can pause and scrub still needs a pointer to aim with. */
     cursor: none;
   }
+  body.pointer-visible, body.pointer-visible * { cursor: auto !important; }
 
   #stage {
     position: fixed; inset: 0;
@@ -1578,7 +1581,9 @@
 <div id="rec-dot"><div class="dot"></div>REC · DEMO REEL</div>
 <div id="scene-label">SCENE 1 / 7</div>
 <div id="controls">
+  <button id="btn-back10">⏪ -10s</button>
   <button id="btn-toggle">⏸ Pause</button>
+  <button id="btn-fwd10">+10s ⏩</button>
   <button id="btn-restart">↺ Restart</button>
   <button id="btn-hide">Hide UI (H)</button>
   <span class="time" id="time">0:00 / 1:29</span>
@@ -2022,6 +2027,18 @@
     v.addEventListener('timeupdate', sync);
     sync();
 
+    // Advance straight off the video's own 'ended' event rather than waiting for
+    // the timeline to notice. currentTime stops a hair short of duration, which
+    // is what left the reel parked on the last frame.
+    v.addEventListener('ended', () => {
+      if (!(SCENES[currentIdx] && SCENES[currentIdx].id === 8)) return;
+      if (currentIdx < SCENES.length - 1) {
+        sceneElapsed = 0;
+        currentIdx++;
+        activateScene(currentIdx);
+      }
+    }, { once: true });
+
     v.currentTime = 0;
     v.muted = false;
     // The reel only ever starts from a click, so audio is allowed. If a browser
@@ -2039,7 +2056,15 @@
     if (playing) {
       const onDemo = SCENES[currentIdx] && SCENES[currentIdx].id === 8;
       const dv = onDemo ? currentDemoVideo() : null;
-      if (dv && dv.duration > 0) {
+      if (dv && dv.ended) {
+        // The file stops a fraction short of its own duration, so the scene
+        // threshold below is never crossed and the reel sits on the last frame
+        // forever. Ending the video ends the scene.
+        sceneElapsed = SCENES[currentIdx].dur;
+        let off = 0;
+        for (let i = 0; i < currentIdx; i++) off += SCENES[i].dur;
+        elapsed = off + sceneElapsed;
+      } else if (dv && dv.duration > 0) {
         // The recording owns the clock while it is on screen: the reel position
         // is derived from the video, not accumulated alongside it. Computed
         // absolutely so that seeking inside the video lands the timeline exactly
@@ -2091,6 +2116,8 @@
       if (playing) dv.play().catch(() => {}); else dv.pause();
     }
   });
+  document.getElementById('btn-back10').addEventListener('click', () => nudge(-10));
+  document.getElementById('btn-fwd10').addEventListener('click',  () => nudge(10));
   btnRestart.addEventListener('click', restart);
   btnHide.addEventListener('click', () => {
     uiHidden = !uiHidden;
@@ -2101,6 +2128,29 @@
   // ============================================================
   // Seek — click progress bar OR arrow keys
   // ============================================================
+  /**
+   * Nudge playback by `delta` seconds.
+   *
+   * While the recording is on screen this scrubs the video itself — moving the
+   * reel timeline there would skip past the whole demo in one press, since the
+   * footage is a single 8-minute scene. Everywhere else it moves the reel clock.
+   */
+  function nudge(delta) {
+    const onDemo = SCENES[currentIdx] && SCENES[currentIdx].id === 8;
+    const dv = onDemo ? currentDemoVideo() : null;
+    if (dv && dv.duration > 0) {
+      dv.currentTime = Math.min(Math.max(0, dv.currentTime + delta), dv.duration - 0.1);
+      let offset = 0;
+      for (let i = 0; i < currentIdx; i++) offset += SCENES[i].dur;
+      elapsed = offset + dv.currentTime;
+      sceneElapsed = dv.currentTime;
+      timeEl.textContent = fmt(elapsed) + ' / ' + fmt(totalDuration);
+      progressEl.style.width = (elapsed / totalDuration * 100) + '%';
+      return;
+    }
+    seekTo(elapsed + delta);
+  }
+
   function seekTo(seconds) {
     seconds = Math.max(0, Math.min(totalDuration - 0.1, seconds));
     // find scene containing this timestamp
@@ -2151,15 +2201,10 @@
     }
     // While the recording is on screen the arrows scrub it by 10 seconds.
     // Jumping scenes there would skip the whole demo in one keypress.
-    if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') &&
-        SCENES[currentIdx] && SCENES[currentIdx].id === 8) {
-      const dv = currentDemoVideo();
-      if (dv && !isNaN(dv.duration)) {
-        e.preventDefault();
-        const step = e.key === 'ArrowRight' ? 10 : -10;
-        dv.currentTime = Math.min(Math.max(0, dv.currentTime + step), dv.duration - 0.1);
-        return;
-      }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      nudge(e.key === 'ArrowRight' ? 10 : -10);
+      return;
     }
     if (e.key === 'ArrowRight') {
       e.preventDefault();
@@ -2233,6 +2278,14 @@
     // start player loop
     requestAnimationFrame(tickPlayer);
   }
+
+  // Show the pointer whenever it moves; hide it again once it settles.
+  let pointerTimer = null;
+  document.addEventListener('mousemove', () => {
+    document.body.classList.add('pointer-visible');
+    clearTimeout(pointerTimer);
+    pointerTimer = setTimeout(() => document.body.classList.remove('pointer-visible'), 2000);
+  });
 
   gate.addEventListener('click', startReel);
   document.addEventListener('keydown', (e) => {
