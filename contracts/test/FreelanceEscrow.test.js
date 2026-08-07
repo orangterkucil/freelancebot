@@ -289,4 +289,60 @@ describe("FreelanceEscrow", function () {
       expect(o.status).to.equal(3); // Released
     });
   });
+
+  describe("fee locked at funding", function () {
+    // The whole product is a trust claim: the client agrees to a 1% fee when they
+    // put money in. If the owner could raise the fee afterwards and have it apply
+    // to escrow already funded, that claim would be worthless.
+    it("charges the rate agreed at funding, not the current one", async function () {
+      const { owner, client, freelancer, escrow, usdc, feeRecipient } = await deployFixture();
+      const deadline = (await time.latest()) + 7 * 24 * 60 * 60;
+
+      await escrow.connect(client).createAndFund(freelancer.address, AMOUNT, "brief", deadline);
+
+      // Owner raises the fee to the contract maximum AFTER the money is in.
+      await escrow.connect(owner).setAgentFee(1000n, feeRecipient.address);
+      expect(await escrow.agentFeeBps()).to.equal(1000n);
+
+      const before = await usdc.balanceOf(freelancer.address);
+      await escrow.connect(freelancer).submitDelivery(1, "https://example.com/work");
+      await escrow.connect(client).approveAndRelease(1);
+      const paid = (await usdc.balanceOf(freelancer.address)) - before;
+
+      // 1% was agreed, so 99% is owed -- not the 90% the new rate would give.
+      expect(paid).to.equal(AMOUNT - (AMOUNT * FEE_BPS) / 10000n);
+    });
+
+    it("applies the new rate to orders funded after the change", async function () {
+      const { owner, client, freelancer, escrow, usdc, feeRecipient } = await deployFixture();
+      const deadline = (await time.latest()) + 7 * 24 * 60 * 60;
+
+      await escrow.connect(owner).setAgentFee(500n, feeRecipient.address);
+      await escrow.connect(client).createAndFund(freelancer.address, AMOUNT, "brief", deadline);
+
+      const before = await usdc.balanceOf(freelancer.address);
+      await escrow.connect(freelancer).submitDelivery(1, "https://example.com/work");
+      await escrow.connect(client).approveAndRelease(1);
+      const paid = (await usdc.balanceOf(freelancer.address)) - before;
+
+      expect(paid).to.equal(AMOUNT - (AMOUNT * 500n) / 10000n);
+    });
+
+    it("locks the rate for the refund-timeout path too", async function () {
+      const { owner, client, freelancer, escrow, usdc, feeRecipient } = await deployFixture();
+      const deadline = (await time.latest()) + 7 * 24 * 60 * 60;
+
+      await escrow.connect(client).createAndFund(freelancer.address, AMOUNT, "brief", deadline);
+      await escrow.connect(freelancer).submitDelivery(1, "https://example.com/work");
+      await escrow.connect(owner).setAgentFee(1000n, feeRecipient.address);
+      await time.increase(Number(GRACE) + 60);
+
+      const before = await usdc.balanceOf(freelancer.address);
+      await escrow.connect(freelancer).claimDelivered(1);
+      const paid = (await usdc.balanceOf(freelancer.address)) - before;
+
+      expect(paid).to.equal(AMOUNT - (AMOUNT * FEE_BPS) / 10000n);
+    });
+  });
+
 });

@@ -37,7 +37,10 @@ export const ESCROW_ABI = [
   "function submitDelivery(uint256 orderId, string deliverable) external",
   "function approveAndRelease(uint256 orderId) external",
   "function refund(uint256 orderId) external",
-  "function getOrder(uint256 orderId) external view returns (tuple(address client, address freelancer, uint256 amount, string brief, string deliverable, uint64 deadline, uint64 createdAt, uint8 status))",
+  // Keep every field the struct has, in order. Trailing fields could be omitted
+  // without breaking the decode — they sit after `status` in the head — but a
+  // short ABI is how `deliveredAt` went unnoticed here for so long.
+  "function getOrder(uint256 orderId) external view returns (tuple(address client, address freelancer, uint256 amount, string brief, string deliverable, uint64 deadline, uint64 createdAt, uint8 status, uint64 deliveredAt, uint16 feeBps))",
   "function usdc() external view returns (address)",
   "function agentFeeBps() external view returns (uint256)",
   "event OrderFunded(uint256 indexed orderId, address indexed client, address indexed freelancer, uint256 amount, uint64 deadline, string brief)",

@@ -37,6 +37,10 @@ contract FreelanceEscrow is Ownable {
         uint64  createdAt;
         Status  status;
         uint64  deliveredAt;  // set on submitDelivery; enables the review-timeout claim
+        // The fee agreed at funding time. Locked into the order so that a later
+        // setAgentFee cannot change the split on money already in escrow -- the
+        // client is charged the rate they saw when they paid, not the current one.
+        uint16  feeBps;
     }
 
     // ---------------------------------------------------------------------
@@ -143,7 +147,9 @@ contract FreelanceEscrow is Ownable {
             deliverable: "",
             deadline:    deadline,
             createdAt:   uint64(block.timestamp),
-            status:      Status.Funded
+            status:      Status.Funded,
+            deliveredAt: 0,
+            feeBps:      uint16(agentFeeBps)
         });
 
         // Pull USDC from client into escrow.
@@ -171,7 +177,7 @@ contract FreelanceEscrow is Ownable {
         if (o.status != Status.Delivered)                     revert WrongStatus(Status.Delivered, o.status);
         if (msg.sender != o.client && msg.sender != agent)    revert NotAuthorized();
 
-        uint256 fee = (o.amount * agentFeeBps) / 10000;
+        uint256 fee = (o.amount * o.feeBps) / 10000;
         uint256 net = o.amount - fee;
         o.status    = Status.Released;
 
@@ -205,7 +211,7 @@ contract FreelanceEscrow is Ownable {
         if (o.status != Status.Delivered)                                          revert WrongStatus(Status.Delivered, o.status);
         if (block.timestamp <= uint256(o.deliveredAt) + uint256(refundGracePeriod)) revert TooEarlyForRefund();
 
-        uint256 fee = (o.amount * agentFeeBps) / 10000;
+        uint256 fee = (o.amount * o.feeBps) / 10000;
         uint256 net = o.amount - fee;
         o.status    = Status.Released;
 
