@@ -624,6 +624,20 @@
 
   .browser-bar { display: none; }
 
+  /* The recorded scene holds a 16:9 file, so its frame is pinned to 16:9 —
+     otherwise the video letterboxes inside a wider box and the frame reads as
+     padding rather than as a screen. Scoped to #scene-8 so the illustrated
+     tutorials keep their own proportions. */
+  #scene-8 .stage-box {
+    aspect-ratio: 16 / 9;
+    height: auto;
+    max-height: 62vh;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+  }
+  #scene-8 #demo-video { border-radius: inherit; }
+
   .browser-body {
     flex: 1; position: relative;
     background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
@@ -1533,6 +1547,32 @@
       built by geografinist
     </div>
   </div>
+
+  <!-- The recorded product walkthrough, dressed in the same frame as the
+       illustrated scenes. The animation sets up the problem; this is the proof —
+       the real app, a real wallet, a real transaction. The footage is never cut;
+       only the chrome around it is ours, and the step strip follows the video's
+       own clock. -->
+  <div class="scene tutorial" id="scene-8">
+    <div class="kicker">Live demo · recorded</div>
+    <h1>The <em>real product</em> — end to end, uncut</h1>
+    <div class="steps-strip" id="strip-8">
+      <div class="step" data-i="0">Client · sign in + post</div>
+      <div class="step" data-i="1">Client · apply + match</div>
+      <div class="step" data-i="2">Client · fund escrow</div>
+      <div class="step" data-i="3">Client · agent verdict</div>
+      <div class="step" data-i="4">Client · release + on-chain</div>
+      <div class="step" data-i="5">Freelancer POV</div>
+    </div>
+    <div class="stage-box">
+      <div class="browser-bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="url">https://freelancebot-alpha.vercel.app</div>
+      </div>
+      <video id="demo-video" src="/demo.mp4" playsinline preload="auto"
+             style="display:block;width:100%;height:100%;object-fit:contain;background:#0b0f1a"></video>
+    </div>
+  </div>
 </div>
 
 <div id="rec-dot"><div class="dot"></div>REC · DEMO REEL</div>
@@ -1552,8 +1592,11 @@
   // ============================================================
   const ALL_SCENES = [
     { id: 1, dur: 5,  tts: "FreelanceBot. Payouts on Arc.", label: "OPENING" },
-    { id: 2, dur: 7,  tts: "300 dollar job. 220 arrives. 80 dollars lost.", label: "PROBLEM" },
+    { id: 2, dur: 6,  tts: "300 dollar job. 220 arrives. 80 dollars lost.", label: "PROBLEM" },
     { id: 3, dur: 6,  tts: "USDC on Arc. Verified. Released in under one second.", label: "SOLUTION" },
+    // The recorded walkthrough. 263s = the file's own length; the timeline has
+    // to match it or the reel would move on while the video is still playing.
+    { id: 8, dur: 502, tts: "Here is the whole flow, recorded end to end, from both sides.", label: "LIVE DEMO" },
     { id: 4, dur: 30, tts: "Client: post a job. Pick applicant. Fund escrow. Agent verifies. Release.", label: "CLIENT" },
     { id: 5, dur: 30, tts: "Freelancer: browse. Apply. Deliver. Get paid instantly.", label: "FREELANCER" },
     { id: 6, dur: 5,  tts: "Source verified. Open source, MIT.", label: "TECH" },
@@ -1569,10 +1612,18 @@
   const ROLE_CUTS = {
     client:     { ids: [1, 2, 3, 4, 6, 7], title: "The Client Journey",     sub: "Post · fund escrow · verify · release" },
     freelancer: { ids: [1, 2, 3, 5, 6, 7], title: "The Freelancer Journey", sub: "Browse · apply · deliver · get paid" },
+    // Animated-only cut, kept for anyone who wants the short illustrated version.
+    reel:       { ids: [1, 2, 3, 4, 5, 6, 7], title: "FreelanceBot Demo Reel", sub: "illustrated walkthrough" },
   };
   const roleParam = (new URLSearchParams(location.search).get('role') || '').toLowerCase();
   const cut = ROLE_CUTS[roleParam] || null;
-  const SCENES = cut ? ALL_SCENES.filter(s => cut.ids.includes(s.id)) : ALL_SCENES;
+  // Default: 17 seconds of setup, then the actual recording. The illustrated
+  // walkthroughs (4 and 5) are a re-enactment — they belong behind ?role=.
+  const DEFAULT_IDS = [1, 2, 3, 8, 6, 7];
+  const SCENES = cut
+    ? ALL_SCENES.filter(s => cut.ids.includes(s.id))
+    : ALL_SCENES.filter(s => DEFAULT_IDS.includes(s.id))
+                .sort((a, b) => DEFAULT_IDS.indexOf(a.id) - DEFAULT_IDS.indexOf(b.id));
 
   // Frame timing per tutorial scene (offsets within scene)
   const CLIENT_STEPS = [
@@ -1901,6 +1952,7 @@
   }
 
   function activateScene(idx) {
+    stopDemoVideo();
     // reset by cloning to restart CSS animations
     sceneEls.forEach((el, k) => {
       if (k !== idx) el.classList.remove('active');
@@ -1920,6 +1972,7 @@
     if (sid === 3) { setTimeout(cash, 700); setTimeout(ding, 4200); }
     if (sid === 4) { runTutorial(4, CLIENT_STEPS); }
     if (sid === 5) { runTutorial(5, FREELANCER_STEPS); }
+    if (sid === 8) { startDemoVideo(); }
     if (sid === 6) { setTimeout(ding, 800); }
     if (sid === 7) { setTimeout(ding, 400); }
 
@@ -1932,11 +1985,73 @@
     }
   }
 
+  // ---------------------------------------------------------------
+  // Recorded demo scene
+  // ---------------------------------------------------------------
+  // The step strip is driven by the video's own currentTime rather than the
+  // reel's clock: the file is the source of truth for where we are, and the two
+  // would drift apart the moment the viewer pauses or the video buffers.
+  const DEMO_STEPS = [
+    { at: 0,   i: 0 },   // client: sign in + post job
+    { at: 62,  i: 1 },   // client: apply + match
+    { at: 112, i: 2 },   // client: fund escrow
+    { at: 162, i: 3 },   // client: agent verdict
+    { at: 212, i: 4 },   // client: release + on-chain
+    { at: 262, i: 5 },   // the freelancer recording starts here
+  ];
+  let demoTimeHandler = null;
+
+  function currentDemoVideo() {
+    // activateScene clones the scene element, so always re-query.
+    return document.querySelector('#scene-8 #demo-video');
+  }
+
+  function startDemoVideo() {
+    const v = currentDemoVideo();
+    if (!v) return;
+    const strip = document.querySelector('#strip-8');
+    const steps = strip ? [...strip.querySelectorAll('.step')] : [];
+
+    const sync = () => {
+      let idx = 0;
+      for (const s of DEMO_STEPS) if (v.currentTime >= s.at) idx = s.i;
+      steps.forEach((el, k) => el.classList.toggle('active', k === idx));
+    };
+    if (demoTimeHandler) v.removeEventListener('timeupdate', demoTimeHandler);
+    demoTimeHandler = sync;
+    v.addEventListener('timeupdate', sync);
+    sync();
+
+    v.currentTime = 0;
+    v.muted = false;
+    // The reel only ever starts from a click, so audio is allowed. If a browser
+    // still refuses, fall back to muted rather than leaving a frozen frame.
+    v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+  }
+
+  function stopDemoVideo() {
+    const v = currentDemoVideo();
+    if (v) { try { v.pause(); } catch (e) {} }
+  }
+
   function tickPlayer(now) {
     const dt = (now - last) / 1000; last = now;
     if (playing) {
-      elapsed += dt;
-      sceneElapsed += dt;
+      const onDemo = SCENES[currentIdx] && SCENES[currentIdx].id === 8;
+      const dv = onDemo ? currentDemoVideo() : null;
+      if (dv && dv.duration > 0) {
+        // The recording owns the clock while it is on screen: the reel position
+        // is derived from the video, not accumulated alongside it. Computed
+        // absolutely so that seeking inside the video lands the timeline exactly
+        // where the footage is, instead of drifting and skipping the scene.
+        sceneElapsed = dv.currentTime;
+        let offset = 0;
+        for (let i = 0; i < currentIdx; i++) offset += SCENES[i].dur;
+        elapsed = offset + sceneElapsed;
+      } else {
+        elapsed += dt;
+        sceneElapsed += dt;
+      }
       if (elapsed > totalDuration) elapsed = totalDuration;
       if (sceneElapsed >= SCENES[currentIdx].dur) {
         sceneElapsed = 0;
@@ -1969,6 +2084,12 @@
     btnToggle.textContent = playing ? '⏸ Pause' : '▶ Play';
     if (!playing) { try { speechSynthesis.pause(); } catch (e) {} }
     else { try { speechSynthesis.resume(); } catch (e) {} }
+    // Pause has to reach the recording too, or the reel freezes while the
+    // video keeps running underneath it.
+    const dv = currentDemoVideo();
+    if (dv && SCENES[currentIdx] && SCENES[currentIdx].id === 8) {
+      if (playing) dv.play().catch(() => {}); else dv.pause();
+    }
   });
   btnRestart.addEventListener('click', restart);
   btnHide.addEventListener('click', () => {
@@ -2027,6 +2148,18 @@
     if (e.key === 'f' || e.key === 'F') {
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
+    }
+    // While the recording is on screen the arrows scrub it by 10 seconds.
+    // Jumping scenes there would skip the whole demo in one keypress.
+    if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') &&
+        SCENES[currentIdx] && SCENES[currentIdx].id === 8) {
+      const dv = currentDemoVideo();
+      if (dv && !isNaN(dv.duration)) {
+        e.preventDefault();
+        const step = e.key === 'ArrowRight' ? 10 : -10;
+        dv.currentTime = Math.min(Math.max(0, dv.currentTime + step), dv.duration - 0.1);
+        return;
+      }
     }
     if (e.key === 'ArrowRight') {
       e.preventDefault();
