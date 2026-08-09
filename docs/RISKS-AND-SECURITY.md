@@ -74,31 +74,33 @@ the brief. Be clear-eyed about its limits:
   refund after the deadline + grace period and (by design) a human in the loop.
 - It does **not** guarantee uptime, and it is **not** insured.
 
-## The fee is owner-controlled, and that is a real risk
+## The fee cap, and what is deployed today
 
 The protocol fee is `agentFeeBps`, set to `100` (1%) at deployment. Two things
-about it are easy to misread, so they are stated plainly here:
+about it matter, and they differ between the code in this repo and the instance
+currently running on Arc testnet.
 
-- **The contract's cap is 10%, not 1%.** `setAgentFee` reverts above `1000` bps.
-  1% is the value we chose, not a value the contract enforces.
-- **The owner can change it at any time, and the change is retroactive.**
-  `release()` computes the fee from whatever `agentFeeBps` holds at the moment of
-  release (`FreelanceEscrow.sol:174`), not from a value snapshotted when the
-  escrow was funded. An escrow funded under a 1% fee could be released under a
-  higher one.
+**In this repo.** `MAX_FEE_BPS` is `100`. The owner can *lower* the fee but the
+contract rejects any attempt to raise it above 1%, in the constructor and in
+`setAgentFee` alike. The rate is also snapshotted onto each order at funding
+time, so `release()` charges what the client agreed to rather than whatever the
+current setting happens to be. Both behaviours are covered by tests.
 
-**The fix is written and tested, but not deployed.** `FreelanceEscrow.sol` in this
-repo now stores `feeBps` on the order at funding time and both payout paths use
-it, with tests covering the release path, the refund-timeout path, and the case
-where the owner raises the fee mid-escrow. What is live on Arc testnet at
-`0xA8CA04560603951b0f0e803039B059432F673ae4` predates that change, because
-deploying it means a new address and re-verifying the source, and we would rather
-ship that with time to test it end-to-end than days before a deadline.
+That combination is the point: 1% stops being a promise the owner is trusted to
+keep and becomes a property of the contract. Raising it is not an admin action —
+it would require deploying a different contract, which is public and obvious.
 
-So: on the deployed instance the risk is live, not theoretical, and the only
-mitigation is that `AgentFeeUpdated` is emitted on every change, making a raise
-publicly visible on-chain. Read the contract in this repo to see the intended
-behaviour; read the deployed bytecode to see what is actually running today.
+**On the deployed instance** at `0xA8CA04560603951b0f0e803039B059432F673ae4`,
+neither is true yet. Its ceiling is 10%, and `release()` reads the fee at release
+rather than at funding, so a fee change would apply retroactively to money already
+in escrow. That contract predates both fixes. We chose not to redeploy days before
+a submission deadline, because a new address means re-verifying source, migrating
+live escrows, and updating every reference — a worse risk than a documented one.
+
+Until the redeploy ships, the only mitigation on the live instance is that
+`AgentFeeUpdated` is emitted on every change, so a raise is publicly visible
+on-chain. Read the contract in this repo to see the intended behaviour; read the
+deployed bytecode to see what is actually running today.
 
 ## Known gaps
 

@@ -52,13 +52,13 @@ describe("FreelanceEscrow", function () {
       ).to.be.revertedWithCustomError(Escrow, "InvalidAddress");
     });
 
-    it("reverts on fee > 10%", async function () {
+    it("reverts on a fee above the 1% cap", async function () {
       const [owner, agent, feeRecipient] = await ethers.getSigners();
       const USDC = await ethers.getContractFactory("MockUSDC");
       const usdc = await USDC.deploy();
       const Escrow = await ethers.getContractFactory("FreelanceEscrow");
       await expect(
-        Escrow.deploy(await usdc.getAddress(), agent.address, 1001, feeRecipient.address, GRACE)
+        Escrow.deploy(await usdc.getAddress(), agent.address, 101, feeRecipient.address, GRACE)
       ).to.be.revertedWithCustomError(Escrow, "FeeTooHigh");
     });
   });
@@ -246,15 +246,16 @@ describe("FreelanceEscrow", function () {
 
     it("owner can update fee", async function () {
       const { escrow, owner, stranger } = await deployFixture();
-      await escrow.connect(owner).setAgentFee(200, stranger.address);
-      expect(await escrow.agentFeeBps()).to.equal(200);
+      // 50 bps = 0.5%: the owner can still lower the fee, just never exceed 1%.
+      await escrow.connect(owner).setAgentFee(50, stranger.address);
+      expect(await escrow.agentFeeBps()).to.equal(50);
       expect(await escrow.agentFeeRecipient()).to.equal(stranger.address);
     });
 
-    it("cannot set fee > 10%", async function () {
+    it("cannot raise the fee above the 1% cap", async function () {
       const { escrow, owner, stranger } = await deployFixture();
       await expect(
-        escrow.connect(owner).setAgentFee(1001, stranger.address)
+        escrow.connect(owner).setAgentFee(101, stranger.address)
       ).to.be.revertedWithCustomError(escrow, "FeeTooHigh");
     });
   });
@@ -301,8 +302,10 @@ describe("FreelanceEscrow", function () {
       await escrow.connect(client).createAndFund(freelancer.address, AMOUNT, "brief", deadline);
 
       // Owner raises the fee to the contract maximum AFTER the money is in.
-      await escrow.connect(owner).setAgentFee(1000n, feeRecipient.address);
-      expect(await escrow.agentFeeBps()).to.equal(1000n);
+      // The cap means the owner cannot reach 10% at all any more. Prove the
+      // attempt reverts, then prove the lock still holds for a legal change.
+      await expect(escrow.connect(owner).setAgentFee(1000n, feeRecipient.address))
+        .to.be.revertedWithCustomError(escrow, "FeeTooHigh");
 
       const before = await usdc.balanceOf(freelancer.address);
       await escrow.connect(freelancer).submitDelivery(1, "https://example.com/work");
@@ -317,7 +320,7 @@ describe("FreelanceEscrow", function () {
       const { owner, client, freelancer, escrow, usdc, feeRecipient } = await deployFixture();
       const deadline = (await time.latest()) + 7 * 24 * 60 * 60;
 
-      await escrow.connect(owner).setAgentFee(500n, feeRecipient.address);
+      await escrow.connect(owner).setAgentFee(50n, feeRecipient.address);
       await escrow.connect(client).createAndFund(freelancer.address, AMOUNT, "brief", deadline);
 
       const before = await usdc.balanceOf(freelancer.address);
@@ -325,7 +328,7 @@ describe("FreelanceEscrow", function () {
       await escrow.connect(client).approveAndRelease(1);
       const paid = (await usdc.balanceOf(freelancer.address)) - before;
 
-      expect(paid).to.equal(AMOUNT - (AMOUNT * 500n) / 10000n);
+      expect(paid).to.equal(AMOUNT - (AMOUNT * 50n) / 10000n);
     });
 
     it("locks the rate for the refund-timeout path too", async function () {
@@ -334,7 +337,8 @@ describe("FreelanceEscrow", function () {
 
       await escrow.connect(client).createAndFund(freelancer.address, AMOUNT, "brief", deadline);
       await escrow.connect(freelancer).submitDelivery(1, "https://example.com/work");
-      await escrow.connect(owner).setAgentFee(1000n, feeRecipient.address);
+      await expect(escrow.connect(owner).setAgentFee(1000n, feeRecipient.address))
+        .to.be.revertedWithCustomError(escrow, "FeeTooHigh");
       await time.increase(Number(GRACE) + 60);
 
       const before = await usdc.balanceOf(freelancer.address);

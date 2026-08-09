@@ -49,7 +49,15 @@ contract FreelanceEscrow is Ownable {
 
     IERC20  public immutable usdc;
     address public agent;             // AI agent wallet allowed to release
-    uint256 public agentFeeBps;       // platform/agent fee, 0..1000 = 0..10%
+    /// @notice Platform/agent fee in basis points. Hard-capped at MAX_FEE_BPS.
+    uint256 public agentFeeBps;
+
+    /// @notice The ceiling on the fee, enforced in the constructor and in
+    ///         setAgentFee. Set to 1% -- the rate the product is sold on -- so
+    ///         that "1%" is a property of the contract rather than a promise the
+    ///         owner is trusted to keep. Raising it is not an admin action; it
+    ///         would require deploying a different contract, which is public.
+    uint256 public constant MAX_FEE_BPS = 100;
     address public agentFeeRecipient; // receives the agent fee on release
     uint64  public refundGracePeriod; // seconds after deadline before refund opens
 
@@ -111,7 +119,7 @@ contract FreelanceEscrow is Ownable {
     ) Ownable(msg.sender) {
         if (address(_usdc) == address(0)) revert InvalidAddress();
         if (_agent == address(0))         revert InvalidAddress();
-        if (_agentFeeBps > 1000)          revert FeeTooHigh();
+        if (_agentFeeBps > MAX_FEE_BPS)   revert FeeTooHigh();
         if (_agentFeeBps > 0 && _agentFeeRecipient == address(0)) revert InvalidAddress();
 
         usdc              = _usdc;
@@ -234,7 +242,7 @@ contract FreelanceEscrow is Ownable {
     }
 
     function setAgentFee(uint256 newBps, address newRecipient) external onlyOwner {
-        if (newBps > 1000) revert FeeTooHigh();
+        if (newBps > MAX_FEE_BPS) revert FeeTooHigh();
         if (newBps > 0 && newRecipient == address(0)) revert InvalidAddress();
         emit AgentFeeUpdated(agentFeeBps, newBps, agentFeeRecipient, newRecipient);
         agentFeeBps       = newBps;
