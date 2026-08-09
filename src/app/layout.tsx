@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Anton, Condiment, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/SiteFooter";
+import { SITE_URL } from "@/lib/site";
 
 const anton = Anton({
   subsets: ["latin"],
@@ -24,6 +25,7 @@ const jbMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "FreelanceBot — Autonomous Payment Agent for Global Freelancers",
   description:
     "Clients fund USDC escrow on Arc, AI agent verifies deliverables, payment releases in sub-second. No PayPal fees, no SWIFT wait.",
@@ -36,7 +38,7 @@ export const metadata: Metadata = {
     description:
       "AI payment agent for global freelancers, built on Arc + USDC. Sub-second settlement, no PayPal fees.",
     type: "website",
-    url: "https://freelancebot-alpha.vercel.app",
+    url: SITE_URL,
     images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "FreelanceBot" }],
   },
   twitter: {

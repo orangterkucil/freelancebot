@@ -1,5 +1,6 @@
 "use client";
 
+import { SITE_URL } from "@/lib/site";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -107,7 +108,7 @@ export default function DocsPage() {
               </p>
               <p>
                 It is not a startup, not a token, not a take-rate platform you can&apos;t leave. The hosted demo lives at
-                <a href="https://freelancebot-alpha.vercel.app" className="text-brand hover:underline"> freelancebot-alpha.vercel.app</a>.
+                <a href={SITE_URL} className="text-brand hover:underline"> {SITE_URL.replace(/^https?:\/\//, "")}</a>.
                 Anyone can fork the repo and deploy their own instance.
               </p>
               <Callout>
