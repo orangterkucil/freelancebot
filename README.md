@@ -3,20 +3,20 @@
 </p>
 
 <p align="center">
-  <strong>Autonomous AI payment agent for global freelancers, built on Arc.</strong><br/>
-  Clients fund USDC escrow on Arc · AI agent verifies deliverables · Payment releases in sub-second.<br/>
-  <em>No PayPal fees · No SWIFT wait · No Upwork hold.</em>
+  <strong>An AI agent with its own wallet, settling freelance jobs in USDC on Arc.</strong><br/>
+  Clients fund USDC escrow · the agent audits the delivered work · settlement lands in under a second.<br/>
+  <em>1% fee, capped in the contract · no platform holds your money.</em>
 </p>
 
 <p align="center">
-  <a href="https://freelancebot-alpha.vercel.app"><img alt="Live demo" src="https://img.shields.io/badge/live%20demo-online-22c55e?style=flat-square" /></a>
+  <a href="https://freelancebot.site"><img alt="Live demo" src="https://img.shields.io/badge/live%20demo-online-22c55e?style=flat-square" /></a>
   <a href="https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4"><img alt="Contract verified" src="https://img.shields.io/badge/contract-verified%20on%20Arc-0369a1?style=flat-square" /></a>
   <a href="https://github.com/orangterkucil/freelancebot/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" /></a>
   <img alt="Version" src="https://img.shields.io/badge/version-v0.13.0-informational?style=flat-square" />
 </p>
 
 <p align="center">
-  <img alt="Tests" src="https://img.shields.io/badge/tests-18%2F18%20passing-brightgreen?style=flat-square" />
+  <img alt="Tests" src="https://img.shields.io/badge/tests-25%2F25%20passing-brightgreen?style=flat-square" />
   <img alt="OWASP" src="https://img.shields.io/badge/OWASP%20LLM-hardened-blueviolet?style=flat-square" />
   <img alt="i18n" src="https://img.shields.io/badge/i18n-6%20languages-orange?style=flat-square" />
   <img alt="Stack" src="https://img.shields.io/badge/stack-Next.js%20·%20Solidity%20·%20Groq%20·%20Supabase-0f172a?style=flat-square" />
@@ -26,18 +26,40 @@
 
 ## What it does
 
-FreelanceBot is an autonomous payment agent for cross-border freelance work. Clients fund USDC escrow on Arc in a single signed transaction; an AI verifier (Groq Llama 3.3 70B) evaluates the deliverable against the brief, deadline, and URL reachability; and once approved, USDC settles to the freelancer with sub-second finality. The result: a $300 job that historically netted $220 after 14 days of PayPal, SWIFT, and local-bank fees now nets **$297 in 0.8 seconds** — end-to-end, self-custody, no platform-held funds.
+A client posts a job and funds it in USDC into an on-chain escrow. The freelancer delivers. An AI agent
+audits the work — it fetches the deliverable server-side, hashes it, and for images opens the actual file
+with a vision model — then writes a verdict that separates what it *verified* from what is only its
+*opinion*. On release, USDC settles to the freelancer with sub-second finality, minus a 1% fee.
+
+The agent is a transacting party, not a chat widget. It holds its own wallet and is a permissioned party
+in the escrow contract, so it can execute the release itself. That capability ships behind an operator
+switch rather than on by default — an LLM whose input includes a job brief written by a stranger should
+not be the sole authority over a transfer. The reasoning is in
+[`docs/DESIGN-DECISIONS.md`](docs/DESIGN-DECISIONS.md).
+
+A $300 job that historically netted ~$220 after two weeks of platform fees, FX spread and bank charges
+nets **$297**, and the on-chain leg takes under a second.
 
 ## Features
 
-- 🏦 **USDC escrow on Arc** — client deposits, contract holds, freelancer receives. All in stablecoin, sub-second finality.
-- 🤖 **AI agent (Groq Llama 3.3 70B)** — verifies deliverables, recommends release, chats with both parties in their own language.
-- ⚙️ **Auto-verification** — URL reachability check + deadline check + LLM brief alignment → structured JSON verdict.
-- 🔐 **Smart contract verified on-chain** — source code public on [arcscan](https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4), audit-clean (SafeERC20, custom errors, Ownable).
-- 💸 **1% platform fee, configurable** — fee routes to a separate recipient address (planned: Circle Gateway for treasury splits).
-- 🌐 **Multi-language agent** — auto-detects user language (Indonesian, English, Tagalog, Vietnamese, etc) and replies in kind.
-- 🛡️ **Production-grade resilience** — structured logger, exponential backoff retries on API calls, lazy clients for build-time safety.
-- 🔄 **End-to-end happy path** — Draft → Funded → Delivered → Released, with refund path for missed deadlines.
+- 🏦 **USDC escrow on Arc** — client deposits, the contract holds, the freelancer receives. One currency
+  end to end: Arc's gas is USDC-denominated, so a freelancer never learns that "gas" exists.
+- 🤖 **An agent with a wallet** — its own address on Arc, permissioned in the contract, able to execute
+  `approveAndRelease` itself when autonomous settlement is enabled.
+- 🔍 **Brief review before posting** — tells the client whether the deliverable is objectively verifiable,
+  so an uncheckable brief is caught at posting time instead of becoming a dispute.
+- 🏅 **Applicant ranking** — scores applicants against the brief with a written reason for each.
+- 👁️ **Vision-backed delivery audit** — fetches the file server-side, validates content type, SHA-256
+  hashes it, and runs a vision model over image deliverables. The verdict states which checks actually ran.
+- 💸 **1% fee, capped in the contract** — `MAX_FEE_BPS = 100`. The owner can lower it and cannot raise it;
+  the rate is locked onto each order when funded, so you are charged what you agreed to.
+- ⭐ **Two-sided ratings + market history** — reputation that travels across orders, and a public feed of
+  funded/released/refunded activity.
+- 🔐 **Contract source-verified on-chain** — [arcscan](https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4),
+  SafeERC20, custom errors, Ownable, 25 passing tests.
+- 🛡️ **Security worked, not assumed** — server-derived `verified` flag, SSRF guards on every redirect hop,
+  rate limits on every LLM route, auth that fails closed. See [`docs/RISKS-AND-SECURITY.md`](docs/RISKS-AND-SECURITY.md).
+- 🌐 **Multi-language agent** — detects the user's language and replies in kind.
 
 ---
 
@@ -45,10 +67,11 @@ FreelanceBot is an autonomous payment agent for cross-border freelance work. Cli
 
 | Resource | URL |
 |---|---|
-| **Live app** | https://freelancebot-alpha.vercel.app |
-| **Cinematic demo reel** (1:29, auto-play, narrated) | https://freelancebot-alpha.vercel.app/demo-reel.html |
-| **Narrated MP4** (1:02) | https://freelancebot-alpha.vercel.app/demo.mp4 |
-| **Docs & whitepaper** | https://freelancebot-alpha.vercel.app/docs |
+| **Live app** | https://freelancebot.site |
+| **Demo reel** (8:50 — 17s intro, then an uncut recording of both sides) | https://freelancebot.site/demo-reel.html |
+| **Raw recording** (8:22) | https://freelancebot.site/demo.mp4 |
+| **Docs — how it works, fees, risks** | https://freelancebot.site/docs |
+| **Who built it** | https://freelancebot.site/team.html |
 | **GitHub repo** | https://github.com/orangterkucil/freelancebot |
 | **Deployed contract** (Arc Testnet) | [`0xA8CA04560603951b0f0e803039B059432F673ae4`](https://testnet.arcscan.app/address/0xA8CA04560603951b0f0e803039B059432F673ae4) ✓ source verified |
 
@@ -110,7 +133,7 @@ Off-chain, the AI agent (Groq Llama 3.3 70B) handles:
 | Database | Supabase (Postgres + RLS) | Off-chain mirror of orders + chat |
 | AI agent | Groq (Llama 3.3 70B) | Sub-second LLM inference, free tier |
 | Smart contract | Solidity 0.8.24 on Arc testnet, deployed via Remix | Sub-second finality, USDC-native gas |
-| Wallet UX | Circle Wallets (planned, week 6) + MetaMask fallback | Onboarding for non-crypto users |
+| Wallet UX | Wallet-agnostic via EIP-1193 (tested on Rabby + MetaMask); Circle Wallets planned | Onboarding for non-crypto users |
 | Settlement | **USDC on Arc** | Predictable USD-denominated fees |
 
 ## Circle products used
@@ -119,7 +142,7 @@ Off-chain, the AI agent (Groq Llama 3.3 70B) handles:
 |---|---|
 | **USDC** | Settlement currency for all escrow operations |
 | **Arc Testnet** | L1 deployment target; USDC-native gas, sub-second finality |
-| **Circle Wallets** (planned) | Embedded wallets so non-crypto users onboard without MetaMask |
+| **Circle Wallets** (planned) | Embedded wallets so non-crypto users onboard without a browser extension |
 | **Circle Gateway** (planned) | Treasury routing for platform-fee splits |
 
 See [`circle_product_feedback.md`](./circle_product_feedback.md) for our detailed feedback on Circle's developer experience.
@@ -218,7 +241,7 @@ Full test suite: 18 cases in `contracts/test/FreelanceEscrow.test.js` covering h
 
 ## Try the live demo — no install required
 
-**👉 https://freelancebot-alpha.vercel.app**
+**👉 https://freelancebot.site**
 
 The demo is a hosted instance with a real source-verified contract on Arc Testnet. 90-second walkthrough:
 
@@ -228,7 +251,7 @@ The demo is a hosted instance with a real source-verified contract on Arc Testne
 4. **Browse `/jobs`** — open in another tab. Your job appears, filterable by field and budget.
 5. **Apply as freelancer** — click your job, fill a pitch + optional counter-bid, send the application.
 6. **Accept** — back on the order as the client, see the applicant, click **Accept**. Order becomes private and escrow flow begins.
-7. **Fund** — click **Fund USDC**. With MetaMask on Arc Testnet (Chain `5042002`) and USDC from [faucet.circle.com](https://faucet.circle.com), the escrow contract pulls the USDC on-chain. Otherwise the demo simulates.
+7. **Fund** — click **Fund USDC**. With any EIP-1193 wallet on Arc Testnet (Chain `5042002`) and USDC from [faucet.circle.com](https://faucet.circle.com), the escrow contract pulls the USDC on-chain. Otherwise the demo simulates.
 8. **Deliver** — switch to freelancer view, submit a deliverable URL. The Groq Llama 3.3 70B agent checks reachability + deadline + brief alignment, returns a verdict.
 9. **Release** — as client, click **Approve & release**. USDC settles to the freelancer in sub-second finality on Arc.
 
@@ -236,17 +259,21 @@ No clone, no install — open the link and try it.
 
 ---
 
-## For contributors and self-hosters
+<details>
+<summary><strong>For contributors and self-hosters</strong> — running your own instance (click to expand)</summary>
 
-Skip this section if you're just here to use the demo. The rest is for forking the repo and running your own instance.
+<br />
 
-### Prerequisites
+Nothing below is needed to use FreelanceBot. It is here because the licence is MIT and a licence you
+cannot act on is decoration: fork it, run it, change the fee, point it at your own contract.
+
+#### Prerequisites
 - Node.js 20+
 - A Supabase project (free tier)
 - A Groq API key (free tier)
 - An Arc testnet wallet with testnet USDC ([faucet](https://faucet.circle.com))
 
-### Install + run
+#### Install + run
 
 ```bash
 git clone https://github.com/orangterkucil/freelancebot.git
@@ -259,15 +286,15 @@ npm run dev
 
 Apply the database schema once: copy `supabase/schema.sql` into your Supabase project's SQL Editor and run it. Idempotent.
 
-### Compile + test contracts
+#### Compile + test contracts
 
 ```bash
 cd contracts
 npm install
-npm test       # 18 test cases
+npm test       # 25 test cases
 ```
 
-### Deploy contract to Arc testnet
+#### Deploy contract to Arc testnet
 
 ```bash
 # from contracts/
@@ -276,6 +303,9 @@ npm run deploy:arc
 ```
 
 Or use Remix in the browser — no local Node install required. See [`contracts/README.md`](./contracts/README.md).
+
+
+</details>
 
 ## Project documents
 
