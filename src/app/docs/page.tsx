@@ -98,7 +98,7 @@ export default function DocsPage() {
 
         {/* CONTENT */}
         <main className="py-8 lg:py-12">
-          <div className="prose-doc max-w-3xl">
+          <div className="prose-doc max-w-[68ch]">
             <Section id="overview" title="Overview" emoji="📘">
               <p>
                 FreelanceBot is an open-source escrow + agentic-payment platform for global freelance work.
@@ -503,15 +503,20 @@ export default function DocsPage() {
       </div>
 
       <style jsx global>{`
-        .prose-doc { line-height: 1.7; color: #334155; }
+        .prose-doc { line-height: 1.75; color: #334155; }
         .prose-doc h2 { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-anton), Anton, sans-serif; font-size: 1.875rem; line-height: 1.1; text-transform: uppercase; color: #0f172a; margin-top: 2.5rem; margin-bottom: 1rem; letter-spacing: -0.01em; }
         .prose-doc h2:first-of-type { margin-top: 0; }
-        .prose-doc p { font-family: var(--font-jb-mono), "JetBrains Mono", monospace; font-size: 0.85rem; margin-bottom: 0.85rem; color: #475569; }
+        .prose-doc p { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif; font-size: 1rem; line-height: 1.75; margin-bottom: 1rem; color: #334155; }
         .prose-doc strong { color: #0f172a; font-weight: 600; }
-        .prose-doc ul, .prose-doc ol { font-family: var(--font-jb-mono), "JetBrains Mono", monospace; font-size: 0.85rem; padding-left: 1.25rem; margin-bottom: 1rem; color: #475569; }
-        .prose-doc li { margin-bottom: 0.4rem; }
+        .prose-doc ul, .prose-doc ol { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif; font-size: 1rem; line-height: 1.7; padding-left: 1.35rem; margin-bottom: 1.1rem; color: #334155; }
+        .prose-doc li { margin-bottom: 0.55rem; }
         .prose-doc code { font-family: var(--font-jb-mono), "JetBrains Mono", monospace; font-size: 0.8rem; padding: 0.05rem 0.35rem; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; color: #0f172a; }
         .prose-doc a { color: #0ea5e9; }
+        html.dark .prose-doc { color: #cbd5e1; }
+        html.dark .prose-doc p, html.dark .prose-doc ul, html.dark .prose-doc ol { color: #cbd5e1; }
+        html.dark .prose-doc strong { color: #f8fafc; }
+        html.dark .prose-doc h2 { color: #f8fafc; }
+        html.dark .prose-doc code { background: #1e293b; border-color: #334155; color: #e2e8f0; }
       `}</style>
     </div>
   );
